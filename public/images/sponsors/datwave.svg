@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 64" role="img" aria-label="Datwave">
+  <text x="0" y="42" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" letter-spacing="-1.5">
+    <tspan fill="#0F172A">dat</tspan><tspan fill="#0EA5E9">wave</tspan>
+  </text>
+  <path d="M3 54 q 12 -9 24 0 t 24 0 t 24 0 t 24 0 t 24 0" fill="none" stroke="#0EA5E9" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

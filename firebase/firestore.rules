@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// Phase 1 posture: public content is world-readable. All content writes happen
+// via the Admin SDK (which bypasses rules) or from admins (custom claim).
+// The Phase 2 `users/**` rules are included now so favorites work when shipped.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /speakers/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /sessions/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /tracks/{id}   { allow read: if true; allow write: if isAdmin(); }
+    match /sponsors/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /team/{id}     { allow read: if true; allow write: if isAdmin(); }
+    match /config/{id}   { allow read: if true; allow write: if isAdmin(); }
+
+    match /news/{id} {
+      allow read: if resource.data.published == true || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Phase 2 — personal "My Schedule".
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+      match /{sub=**} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Deny everything else.
+    match /{document=**} { allow read, write: if false; }
+  }
+}

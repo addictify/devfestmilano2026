@@ -1,0 +1,282 @@
+@import "tailwindcss";
+
+/* next-themes toggles `.dark` on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  /* GDG brand — constant across themes */
+  --color-gdg-blue: #4285f4;
+  --color-gdg-red: #ea4335;
+  --color-gdg-yellow: #fbbc04;
+  --color-gdg-green: #34a853;
+
+  /* Semantic — driven by runtime vars so dark mode swaps live */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-paper: var(--paper);
+
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", monospace;
+
+  --radius-card: 1.5rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 38s linear infinite;
+}
+
+:root {
+  --background: #fbfaf6;
+  --foreground: #17150f;
+  --card: #ffffff;
+  --card-foreground: #17150f;
+  --muted: #f0ede3;
+  --muted-foreground: #6b6658;
+  --border: #e6e2d6;
+  --ring: #4285f4;
+  --primary: #4285f4;
+  --primary-foreground: #ffffff;
+  --accent: #17150f;
+  --accent-foreground: #fbfaf6;
+  --paper: #f3f0e7;
+
+  --grid-line: rgba(23, 21, 15, 0.045);
+  --dot: rgba(23, 21, 15, 0.08);
+}
+
+.dark {
+  --background: #0f0e0c;
+  --foreground: #f4f1e9;
+  --card: #1a1815;
+  --card-foreground: #f4f1e9;
+  --muted: #1c1a16;
+  --muted-foreground: #a39e90;
+  --border: #2b2823;
+  --ring: #4285f4;
+  --primary: #4285f4;
+  --primary-foreground: #ffffff;
+  --accent: #f4f1e9;
+  --accent-foreground: #0f0e0c;
+  --paper: #161410;
+
+  --grid-line: rgba(244, 241, 233, 0.05);
+  --dot: rgba(244, 241, 233, 0.09);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-gdg-yellow);
+    color: #17150f;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Custom scrollbar (subtle) */
+  @media (pointer: fine) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--color-muted-foreground) transparent;
+    }
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Eyebrow / kicker label */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  /* Dotted grid background — Material × Milano geometry */
+  .bg-dot-grid {
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Engineering grid lines */
+  .bg-line-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* Film grain overlay */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Four-color top beam used on cards & sections */
+  .beam-4 {
+    background: linear-gradient(
+      90deg,
+      var(--color-gdg-blue) 0 25%,
+      var(--color-gdg-red) 25% 50%,
+      var(--color-gdg-yellow) 50% 75%,
+      var(--color-gdg-green) 75% 100%
+    );
+  }
+
+  .mask-fade-r {
+    mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  }
+
+  .mask-fade-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes acc-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes acc-up {
+  from {
+    height: var(--radix-accordion-content-height);
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes beam-shimmer {
+  from {
+    background-position: 0% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0);
+  }
+}
+
+@keyframes blob-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(20px, -16px, 0) scale(1.05);
+  }
+  66% {
+    transform: translate3d(-14px, 12px, 0) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

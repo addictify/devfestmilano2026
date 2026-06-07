@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "title": "DevFest Milano 2026",
+    "description": "The biggest Google Developer community event in Milan. Talks, workshops and networking on October 10, 2026.",
+    "tagline": "One day. One community. Endless ideas."
+  },
+  "nav": {
+    "speakers": "Speakers",
+    "agenda": "Agenda",
+    "communities": "Communities",
+    "sponsors": "Sponsors",
+    "team": "Team",
+    "venue": "Venue",
+    "faq": "FAQ",
+    "cfp": "Call for Speakers",
+    "tickets": "Tickets",
+    "ticketsSoon": "Tickets — soon",
+    "menu": "Menu",
+    "close": "Close",
+    "home": "Home"
+  },
+  "hero": {
+    "eyebrow": "GDG Cloud Milano & GDG Milano present",
+    "date": "October 10, 2026",
+    "city": "Milan, Italy",
+    "title": "DevFest Milano",
+    "year": "2026",
+    "lead": "A full day of talks, workshops and community around Google technologies and open source. Built by developers, for developers.",
+    "ctaTickets": "Get your ticket",
+    "ctaCfp": "Submit a talk",
+    "countdownTitle": "Countdown to the event",
+    "days": "days",
+    "hours": "hrs",
+    "minutes": "min",
+    "seconds": "sec",
+    "live": "It's today! See you at DevFest 🎉",
+    "scroll": "Explore"
+  },
+  "stats": {
+    "title": "What to expect",
+    "lead": "A packed day designed for learning and connecting.",
+    "talks": "Talks",
+    "talksValue": "40+",
+    "tracks": "Parallel tracks",
+    "tracksValue": "4",
+    "speakers": "Speakers",
+    "speakersValue": "50+",
+    "attendees": "Attendees",
+    "attendeesValue": "800+"
+  },
+  "expect": {
+    "title": "Why attend",
+    "talksTitle": "Technical talks",
+    "talksBody": "Sessions on AI, Android, Web, Cloud, Flutter and much more, delivered by industry experts.",
+    "workshopsTitle": "Hands-on workshops",
+    "workshopsBody": "Get your hands on the code in practical labs for every experience level.",
+    "communityTitle": "Community & networking",
+    "communityBody": "Meet developers, GDEs and community leaders from across Italy and Europe."
+  },
+  "featuredSpeakers": {
+    "eyebrow": "Voices on stage",
+    "title": "Featured speakers",
+    "lead": "A taste of who's taking the stage. The full lineup is on its way.",
+    "viewAll": "All speakers",
+    "comingSoon": "Speakers will be announced soon. Stay tuned!"
+  },
+  "speakerTypes": {
+    "eyebrow": "Call for Speakers open",
+    "title": "Who'll be on stage",
+    "lead": "Speakers will be announced after talk selection. Expect Googlers, Google Developer Experts and industry professionals from around the world.",
+    "statAttendees": "Attendees",
+    "statSpeakers": "Speakers",
+    "statSessions": "Sessions",
+    "statTracks": "Tracks",
+    "lastEditionNote": "The {year} edition in numbers",
+    "cfpTitle": "It could be you on stage",
+    "cfpLead": "The call for speakers is open: pitch your talk or workshop and join the lineup.",
+    "cfpCta": "Submit a talk"
+  },
+  "agendaPreview": {
+    "eyebrow": "The program",
+    "title": "Agenda",
+    "lead": "Four parallel tracks from morning to evening.",
+    "viewAll": "See the full agenda",
+    "comingSoon": "The detailed agenda will be published after talk selection."
+  },
+  "sponsors": {
+    "eyebrow": "Supported by",
+    "title": "Our sponsors",
+    "lead": "DevFest is made possible by companies that believe in the community.",
+    "become": "Become a sponsor",
+    "tiers": {
+      "platinum": "Platinum",
+      "gold": "Gold",
+      "venue": "Venue Partner",
+      "silver": "Silver",
+      "bronze": "Bronze",
+      "community": "Community Partner",
+      "inkind": "In-kind"
+    },
+    "comingSoon": "We're confirming this edition's partners."
+  },
+  "communities": {
+    "eyebrow": "Organized by",
+    "title": "Two communities, one event",
+    "lead": "DevFest Milano 2026 is born from the collaboration between GDG Cloud Milano and GDG Milano: two distinct communities, one big day for developers.",
+    "visit": "Visit the community",
+    "pastTitle": "What we've done so far"
+  },
+  "past": {
+    "eyebrow": "Past editions",
+    "title": "Where we come from",
+    "lead": "Years of DevFest in Milan: thousands of developers, hundreds of talks."
+  },
+  "cfp": {
+    "eyebrow": "Call for Speakers",
+    "title": "Got something to share?",
+    "lead": "The call for speakers is open on Sessionize. Pitch your talk or workshop: we're looking for fresh voices and real stories.",
+    "deadline": "Submissions close on",
+    "cta": "Submit your proposal",
+    "guidelines": "Guidelines & details",
+    "topics": "We're looking for talks on",
+    "topicsList": "AI & ML, Android, Web, Cloud, Flutter, Kotlin, Firebase, Open Source, DevOps, Accessibility"
+  },
+  "venue": {
+    "eyebrow": "Where",
+    "title": "The venue",
+    "lead": "An easy-to-reach location in the heart of Milan.",
+    "directions": "Get directions",
+    "tbd": "The venue will be announced soon."
+  },
+  "faq": {
+    "eyebrow": "Frequently asked",
+    "title": "FAQ",
+    "lead": "Everything you need to know. Can't find an answer? Reach out.",
+    "items": [
+      {
+        "q": "How much is a ticket?",
+        "a": "DevFest is a community event with a symbolic price. You'll find all the details on the registration page."
+      },
+      {
+        "q": "Is the event in Italian or English?",
+        "a": "Both: there will be talks in Italian and English. Each session shows its language in the agenda."
+      },
+      {
+        "q": "Can I submit a talk?",
+        "a": "Yes! The call for speakers is open on Sessionize until the stated deadline."
+      },
+      {
+        "q": "Is there a code of conduct?",
+        "a": "Yes. Everyone attending must follow our Code of Conduct, linked in the footer."
+      },
+      {
+        "q": "Will I get a certificate of attendance?",
+        "a": "Details on certificates and digital badges will be shared with registrants by email."
+      }
+    ]
+  },
+  "footer": {
+    "tagline": "The annual Google Developer community event in Milan.",
+    "explore": "Explore",
+    "community": "Community",
+    "legal": "Info",
+    "codeOfConduct": "Code of Conduct",
+    "newsletter": "Stay in the loop",
+    "newsletterBody": "Join the community so you never miss announcements and tickets.",
+    "join": "Join",
+    "madeWith": "Made with",
+    "by": "by the GDG Cloud Milano & GDG Milano volunteers",
+    "disclaimer": "DevFest Milano is an independent event organized by the community. Google and the Google logo are not affiliated with and do not sponsor the event.",
+    "rights": "All rights reserved."
+  },
+  "speakersPage": {
+    "title": "Speakers",
+    "lead": "The people who will share knowledge, experience and energy on the DevFest Milano 2026 stage.",
+    "search": "Search a speaker…",
+    "empty": "No speaker found.",
+    "comingSoon": "Speakers will be announced after talk selection. Check back soon!",
+    "sessions": "Talks",
+    "noBio": "Bio coming soon.",
+    "topSpeaker": "Top Speaker"
+  },
+  "agendaPage": {
+    "title": "Agenda",
+    "lead": "The full program of DevFest Milano 2026.",
+    "comingSoonTitle": "The agenda is taking shape",
+    "comingSoonBody": "The call for speakers is still open. The detailed program with times and rooms will be published here after talk selection. In the meantime, discover the kind of speakers and talks to expect.",
+    "filters": "Filters",
+    "allTracks": "All tracks",
+    "allTags": "All topics",
+    "allLanguages": "All languages",
+    "italian": "Italian",
+    "english": "English",
+    "clear": "Clear filters",
+    "noResults": "No session matches the filters.",
+    "viewSpeakers": "See the speakers",
+    "room": "Room"
+  },
+  "teamPage": {
+    "title": "The team",
+    "lead": "DevFest Milano is organized entirely by volunteers from GDG Cloud Milano and GDG Milano.",
+    "comingSoon": "This year's team will be introduced soon."
+  },
+  "communitiesPage": {
+    "title": "The communities",
+    "lead": "DevFest Milano 2026 is co-organized by GDG Cloud Milano and GDG Milano: two communities with their own stories and organizers, united for one big day for developers."
+  },
+  "venuePage": {
+    "title": "The venue",
+    "lead": "Where DevFest Milano 2026 will take place.",
+    "address": "Address",
+    "gettingThere": "Getting there",
+    "gettingThereBody": "Milan is easy to reach by metro, train and from the main airports (Linate, Malpensa, Orio al Serio).",
+    "tbd": "The final venue will be announced soon. Subscribe to get the update."
+  },
+  "cocPage": {
+    "title": "Code of Conduct",
+    "lead": "DevFest Milano is dedicated to providing a safe and inclusive experience for everyone."
+  },
+  "faqPage": {
+    "title": "Frequently asked questions",
+    "lead": "Answers to the most common questions about DevFest Milano 2026."
+  },
+  "cfpPage": {
+    "title": "Call for Speakers",
+    "lead": "Share your knowledge with the community. The DevFest Milano 2026 call for speakers is open."
+  },
+  "sponsorsPage": {
+    "title": "Sponsors",
+    "lead": "The companies that make DevFest Milano 2026 possible.",
+    "becomeTitle": "Want to support DevFest?",
+    "becomeBody": "Reach hundreds of developers and support Milan's tech community. Get in touch for the sponsor kit.",
+    "becomeCta": "Become a sponsor"
+  },
+  "common": {
+    "backHome": "Back to home",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The page you're looking for doesn't exist or has moved.",
+    "external": "opens in a new tab",
+    "theme": "Theme",
+    "language": "Language"
+  }
+}
