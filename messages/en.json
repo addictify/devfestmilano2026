@@ -28,6 +28,7 @@
     "lead": "A full day of talks, workshops and community around Google technologies and open source. Built by developers, for developers.",
     "ctaTickets": "Get your ticket",
     "ctaCfp": "Submit a talk",
+    "ctaNotify": "Notify me when tickets open",
     "countdownTitle": "Countdown to the event",
     "days": "days",
     "hours": "hrs",
@@ -35,6 +36,13 @@
     "seconds": "sec",
     "live": "It's today! See you at DevFest 🎉",
     "scroll": "Explore"
+  },
+  "notify": {
+    "title": "Be first to know",
+    "body": "Tickets aren't on sale yet. We announce them through our two organizing communities, so follow both on the GDG platform and you won't miss the drop.",
+    "follow": "Follow {community}",
+    "note": "One free GDG account follows both chapters.",
+    "close": "Close"
   },
   "stats": {
     "title": "What to expect",
@@ -162,9 +170,9 @@
     "community": "Community",
     "legal": "Info",
     "codeOfConduct": "Code of Conduct",
-    "newsletter": "Stay in the loop",
-    "newsletterBody": "Join the community so you never miss announcements and tickets.",
-    "join": "Join",
+    "newsletter": "Ticket news",
+    "newsletterBody": "We announce tickets and updates through our two communities. Follow both so you don't miss the drop.",
+    "join": "Follow the communities",
     "madeWith": "Made with",
     "by": "by the GDG Cloud Milano & GDG Milano volunteers",
     "disclaimer": "DevFest Milano is an independent event organized by the community. Google and the Google logo are not affiliated with and do not sponsor the event.",

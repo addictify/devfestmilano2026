@@ -28,6 +28,7 @@
     "lead": "Un giorno di talk, workshop e community attorno alle tecnologie Google e all'open source. Costruito da developer, per developer.",
     "ctaTickets": "Prendi il biglietto",
     "ctaCfp": "Proponi un talk",
+    "ctaNotify": "Avvisami quando aprono i biglietti",
     "countdownTitle": "All'evento mancano",
     "days": "giorni",
     "hours": "ore",
@@ -35,6 +36,13 @@
     "seconds": "sec",
     "live": "È oggi! Ci vediamo al DevFest 🎉",
     "scroll": "Scopri"
+  },
+  "notify": {
+    "title": "Sii il primo a saperlo",
+    "body": "I biglietti non sono ancora in vendita. Li annunciamo tramite le nostre due community organizzatrici: segui entrambe sulla piattaforma GDG e non ti perderai l'apertura.",
+    "follow": "Segui {community}",
+    "note": "Un solo account GDG gratuito per seguire entrambe.",
+    "close": "Chiudi"
   },
   "stats": {
     "title": "Cosa ti aspetta",
@@ -162,9 +170,9 @@
     "community": "Community",
     "legal": "Info",
     "codeOfConduct": "Codice di Condotta",
-    "newsletter": "Resta aggiornato",
-    "newsletterBody": "Iscriviti alla community per non perdere annunci e biglietti.",
-    "join": "Unisciti",
+    "newsletter": "Novità biglietti",
+    "newsletterBody": "Annunciamo biglietti e aggiornamenti tramite le nostre due community. Seguile entrambe per non perdere l'apertura.",
+    "join": "Segui le community",
     "madeWith": "Fatto con",
     "by": "dai volontari di GDG Cloud Milano & GDG Milano",
     "disclaimer": "DevFest Milano è un evento indipendente organizzato dalla community. Google e il logo Google non sono affiliati e non sponsorizzano l'evento.",

@@ -46,3 +46,8 @@ next-env.d.ts
 # local screenshots / mcp
 .playwright-mcp/
 *.local.png
+
+# AI tool config (skill mirrors — local, not project state)
+.claude/
+.cursor/
+.gemini/

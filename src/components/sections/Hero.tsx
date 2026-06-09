@@ -2,12 +2,13 @@
 
 import { useTranslations } from "next-intl";
 import { motion, useReducedMotion } from "motion/react";
-import { CalendarDays, MapPin } from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { GDG, GDG_ORDER } from "@/lib/design/tokens";
 import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
 import { TicketButton } from "@/components/common/TicketButton";
+import { NotifyTicketsDialog } from "@/components/common/NotifyTicketsDialog";
 import { Countdown } from "@/components/common/Countdown";
 import { DuomoSilhouette } from "@/components/common/DuomoSilhouette";
 
@@ -120,16 +121,37 @@ export function Hero() {
             variants={item}
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
           >
-            <TicketButton size="lg" label={t("ctaTickets")} />
-            <Button asChild variant="outline" size="lg">
-              <a
-                href={siteConfig.cfpUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("ctaCfp")}
-              </a>
-            </Button>
+            {siteConfig.ticketsAvailable ? (
+              <>
+                {/* Tickets on sale: tickets lead, CFP secondary. */}
+                <TicketButton size="lg" label={t("ctaTickets")} />
+                <Button asChild variant="outline" size="lg">
+                  <a
+                    href={siteConfig.cfpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("ctaCfp")}
+                  </a>
+                </Button>
+              </>
+            ) : (
+              <>
+                {/* CFP-open phase: the live action (submit a talk) leads;
+                    ticket intent is captured via the notify dialog. */}
+                <Button asChild variant="accent" size="lg">
+                  <a
+                    href={siteConfig.cfpUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t("ctaCfp")}
+                    <ArrowUpRight className="size-4" />
+                  </a>
+                </Button>
+                <NotifyTicketsDialog size="lg" />
+              </>
+            )}
           </motion.div>
 
           <motion.div variants={item} className="mt-12">

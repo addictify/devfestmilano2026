@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-09T00:00:00.000Z",
+  "title": "Design System: DevFest Milano 2026",
+  "extensions": {
+    "colorMeta": {
+      "gdg-blue": { "role": "primary", "displayName": "GDG Blue", "canonical": "#4285F4", "tonalRamp": ["#0a1f3d", "#103163", "#1a4a93", "#2563c4", "#4285F4", "#7aa6f8", "#a8c5fb", "#dbe8fe"] },
+      "gdg-red": { "role": "secondary", "displayName": "GDG Red", "canonical": "#EA4335", "tonalRamp": ["#3d100c", "#631a13", "#93271d", "#c4362a", "#EA4335", "#f17a70", "#f6a8a1", "#fcdbd7"] },
+      "gdg-yellow": { "role": "secondary", "displayName": "GDG Yellow", "canonical": "#FBBC04", "tonalRamp": ["#3d2e00", "#634a00", "#937000", "#c49500", "#FBBC04", "#fccf4f", "#fddd87", "#fef0c9"] },
+      "gdg-green": { "role": "secondary", "displayName": "GDG Green", "canonical": "#34A853", "tonalRamp": ["#0c2914", "#134221", "#1d6332", "#298445", "#34A853", "#6dc586", "#9fd9b0", "#d4efdc"] },
+      "foreground": { "role": "neutral", "displayName": "Warm Ink", "canonical": "#17150F", "tonalRamp": ["#17150F", "#2c2920", "#454033", "#6b6658", "#928c7c", "#bdb8a8", "#e6e2d6", "#fbfaf6"] },
+      "background": { "role": "neutral", "displayName": "Paper", "canonical": "#FBFAF6", "tonalRamp": ["#0f0e0c", "#1a1815", "#2b2823", "#6b6658", "#a39e90", "#e6e2d6", "#f3f0e7", "#fbfaf6"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headline only — the oversized DevFest Milano 2026 with four-color year." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles (SectionHeading h2)." },
+      "title": { "displayName": "Title", "purpose": "Card titles, mobile nav links, the ticket 10.10 stub." },
+      "body": { "displayName": "Body", "purpose": "Leads and prose, capped ~65ch, with ss01/cv01 features." },
+      "label": { "displayName": "Label / Mono", "purpose": "Eyebrows, countdown, badges, save-the-date — the only caps + wide tracking." }
+    },
+    "shadows": [
+      { "name": "panel-drop", "value": "0 30px 80px -40px rgba(0,0,0,0.4)", "purpose": "Hero ticket panel only — large soft far-offset drop so the card floats over paper." },
+      { "name": "accent-glow", "value": "0 8px 24px -8px rgba(66,133,244,0.6)", "purpose": "Under the blue accent button — a tinted glow so the primary CTA reads as lit." },
+      { "name": "hairline-lift", "value": "0 1px 0 0 rgba(0,0,0,0.04)", "purpose": "Primary ink button — a barely-there single-pixel top edge." }
+    ],
+    "motion": [
+      { "name": "ease-out-expo", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Default easing for all state transitions and entrances." },
+      { "name": "hero-reveal", "value": "0.7s ease-out-expo, staggerChildren 0.08s", "purpose": "First-load hero choreography: y+22 opacity-0 to settled, staggered." },
+      { "name": "beam-shimmer", "value": "6s linear infinite", "purpose": "Four-color beam sliding across the ticket panel." },
+      { "name": "blob-drift", "value": "18-26s ease-in-out infinite", "purpose": "Slow drift of the blurred GDG color blobs behind the hero." },
+      { "name": "marquee", "value": "38s linear infinite", "purpose": "Past-editions logo marquee." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" },
+      { "name": "container", "value": "80rem (max-w-7xl)" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The default, confident-and-quiet button — ink fill on paper.",
+      "html": "<button class=\"ds-btn-primary\">Save changes</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.75rem; padding: 0 1.25rem; border: none; border-radius: 9999px; background: #17150F; color: #FBFAF6; font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; font-size: 0.95rem; font-weight: 500; box-shadow: 0 1px 0 0 rgba(0,0,0,0.04); transition: background 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1); cursor: pointer; } .ds-btn-primary:hover { background: rgba(23,21,15,0.9); } .ds-btn-primary:active { transform: scale(0.98); } .ds-btn-primary:focus-visible { outline: 2px solid #4285F4; outline-offset: 2px; }"
+    },
+    {
+      "name": "Accent Button",
+      "kind": "button",
+      "refersTo": "button-accent",
+      "description": "The single energized CTA — GDG blue fill with a tinted glow that lifts on hover. Use for tickets / register.",
+      "html": "<button class=\"ds-btn-accent\">Get tickets</button>",
+      "css": ".ds-btn-accent { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 3.25rem; padding: 0 1.75rem; border: none; border-radius: 9999px; background: #4285F4; color: #fff; font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; font-weight: 500; box-shadow: 0 8px 24px -8px rgba(66,133,244,0.6); transition: filter 0.2s cubic-bezier(0.16,1,0.3,1), transform 0.2s cubic-bezier(0.16,1,0.3,1); cursor: pointer; } .ds-btn-accent:hover { filter: brightness(1.1); transform: translateY(-2px); } .ds-btn-accent:active { transform: scale(0.98); } .ds-btn-accent:focus-visible { outline: 2px solid #4285F4; outline-offset: 2px; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action (e.g. CFP) — transparent with a warm hairline border.",
+      "html": "<button class=\"ds-btn-outline\">Submit a talk</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.75rem; padding: 0 1.25rem; border: 1px solid #E6E2D6; border-radius: 9999px; background: transparent; color: #17150F; font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; font-size: 0.95rem; font-weight: 500; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1); cursor: pointer; } .ds-btn-outline:hover { background: #F0EDE3; border-color: rgba(23,21,15,0.3); } .ds-btn-outline:active { transform: scale(0.98); } .ds-btn-outline:focus-visible { outline: 2px solid #4285F4; outline-offset: 2px; }"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Metadata pill — mono uppercase on white card with a warm border. Used for date/place chips.",
+      "html": "<span class=\"ds-badge\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#4285F4\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"/><path d=\"M16 2v4M8 2v4M3 10h18\"/></svg>10 Oct 2026</span>",
+      "css": ".ds-badge { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.125rem 0.625rem; border: 1px solid #E6E2D6; border-radius: 9999px; background: #fff; color: #6B6658; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }"
+    },
+    {
+      "name": "Eyebrow Kicker",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "Section eyebrow — four GDG dots followed by a mono uppercase label.",
+      "html": "<span class=\"ds-eyebrow\"><span class=\"ds-dots\"><i style=\"background:#4285F4\"></i><i style=\"background:#EA4335\"></i><i style=\"background:#FBBC04\"></i><i style=\"background:#34A853\"></i></span>The program</span>",
+      "css": ".ds-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: #6B6658; } .ds-eyebrow .ds-dots { display: inline-flex; gap: 0.25rem; } .ds-eyebrow .ds-dots i { width: 0.5rem; height: 0.5rem; border-radius: 9999px; }"
+    },
+    {
+      "name": "Card with Four-Color Beam",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The signature surface — flat white card with a warm border and the four GDG colors as an equal-band top beam.",
+      "html": "<article class=\"ds-card\"><span class=\"ds-card-beam\"></span><div class=\"ds-card-body\"><h3 class=\"ds-card-title\">Cloud · AI · DevOps</h3><p class=\"ds-card-text\">A full track of sessions from GDG Cloud Milano, on the Randstad Box stage.</p></div></article>",
+      "css": ".ds-card { position: relative; overflow: hidden; border: 1px solid #E6E2D6; border-radius: 1.5rem; background: #fff; } .ds-card-beam { display: block; height: 0.5rem; width: 100%; background: linear-gradient(90deg, #4285F4 0 25%, #EA4335 25% 50%, #FBBC04 50% 75%, #34A853 75% 100%); } .ds-card-body { padding: 2rem; } .ds-card-title { margin: 0; font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; color: #17150F; } .ds-card-text { margin: 0.75rem 0 0; font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; font-size: 1rem; line-height: 1.6; color: #6B6658; max-width: 42ch; }"
+    },
+    {
+      "name": "Nav Link",
+      "kind": "nav",
+      "refersTo": "button-ghost",
+      "description": "Top-bar nav link — pill hover fill; active is full ink, inactive is muted.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link is-active\" href=\"#\">Speakers</a><a class=\"ds-nav-link\" href=\"#\">Agenda</a><a class=\"ds-nav-link\" href=\"#\">Venue</a></nav>",
+      "css": ".ds-nav { display: inline-flex; gap: 0.25rem; } .ds-nav-link { padding: 0.5rem 0.875rem; border-radius: 9999px; font-family: 'Hanken Grotesk', ui-sans-serif, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #6B6658; text-decoration: none; transition: background 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s; } .ds-nav-link:hover { background: #F0EDE3; } .ds-nav-link.is-active { color: #17150F; } .ds-nav-link:focus-visible { outline: 2px solid #4285F4; outline-offset: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Engineering Blueprint of Milano",
+    "overview": "This is a developer festival drawn the way developers draw: on a precision grid, with technical labels, in the four signal colors of the Google Developer ecosystem. The page sits on a faint engineering lattice (a 22px radial dot field over 64px line grid), the way a draftsman's sheet sits under a drawing. The four GDG colors (blue, red, yellow, green) are never decoration; they are signal, mapped deterministically from keys so every track, community, and section earns a consistent hue. Milano is present as geometry, the Duomo silhouette and the ticket-stub 10.10, not as a postcard. The warm paper ground keeps the whole thing human and Italian rather than cold and terminal. The system is systematic but warm, technical but legible, energetic but disciplined. Bricolage Grotesque headlines run oversized and tight; Hanken Grotesk carries body copy with real warmth and clean diacritics for Italian; JetBrains Mono appears only as accent. Motion is choreographed on first load and otherwise quiet, always with a prefers-reduced-motion path.",
+    "keyCharacteristics": [
+      "A faint engineering grid (dot + line lattice) underlies hero and atmosphere.",
+      "Four GDG colors used as deterministic signal, never confetti.",
+      "Oversized, tightly-tracked grotesque display over warm humanist body.",
+      "Mono reserved for technical accents: eyebrows, countdown, save-the-date labels.",
+      "Warm paper ground in light, deep warm-charcoal in dark; both meet the same contrast bar.",
+      "Choreographed first-load motion, quiet thereafter, reduced-motion honored globally."
+    ],
+    "rules": [
+      { "name": "The Signal Rule", "body": "The four GDG colors are signal, not decoration. Each is assigned deterministically (colorForKey) from a track id, index, or name, so the same entity is always the same color. Never sprinkle all four at once as confetti, and never use a brand color where a neutral would do.", "section": "colors" },
+      { "name": "The No-Lonely-Color Rule", "body": "Color is never the only carrier of meaning (WCAG, color-blind safety). A GDG hue always rides alongside text, an icon, or a position. A green dot without a label is forbidden.", "section": "colors" },
+      { "name": "The Mono-Is-Accent Rule", "body": "JetBrains Mono never sets body copy or headings. It is confined to eyebrows, the countdown, badges, and save-the-date labels.", "section": "typography" },
+      { "name": "The Tight-Display Rule", "body": "Display and headline always track at -0.02em with line-height <= 0.98. Headlines hug; body breathes (1.6). Never flatten the contrast between them.", "section": "typography" },
+      { "name": "The Tinted-Glow Rule", "body": "When an element must pop (the primary CTA), it glows in its own hue, never in gray. Gray drop shadows on interactive elements are forbidden; they read as 2014.", "section": "elevation" },
+      { "name": "The Border-First Rule", "body": "Separation is a 1px warm border or a tonal step first, a shadow only when an element must physically float. Default surfaces are flat.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do assign GDG colors deterministically with colorForKey; the same track or community is always the same hue (the Signal Rule).",
+      "Do keep the warm paper ground (#FBFAF6) and let the four colors carry energy against it.",
+      "Do pair every color signal with text, an icon, or position; never color alone (the No-Lonely-Color Rule).",
+      "Do confine JetBrains Mono to eyebrows, the countdown, badges, and labels (the Mono-Is-Accent Rule).",
+      "Do track display/headline at -0.02em with line-height <= 0.98, and let body breathe at 1.6.",
+      "Do make interactive elements crisp and tactile: pill radius, -2px hover lift on the accent CTA, 0.98 press, ease-out-expo.",
+      "Do glow the primary CTA in its own blue hue, never gray (the Tinted-Glow Rule).",
+      "Do keep cards flat with a 1px warm border by default; reserve real shadow for things that physically float (the Border-First Rule).",
+      "Do ship a prefers-reduced-motion path for every entrance, blob, beam, and marquee.",
+      "Do treat both IT and EN as first-class; test layouts at longer Italian strings."
+    ],
+    "donts": [
+      "Don't read as a generic corporate conference: no clapping stock photos, no blue-on-blue gradients, no lanyard cliches, no Eventbrite-template feel.",
+      "Don't become an over-designed agency showcase: no scroll-jacking, no heavy WebGL, no animation that blocks content or slows first load.",
+      "Don't turn into a sterile cold dev-tool: mono is never body copy, the dark theme stays warm charcoal (never blue-black terminal), human warmth stays.",
+      "Don't look like a cheap amateur meetup: no clip art, no default component styling, no inconsistent spacing.",
+      "Don't use gradient text (background-clip: text) anywhere; emphasis comes from weight, size, and the four solid colors.",
+      "Don't add side-stripe border-left/border-right accents on cards or callouts; use the full four-color top beam (.beam-4) instead.",
+      "Don't scatter all four GDG colors as random confetti, or use a brand color where a neutral belongs (the Signal Rule).",
+      "Don't put gray drop shadows on buttons or cards at rest; flat with a hairline border, or a tinted glow when it must pop."
+    ]
+  }
+}
