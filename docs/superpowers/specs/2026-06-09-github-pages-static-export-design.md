@@ -92,9 +92,20 @@ Next emits its own `out/404.html` from the existing `not-found`, which Pages
 serves for unknown paths.
 
 ### 4. `public/CNAME` — custom domain
-File containing `devfest.gdgmilano.it`. Pages serves on the custom domain, so **no
-`basePath`/`assetPrefix`** is needed and URLs stay clean. (DNS: a `CNAME` record
-for `devfest` → `davethe.github.io`, documented but outside this repo.)
+File containing `devfestmilano.it` (the live apex domain). Pages serves on the
+custom domain, so **no `basePath`/`assetPrefix`** is needed and URLs stay clean.
+
+> **DNS / subdomain-takeover note.** An earlier draft used the subdomain
+> `devfest.gdgmilano.it` (it was the value in `siteConfig.url`). The live domain
+> is the apex `devfestmilano.it`. **If a DNS record for `devfest.gdgmilano.it`
+> pointing at GitHub Pages was ever published, it must be removed or repointed**
+> — otherwise it becomes a dangling CNAME an attacker can claim by hosting their
+> own Pages site under that GDG subdomain (subdomain takeover). Action items
+> (DNS/org, outside this repo): (1) delete or sink any `devfest.gdgmilano.it` →
+> Pages record; (2) add `gdgmilano.it` to the GitHub org's **Verified domains**
+> so unverified Pages sites can't claim its subdomains; (3) if the subdomain must
+> keep resolving, 301-redirect it to `devfestmilano.it` from org-controlled
+> infrastructure, not Pages. If no such DNS record ever existed, no action needed.
 
 ### 5. `.github/workflows/pages.yml` — CI
 Trigger: **push to `main`**. Permissions `pages: write`, `id-token: write`.
