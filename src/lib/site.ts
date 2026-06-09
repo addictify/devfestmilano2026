@@ -6,7 +6,7 @@ import type { GdgColor } from "@/lib/design/tokens";
 export const siteConfig = {
   name: "DevFest Milano 2026",
   shortName: "DevFest Milano",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://devfest.gdgmilano.it",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://devfestmilano.it",
 
   /** Event start — 10 October 2026, 09:00 Europe/Rome (CEST, +02:00). */
   eventDate: "2026-10-10T09:00:00+02:00",
