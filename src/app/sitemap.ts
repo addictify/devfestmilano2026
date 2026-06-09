@@ -3,6 +3,9 @@ import { routing } from "@/i18n/routing";
 import { siteConfig } from "@/lib/site";
 import { getSpeakers } from "@/lib/data/content";
 
+// Fully static — required for `output: export` (GitHub Pages), harmless otherwise.
+export const dynamic = "force-static";
+
 const STATIC_PATHS = [
   "",
   "/speakers",

@@ -75,19 +75,21 @@ POSIX `sh`/`bash` script, `set -euo pipefail`, `trap restore EXIT`:
 `.static-build-stash/` is added to `.gitignore`.
 
 ### 3. Root redirect `/` → `/it`
-`proxy.ts` (which redirects `/` → `/it`) does not run on Pages. Replace it with a
-**static** redirect, since `redirect()` in a Server Component is unsupported in
-export.
+`proxy.ts` (which redirects `/` → `/it`) does not run on Pages. We need a static
+`out/index.html` that bounces to `/it`.
 
-Approach: a root `src/app/page.tsx` + minimal `src/app/layout.tsx` (there is no
-root layout outside `[locale]` today). The root page is a **client component**
-that renders a `<meta httpEquiv="refresh" content="0;url=/it">` plus a JS
-`window.location.replace("/it")` fallback and a plain `<a href="/it">` for
-no-JS/no-meta. This produces a static `out/index.html` that bounces to `/it`.
+**Approach (revised during implementation):** rather than add a root
+`src/app/page.tsx` + `src/app/layout.tsx` — which would conflict with the
+`<html>` already rendered by `[locale]/layout.tsx` and force a multi-root-layout
+restructure of the working tree (Next.js route-groups rule) — the redirect is a
+**static-export concern**, so the build script writes `out/index.html` directly
+after `next build`. It contains `<meta http-equiv="refresh" content="0;url=/it/">`,
+a `<script>location.replace("/it/")</script>` fallback, and a plain
+`<a href="/it/">` for no-JS. The app tree stays 100% untouched, and the normal
+server build keeps using `proxy.ts` for `/` → `/it`.
 
-Unknown paths fall through to Pages' `404.html`, served from the existing
-`[locale]/not-found` → root `not-found`. We add a root `not-found.tsx` if needed
-so `404.html` is emitted.
+Next emits its own `out/404.html` from the existing `not-found`, which Pages
+serves for unknown paths.
 
 ### 4. `public/CNAME` — custom domain
 File containing `devfest.gdgmilano.it`. Pages serves on the custom domain, so **no

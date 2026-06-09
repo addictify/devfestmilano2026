@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# static-export build scratch (scripts/static-build.sh restores from here)
+/.static-build-stash/
+
 # production
 /build
 
