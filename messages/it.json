@@ -65,6 +65,29 @@
     "communityTitle": "Community & networking",
     "communityBody": "Incontra developer, GDE e community leader da tutta Italia ed Europa."
   },
+  "theme": {
+    "eyebrow": "Il tema del 2026",
+    "title": "Dall'AI generativa agli agenti",
+    "lead": "Il 2026 è l'anno in cui l'AI smette di limitarsi a rispondere e inizia ad agire. DevFest Milano mette al centro l'AI — e in particolare l'AI agentica: sistemi che ragionano, pianificano e usano strumenti per portare a termine compiti reali.",
+    "pillars": {
+      "models": {
+        "title": "Modelli & AI generativa",
+        "body": "LLM, multimodalità e come costruire prodotti sopra i modelli di oggi."
+      },
+      "agents": {
+        "title": "Agenti & tool use",
+        "body": "Ragionamento, pianificazione, orchestrazione: agenti che usano strumenti e API per agire."
+      },
+      "production": {
+        "title": "AI in produzione",
+        "body": "Dal prototipo alla scala: cloud, valutazione, costi e affidabilità."
+      },
+      "responsible": {
+        "title": "AI responsabile",
+        "body": "Sicurezza, privacy e impatto: costruire AI di cui ci si può fidare."
+      }
+    }
+  },
   "featuredSpeakers": {
     "eyebrow": "Voci dal palco",
     "title": "Speaker in evidenza",
@@ -111,7 +134,7 @@
   "communities": {
     "eyebrow": "Organizzato da",
     "title": "Due community, un evento",
-    "lead": "DevFest Milano 2026 nasce dalla collaborazione tra GDG Cloud Milano e GDG Milano: due community diverse, una sola grande giornata per chi sviluppa.",
+    "lead": "Dal 2024 GDG Cloud Milano e GDG Milano organizzano insieme DevFest Milano: due community diverse, una sola grande giornata per chi sviluppa.",
     "visit": "Vai alla community",
     "pastTitle": "Cosa abbiamo fatto finora"
   },
@@ -211,7 +234,7 @@
   },
   "communitiesPage": {
     "title": "Le community",
-    "lead": "DevFest Milano 2026 è organizzato insieme da GDG Cloud Milano e GDG Milano: due community con storie e organizer diversi, unite per una sola grande giornata dedicata a chi sviluppa."
+    "lead": "Dal 2024 GDG Cloud Milano e GDG Milano organizzano insieme DevFest Milano: due community con storie e organizer diversi, unite per una sola grande giornata dedicata a chi sviluppa."
   },
   "venuePage": {
     "title": "La sede",

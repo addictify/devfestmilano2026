@@ -2,6 +2,7 @@ import { setRequestLocale } from "next-intl/server";
 import { getFeaturedSpeakers, getSponsors, getTracks } from "@/lib/data/content";
 import { siteConfig } from "@/lib/site";
 import { Hero } from "@/components/sections/Hero";
+import { ThemeSection } from "@/components/sections/ThemeSection";
 import { WhatToExpect } from "@/components/sections/WhatToExpect";
 import { FeaturedSpeakers } from "@/components/sections/FeaturedSpeakers";
 import { SpeakerTypesSection } from "@/components/sections/SpeakerTypesSection";
@@ -32,6 +33,7 @@ export default async function Home({
   return (
     <>
       <Hero />
+      <ThemeSection />
       <WhatToExpect />
       {siteConfig.speakersPublished ? (
         <FeaturedSpeakers speakers={speakers} />

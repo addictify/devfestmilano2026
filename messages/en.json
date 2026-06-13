@@ -65,6 +65,29 @@
     "communityTitle": "Community & networking",
     "communityBody": "Meet developers, GDEs and community leaders from across Italy and Europe."
   },
+  "theme": {
+    "eyebrow": "The 2026 theme",
+    "title": "From generative AI to agents",
+    "lead": "2026 is the year AI stops just answering and starts acting. DevFest Milano puts AI at the center — and agentic AI in particular: systems that reason, plan and use tools to get real work done.",
+    "pillars": {
+      "models": {
+        "title": "Models & generative AI",
+        "body": "LLMs, multimodality and building products on top of today's models."
+      },
+      "agents": {
+        "title": "Agents & tool use",
+        "body": "Reasoning, planning, orchestration: agents that use tools and APIs to act."
+      },
+      "production": {
+        "title": "AI in production",
+        "body": "From prototype to scale: cloud, evaluation, cost and reliability."
+      },
+      "responsible": {
+        "title": "Responsible AI",
+        "body": "Safety, privacy and impact: building AI you can trust."
+      }
+    }
+  },
   "featuredSpeakers": {
     "eyebrow": "Voices on stage",
     "title": "Featured speakers",
@@ -111,7 +134,7 @@
   "communities": {
     "eyebrow": "Organized by",
     "title": "Two communities, one event",
-    "lead": "DevFest Milano 2026 is born from the collaboration between GDG Cloud Milano and GDG Milano: two distinct communities, one big day for developers.",
+    "lead": "Since 2024, GDG Cloud Milano and GDG Milano have organized DevFest Milano together: two distinct communities, one big day for developers.",
     "visit": "Visit the community",
     "pastTitle": "What we've done so far"
   },
@@ -211,7 +234,7 @@
   },
   "communitiesPage": {
     "title": "The communities",
-    "lead": "DevFest Milano 2026 is co-organized by GDG Cloud Milano and GDG Milano: two communities with their own stories and organizers, united for one big day for developers."
+    "lead": "Since 2024, GDG Cloud Milano and GDG Milano have co-organized DevFest Milano: two communities with their own stories and organizers, united for one big day for developers."
   },
   "venuePage": {
     "title": "The venue",
