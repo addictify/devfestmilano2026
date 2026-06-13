@@ -15,16 +15,32 @@ const EXPLORE = [
   { href: "/cfp", key: "cfp" },
 ] as const;
 
+const CHANNEL_LABELS: Record<string, string> = {
+  meetup: "Meetup",
+  instagram: "Instagram",
+  x: "X",
+  youtube: "YouTube",
+  linkedin: "LinkedIn",
+};
+
+type FooterCommunity = (typeof siteConfig.communities)[number];
+
+/** Platform + social links for a community: Meetup first, then its socials. */
+function channelsFor(community: FooterCommunity) {
+  const entries: [string, string][] = [
+    ["meetup", community.meetup],
+    ...Object.entries(community.social),
+  ];
+  return entries.map(([key, href]) => ({
+    label: CHANNEL_LABELS[key] ?? key,
+    href,
+  }));
+}
+
 export function Footer() {
   const t = useTranslations("footer");
   const nav = useTranslations("nav");
   const year = new Date().getFullYear();
-
-  const social = [
-    { label: "Instagram", href: siteConfig.social.instagram },
-    { label: "X / Twitter", href: siteConfig.social.x },
-    { label: "YouTube", href: siteConfig.social.youtube },
-  ];
 
   return (
     <footer className="relative mt-24 overflow-hidden border-t border-border bg-paper">
@@ -41,19 +57,6 @@ export function Footer() {
             <p className="max-w-xs text-pretty text-muted-foreground">
               {t("tagline")}
             </p>
-            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
-              {social.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {s.label}
-                </a>
-              ))}
-            </div>
           </div>
 
           <nav className="flex flex-col gap-3">
@@ -69,19 +72,33 @@ export function Footer() {
             ))}
           </nav>
 
-          <nav className="flex flex-col gap-3">
+          <nav className="flex flex-col gap-5">
             <h3 className="eyebrow text-muted-foreground">{t("community")}</h3>
             {siteConfig.communities.map((c) => (
-              <a
-                key={c.id}
-                href={c.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex w-fit items-center gap-1 text-foreground/80 transition-colors hover:text-gdg-blue"
-              >
-                {c.name}
-                <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
-              </a>
+              <div key={c.id} className="flex flex-col gap-1.5">
+                <a
+                  href={c.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex w-fit items-center gap-1 font-medium text-foreground/90 transition-colors hover:text-gdg-blue"
+                >
+                  {c.name}
+                  <ArrowUpRight className="size-3.5 opacity-0 transition-opacity group-hover:opacity-100" />
+                </a>
+                <div className="flex flex-wrap gap-x-3 gap-y-1">
+                  {channelsFor(c).map((ch) => (
+                    <a
+                      key={ch.label}
+                      href={ch.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {ch.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
             ))}
           </nav>
 

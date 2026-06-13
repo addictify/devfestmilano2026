@@ -41,7 +41,8 @@ export const siteConfig = {
   /** Become-a-sponsor contact. */
   sponsorEmail: "sponsor@gdgmilano.it",
 
-  /** DevFest Milano is organized jointly by two GDG communities. */
+  /** DevFest Milano is organized jointly by two GDG communities. Each carries
+   *  its own platform + social links (`url` is the Bevy / GDG Community page). */
   communities: [
     {
       id: "gdg-cloud-milano",
@@ -49,6 +50,10 @@ export const siteConfig = {
       url: "https://gdg.community.dev/gdg-cloud-milano/",
       meetup: "https://www.meetup.com/gdg-cloud-milano/",
       color: "green" as GdgColor,
+      social: {
+        instagram: "https://www.instagram.com/gdgcloudmilano/",
+        linkedin: "https://www.linkedin.com/company/gdg-cloud-milano/",
+      },
     },
     {
       id: "gdg-milano",
@@ -56,6 +61,11 @@ export const siteConfig = {
       url: "https://gdg.community.dev/gdg-milano/",
       meetup: "https://www.meetup.com/gdg-milano/",
       color: "blue" as GdgColor,
+      social: {
+        instagram: "https://www.instagram.com/gdgmilano/",
+        x: "https://x.com/gdgmilano",
+        youtube: "https://www.youtube.com/@gdgmilano",
+      },
     },
   ],
 
@@ -68,12 +78,6 @@ export const siteConfig = {
       "https://www.google.com/maps/search/?api=1&query=Randstad+Box+Via+San+Vigilio+5+Milano",
     lat: 45.4337,
     lng: 9.1672,
-  },
-
-  social: {
-    instagram: "https://www.instagram.com/gdgmilano/",
-    x: "https://x.com/gdgmilano",
-    youtube: "https://www.youtube.com/@gdgmilano",
   },
 } as const;
 
