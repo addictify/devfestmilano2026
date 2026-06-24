@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { TicketButton } from "@/components/common/TicketButton";
 import { NotifyTicketsDialog } from "@/components/common/NotifyTicketsDialog";
 import { Countdown } from "@/components/common/Countdown";
-import { DuomoSilhouette } from "@/components/common/DuomoSilhouette";
+import { SkylineMilano } from "@/components/common/SkylineMilano";
 
 export function Hero() {
   const t = useTranslations("hero");
@@ -202,7 +202,7 @@ export function Hero() {
               </div>
 
               <div className="relative mt-8">
-                <DuomoSilhouette className="text-foreground/80 motion-safe:animate-[float-slow_8s_ease-in-out_infinite]" />
+                <SkylineMilano className="bg-foreground/80 motion-safe:animate-[float-slow_8s_ease-in-out_infinite]" />
               </div>
             </div>
 
