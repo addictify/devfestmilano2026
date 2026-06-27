@@ -2,6 +2,7 @@
 
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
+import { FavoritesProvider } from "@/hooks/useFavorites";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -11,7 +12,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <FavoritesProvider>{children}</FavoritesProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
