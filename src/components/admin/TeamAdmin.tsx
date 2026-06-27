@@ -34,6 +34,7 @@ export function TeamAdmin({ initial }: { initial: TeamMember[] }) {
     if (!confirm("Eliminare questo membro?")) return;
     const res = await adminFetch(`/api/admin/team?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     if (res.ok) router.refresh();
+    else setError(`Errore (${res.status}).`);
   }
 
   return (

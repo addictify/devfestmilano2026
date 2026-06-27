@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi, afterEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const verifyIdToken = vi.fn();
 vi.mock("@/lib/firebase/admin", () => ({
@@ -11,16 +11,8 @@ function req(headers: Record<string, string> = {}) {
   return new Request("http://localhost/api/admin/x", { headers });
 }
 
-// Suppress unhandled rejection warnings from mocked Promise.reject
-const suppressUnhandledRejection = () => {};
-
 beforeEach(() => {
   verifyIdToken.mockReset();
-  process.on("unhandledRejection", suppressUnhandledRejection);
-});
-
-afterEach(() => {
-  process.off("unhandledRejection", suppressUnhandledRejection);
 });
 
 describe("verifyAdmin", () => {
@@ -29,7 +21,7 @@ describe("verifyAdmin", () => {
     expect(verifyIdToken).not.toHaveBeenCalled();
   });
   it("false when token invalid (verify throws)", async () => {
-    verifyIdToken.mockRejectedValue(new Error("bad"));
+    verifyIdToken.mockImplementation(() => Promise.reject(new Error("bad")));
     const result = await verifyAdmin(req({ authorization: "Bearer xxx" }));
     expect(result).toBe(false);
   });

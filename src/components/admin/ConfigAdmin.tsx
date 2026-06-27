@@ -19,9 +19,14 @@ export function ConfigAdmin({ initial }: { initial: SiteSettings }) {
   async function save() {
     setBusy(true);
     setMsg(null);
-    const res = await adminFetch("/api/admin/config", { method: "POST", body: JSON.stringify(flags) });
-    setBusy(false);
-    setMsg(res.ok ? "Salvato. Le pagine pubbliche sono state rigenerate." : `Errore (${res.status}).`);
+    try {
+      const res = await adminFetch("/api/admin/config", { method: "POST", body: JSON.stringify(flags) });
+      setMsg(res.ok ? "Salvato. Le pagine pubbliche sono state rigenerate." : `Errore (${res.status}).`);
+    } catch {
+      setMsg("Errore di rete.");
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
