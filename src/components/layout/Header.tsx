@@ -11,6 +11,7 @@ import { DevFestMark } from "@/components/common/DevFestMark";
 import { GdgColorBar } from "@/components/common/GdgColorBar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
+import { AuthButton } from "@/components/auth/AuthButton";
 
 const NAV = [
   { href: "/speakers", key: "speakers" },
@@ -87,6 +88,7 @@ export function Header() {
             </div>
             <ThemeToggle className="hidden sm:inline-flex" />
             <TicketButton size="sm" className="hidden md:inline-flex" />
+            <AuthButton />
 
             {/* Mobile menu */}
             <Dialog.Root open={open} onOpenChange={setOpen}>
@@ -126,6 +128,7 @@ export function Header() {
                     <div className="flex items-center gap-2">
                       <LanguageSwitcher />
                       <ThemeToggle />
+                      <AuthButton />
                     </div>
                     <TicketButton size="sm" />
                   </div>
