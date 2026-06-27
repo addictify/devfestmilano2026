@@ -448,8 +448,8 @@ export const seedSponsors: Sponsor[] = [
   {
     id: "randstad-box",
     name: "Randstad Box",
-    logoLight: "/images/sponsors/randstad-box.svg",
-    logoDark: "/images/sponsors/randstad-box.svg",
+    logoLight: "/images/sponsors/randstad-box.png",
+    logoDark: "/images/sponsors/randstad-box.png",
     website: "https://www.randstadbox.it",
     tier: "venue",
     order: 1,
