@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin } from "@/lib/auth/admin-guard";
+import { SPONSOR_TIERS } from "@/types/models";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   const db = getAdminDb();
   if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
   const body = await req.json().catch(() => null);
-  if (!body || typeof body.name !== "string" || typeof body.tier !== "string") {
+  if (!body || typeof body.name !== "string" || typeof body.tier !== "string" || !(SPONSOR_TIERS as string[]).includes(body.tier)) {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
   const id = typeof body.id === "string" && body.id ? body.id : db.collection("sponsors").doc().id;

@@ -30,7 +30,11 @@ export function SponsorsAdmin({ initial }: { initial: Sponsor[] }) {
   async function remove(id: string) {
     if (!confirm("Eliminare questo sponsor?")) return;
     const res = await adminFetch(`/api/admin/sponsors?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) router.refresh();
+    if (res.ok) {
+      router.refresh();
+    } else {
+      setError(`Errore (${res.status}).`);
+    }
   }
 
   return (
