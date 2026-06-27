@@ -134,17 +134,20 @@ git commit -m "feat: verifyUser server guard + userFetch client helper"
 **Interfaces:**
 - Produces:
   - `type GameProfile = { points: number; badgeIds: string[]; scanCount: number }`
-  - `type Checkpoint = { points: number; badgeId?: string; active: boolean; secret: string }`
   - `type MilestoneBadge = { id: string; milestone: number }`
+  - `type QuizMode = "add" | "multiply"`
+  - `type QuizConfig = { points: number; answer?: string; quizMode?: QuizMode; quizValue?: number; wrongPenalty?: number }`
   - `validateScan(checkpoint: { active: boolean; secret: string } | null, token: string): "ok" | "not-found" | "inactive" | "bad-token"`
-  - `awardForScan(profile: GameProfile, checkpoint: { points: number; badgeId?: string }, milestoneBadges: MilestoneBadge[]): GameProfile` — the NEW profile after a first-time scan.
+  - `normalizeAnswer(s: string): string` — trim + lowercase + collapse internal whitespace.
+  - `quizOutcome(checkpoint: QuizConfig, submittedAnswer?: string): { correct: boolean | null; pointsDelta: number }` — quiz exists iff `answer` set. No quiz → `{null, points}`. Correct: add → `points+quizValue`, multiply → `points*(quizValue||1)`. Wrong → `points - wrongPenalty` (may go negative).
+  - `awardForScan(profile: GameProfile, pointsDelta: number, badgeId: string | undefined, milestoneBadges: MilestoneBadge[]): GameProfile` — NEW profile after a first-time scan; `points += pointsDelta` (NOT clamped).
   - `parseQrPayload(text: string): { checkpointId: string; token: string } | null` — format `DFQ:{checkpointId}:{token}`.
 
 - [ ] **Step 1: Write failing tests**
 
 ```ts
 import { describe, expect, it } from "vitest";
-import { awardForScan, parseQrPayload, validateScan } from "@/lib/gamification";
+import { awardForScan, normalizeAnswer, parseQrPayload, quizOutcome, validateScan } from "@/lib/gamification";
 
 describe("validateScan", () => {
   it("not-found when null", () => expect(validateScan(null, "x")).toBe("not-found"));
@@ -153,25 +156,46 @@ describe("validateScan", () => {
   it("ok on match + active", () => expect(validateScan({ active: true, secret: "s" }, "s")).toBe("ok"));
 });
 
+describe("normalizeAnswer", () => {
+  it("trims, lowercases, collapses whitespace", () =>
+    expect(normalizeAnswer("  Il   Duomo ")).toBe("il duomo"));
+});
+
+describe("quizOutcome", () => {
+  it("no quiz → base points, correct null", () =>
+    expect(quizOutcome({ points: 10 }, undefined)).toEqual({ correct: null, pointsDelta: 10 }));
+  it("correct + add → base + value", () =>
+    expect(quizOutcome({ points: 10, answer: "Roma", quizMode: "add", quizValue: 5 }, "roma "))
+      .toEqual({ correct: true, pointsDelta: 15 }));
+  it("correct + multiply → base * value", () =>
+    expect(quizOutcome({ points: 10, answer: "Roma", quizMode: "multiply", quizValue: 3 }, "ROMA"))
+      .toEqual({ correct: true, pointsDelta: 30 }));
+  it("wrong → base - penalty (can go negative)", () =>
+    expect(quizOutcome({ points: 10, answer: "Roma", wrongPenalty: 25 }, "Milano"))
+      .toEqual({ correct: false, pointsDelta: -15 }));
+  it("missing answer to a quiz checkpoint counts as wrong", () =>
+    expect(quizOutcome({ points: 10, answer: "Roma", wrongPenalty: 5 }, undefined))
+      .toEqual({ correct: false, pointsDelta: 5 }));
+});
+
 describe("awardForScan", () => {
   const base = { points: 10, badgeIds: ["a"], scanCount: 1 };
-  it("adds points, badge, increments scanCount", () => {
-    expect(awardForScan(base, { points: 5, badgeId: "b" }, [])).toEqual({
-      points: 15, badgeIds: ["a", "b"], scanCount: 2,
-    });
+  it("applies a positive delta, badge, increments scanCount", () => {
+    expect(awardForScan(base, 5, "b", [])).toEqual({ points: 15, badgeIds: ["a", "b"], scanCount: 2 });
+  });
+  it("applies a negative delta (no clamp)", () => {
+    expect(awardForScan(base, -25, undefined, [])).toEqual({ points: -15, badgeIds: ["a"], scanCount: 2 });
   });
   it("does not duplicate an already-held badge", () => {
-    expect(awardForScan(base, { points: 5, badgeId: "a" }, [])).toEqual({
-      points: 15, badgeIds: ["a"], scanCount: 2,
-    });
+    expect(awardForScan(base, 5, "a", [])).toEqual({ points: 15, badgeIds: ["a"], scanCount: 2 });
   });
   it("awards a milestone badge when scanCount reaches it", () => {
-    const r = awardForScan({ points: 0, badgeIds: [], scanCount: 4 }, { points: 1 }, [{ id: "m5", milestone: 5 }]);
+    const r = awardForScan({ points: 0, badgeIds: [], scanCount: 4 }, 1, undefined, [{ id: "m5", milestone: 5 }]);
     expect(r.scanCount).toBe(5);
     expect(r.badgeIds).toContain("m5");
   });
   it("no milestone before threshold", () => {
-    const r = awardForScan({ points: 0, badgeIds: [], scanCount: 1 }, { points: 1 }, [{ id: "m5", milestone: 5 }]);
+    const r = awardForScan({ points: 0, badgeIds: [], scanCount: 1 }, 1, undefined, [{ id: "m5", milestone: 5 }]);
     expect(r.badgeIds).not.toContain("m5");
   });
 });
@@ -192,6 +216,14 @@ Run: `pnpm test src/lib/gamification.test.ts` → FAIL.
 ```ts
 export type GameProfile = { points: number; badgeIds: string[]; scanCount: number };
 export type MilestoneBadge = { id: string; milestone: number };
+export type QuizMode = "add" | "multiply";
+export type QuizConfig = {
+  points: number;
+  answer?: string;
+  quizMode?: QuizMode;
+  quizValue?: number;
+  wrongPenalty?: number;
+};
 
 export function validateScan(
   checkpoint: { active: boolean; secret: string } | null,
@@ -203,10 +235,36 @@ export function validateScan(
   return "ok";
 }
 
-/** New profile after a FIRST-TIME scan (caller guarantees no prior scan doc). */
+export function normalizeAnswer(s: string): string {
+  return s.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+/** Points delta for a scan, accounting for an optional quiz. A checkpoint "has a
+ *  quiz" iff it has an `answer`. Wrong answers subtract the penalty from the base
+ *  (the total may go negative — no clamp). */
+export function quizOutcome(
+  checkpoint: QuizConfig,
+  submittedAnswer?: string,
+): { correct: boolean | null; pointsDelta: number } {
+  if (!checkpoint.answer) return { correct: null, pointsDelta: checkpoint.points };
+  const correct =
+    submittedAnswer != null &&
+    normalizeAnswer(submittedAnswer) === normalizeAnswer(checkpoint.answer);
+  if (correct) {
+    const v = checkpoint.quizValue ?? 0;
+    const pointsDelta =
+      checkpoint.quizMode === "multiply" ? checkpoint.points * (v || 1) : checkpoint.points + v;
+    return { correct: true, pointsDelta };
+  }
+  return { correct: false, pointsDelta: checkpoint.points - (checkpoint.wrongPenalty ?? 0) };
+}
+
+/** New profile after a FIRST-TIME scan (caller guarantees no prior scan doc).
+ *  `pointsDelta` (from quizOutcome) may be negative; the total is NOT clamped. */
 export function awardForScan(
   profile: GameProfile,
-  checkpoint: { points: number; badgeId?: string },
+  pointsDelta: number,
+  badgeId: string | undefined,
   milestoneBadges: MilestoneBadge[],
 ): GameProfile {
   const scanCount = profile.scanCount + 1;
@@ -214,9 +272,9 @@ export function awardForScan(
   const add = (id?: string) => {
     if (id && !badgeIds.includes(id)) badgeIds.push(id);
   };
-  add(checkpoint.badgeId);
+  add(badgeId);
   for (const m of milestoneBadges) if (scanCount >= m.milestone) add(m.id);
-  return { points: profile.points + checkpoint.points, badgeIds, scanCount };
+  return { points: profile.points + pointsDelta, badgeIds, scanCount };
 }
 
 export function parseQrPayload(text: string): { checkpointId: string; token: string } | null {
@@ -380,7 +438,10 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import type { LocalizedString } from "@/types/models";
 
 export type Badge = { id: string; name: LocalizedString; description: LocalizedString; icon: string; milestone?: number };
-export type Checkpoint = { id: string; name: LocalizedString; points: number; badgeId?: string; active: boolean; secret: string };
+export type Checkpoint = {
+  id: string; name: LocalizedString; points: number; badgeId?: string; active: boolean; secret: string;
+  question?: LocalizedString; answer?: string; quizMode?: "add" | "multiply"; quizValue?: number; wrongPenalty?: number;
+};
 
 async function readAll<T extends { id: string }>(collection: string): Promise<T[]> {
   const db = getAdminDb();
@@ -583,12 +644,25 @@ export async function POST(req: Request) {
   // Generate a secret only on first create; preserve it on edit.
   const existing = await ref.get();
   const secret = existing.exists ? (existing.data()!.secret as string) : randomBytes(8).toString("hex");
-  const data = {
+  // Optional quiz: only stored when mode is add/multiply AND a question + answer exist.
+  const mode = body.quizMode === "add" || body.quizMode === "multiply" ? body.quizMode : null;
+  const answer = typeof body.answer === "string" ? body.answer.trim() : "";
+  const questionIt = typeof body.questionIt === "string" ? body.questionIt.trim() : "";
+  const hasQuiz = Boolean(mode && answer && questionIt);
+  const quizValue = Number(body.quizValue);
+  const wrongPenalty = Number(body.wrongPenalty);
+  const data: Record<string, unknown> = {
     name: { it: body.nameIt, en: body.nameEn || body.nameIt },
     points: Number.isFinite(points) && points > 0 ? Math.floor(points) : 10,
     badgeId: typeof body.badgeId === "string" && body.badgeId ? body.badgeId : null,
     active: body.active !== false,
     secret,
+    // Quiz fields: written when present, else explicitly nulled so editing can clear them.
+    question: hasQuiz ? { it: questionIt, en: (body.questionEn || questionIt) } : null,
+    answer: hasQuiz ? answer : null,
+    quizMode: hasQuiz ? mode : null,
+    quizValue: hasQuiz && Number.isFinite(quizValue) ? quizValue : null,
+    wrongPenalty: hasQuiz && Number.isFinite(wrongPenalty) ? Math.max(0, wrongPenalty) : null,
   };
   await ref.set(data, { merge: true });
   return NextResponse.json({ ok: true, id });
@@ -631,10 +705,19 @@ import { adminFetch } from "@/lib/admin-client";
 import { Button } from "@/components/ui/button";
 import type { Badge, Checkpoint } from "@/lib/data/game";
 
-type Draft = { id?: string; nameIt: string; nameEn: string; points: string; badgeId: string; active: boolean };
-const EMPTY: Draft = { nameIt: "", nameEn: "", points: "10", badgeId: "", active: true };
+type Draft = {
+  id?: string; nameIt: string; nameEn: string; points: string; badgeId: string; active: boolean;
+  questionIt: string; questionEn: string; answer: string; quizMode: "" | "add" | "multiply"; quizValue: string; wrongPenalty: string;
+};
+const EMPTY: Draft = {
+  nameIt: "", nameEn: "", points: "10", badgeId: "", active: true,
+  questionIt: "", questionEn: "", answer: "", quizMode: "", quizValue: "", wrongPenalty: "",
+};
 const toDraft = (c: Checkpoint): Draft => ({
   id: c.id, nameIt: c.name.it, nameEn: c.name.en, points: String(c.points), badgeId: c.badgeId ?? "", active: c.active,
+  questionIt: c.question?.it ?? "", questionEn: c.question?.en ?? "", answer: c.answer ?? "",
+  quizMode: c.quizMode ?? "", quizValue: c.quizValue != null ? String(c.quizValue) : "",
+  wrongPenalty: c.wrongPenalty != null ? String(c.wrongPenalty) : "",
 });
 
 export function CheckpointsAdmin({ initial, badges }: { initial: Checkpoint[]; badges: Badge[] }) {
@@ -708,6 +791,28 @@ export function CheckpointsAdmin({ initial, badges }: { initial: Checkpoint[]; b
             <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Attivo
           </label>
         </div>
+
+        <div className="mt-5 rounded-xl border border-dashed border-border p-4">
+          <p className="mb-3 text-sm font-semibold">Quiz (facoltativo)</p>
+          <label className="text-sm">Modalità
+            <select value={form.quizMode} onChange={(e) => setForm({ ...form, quizMode: e.target.value as Draft["quizMode"] })}
+              className="mt-1 h-10 w-full rounded-lg border border-border bg-background px-2">
+              <option value="">Nessun quiz</option>
+              <option value="add">Aggiungi punti (base + valore)</option>
+              <option value="multiply">Moltiplica punti (base × valore)</option>
+            </select>
+          </label>
+          {form.quizMode && (
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <F label="Domanda (IT)" v={form.questionIt} on={(v) => setForm({ ...form, questionIt: v })} />
+              <F label="Domanda (EN)" v={form.questionEn} on={(v) => setForm({ ...form, questionEn: v })} />
+              <F label="Risposta corretta" v={form.answer} on={(v) => setForm({ ...form, answer: v })} />
+              <F label={form.quizMode === "multiply" ? "Moltiplicatore" : "Punti bonus"} v={form.quizValue} on={(v) => setForm({ ...form, quizValue: v })} />
+              <F label="Penalità se sbagliato" v={form.wrongPenalty} on={(v) => setForm({ ...form, wrongPenalty: v })} />
+            </div>
+          )}
+        </div>
+
         {error && <p className="mt-3 text-sm text-gdg-red">{error}</p>}
         <div className="mt-4 flex gap-2">
           <Button onClick={save} disabled={busy || !form.nameIt}>{form.id ? "Salva" : "Aggiungi"}</Button>
@@ -753,9 +858,15 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyUser } from "@/lib/auth/user-guard";
-import { awardForScan, validateScan, type GameProfile, type MilestoneBadge } from "@/lib/gamification";
+import { awardForScan, quizOutcome, validateScan, type GameProfile, type MilestoneBadge } from "@/lib/gamification";
+import type { LocalizedString } from "@/types/models";
 
 export const dynamic = "force-dynamic";
+
+type CheckpointDoc = {
+  active: boolean; secret: string; points: number; badgeId?: string;
+  question?: LocalizedString; answer?: string; quizMode?: "add" | "multiply"; quizValue?: number; wrongPenalty?: number;
+};
 
 export async function POST(req: Request) {
   const uid = await verifyUser(req);
@@ -769,22 +880,34 @@ export async function POST(req: Request) {
   if (typeof checkpointId !== "string" || typeof token !== "string") {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
+  const answerProvided = typeof body?.answer === "string";
+  const answer: string | undefined = answerProvided ? body.answer : undefined;
+
+  const scanRef = db.collection("gameProfiles").doc(uid).collection("scans").doc(checkpointId);
+  const profileRef = db.collection("gameProfiles").doc(uid);
 
   const cpSnap = await db.collection("checkpoints").doc(checkpointId).get();
-  const cp = cpSnap.exists ? (cpSnap.data() as { active: boolean; secret: string; points: number; badgeId?: string }) : null;
+  const cp = cpSnap.exists ? (cpSnap.data() as CheckpointDoc) : null;
   const verdict = validateScan(cp, token);
   if (verdict !== "ok") {
     const status = verdict === "not-found" ? 404 : 403;
     return NextResponse.json({ ok: false, reason: verdict }, { status });
   }
 
-  // Milestone badges = badges with a `milestone` field.
+  const hasQuiz = Boolean(cp!.answer);
+
+  // PEEK phase: quiz checkpoint, no answer submitted yet → return the question (never the answer).
+  if (hasQuiz && !answerProvided) {
+    const existing = await scanRef.get();
+    if (existing.exists) return NextResponse.json({ ok: true, already: true });
+    return NextResponse.json({ ok: true, quiz: { question: cp!.question ?? null } });
+  }
+
+  // Milestone badges = badges carrying a positive `milestone`.
   const badgeSnap = await db.collection("badges").where("milestone", ">", 0).get();
   const milestones: MilestoneBadge[] = badgeSnap.docs.map((d) => ({ id: d.id, milestone: d.data().milestone as number }));
 
-  const scanRef = db.collection("gameProfiles").doc(uid).collection("scans").doc(checkpointId);
-  const profileRef = db.collection("gameProfiles").doc(uid);
-
+  // AWARD phase (no quiz, or answer submitted) — idempotent transaction.
   const result = await db.runTransaction(async (tx) => {
     const scanDoc = await tx.get(scanRef);
     if (scanDoc.exists) return { already: true as const };
@@ -792,16 +915,20 @@ export async function POST(req: Request) {
     const current: GameProfile = profDoc.exists
       ? { points: profDoc.data()!.points ?? 0, badgeIds: profDoc.data()!.badgeIds ?? [], scanCount: profDoc.data()!.scanCount ?? 0 }
       : { points: 0, badgeIds: [], scanCount: 0 };
-    const next = awardForScan(current, { points: cp!.points, badgeId: cp!.badgeId }, milestones);
-    tx.set(scanRef, { at: FieldValue.serverTimestamp(), points: cp!.points });
+    const { correct, pointsDelta } = quizOutcome(
+      { points: cp!.points, answer: cp!.answer, quizMode: cp!.quizMode, quizValue: cp!.quizValue, wrongPenalty: cp!.wrongPenalty },
+      answer,
+    );
+    const next = awardForScan(current, pointsDelta, cp!.badgeId, milestones);
+    tx.set(scanRef, { at: FieldValue.serverTimestamp(), points: pointsDelta, correct });
     tx.set(profileRef, next, { merge: true });
     const newBadgeIds = next.badgeIds.filter((b) => !current.badgeIds.includes(b));
-    return { already: false as const, awarded: { points: cp!.points, newBadgeIds, total: next.points } };
+    return { already: false as const, awarded: { pointsDelta, correct, newBadgeIds, total: next.points } };
   });
 
   if (result.already) return NextResponse.json({ ok: true, already: true });
 
-  // Best-effort leaderboard sync if the user opted in.
+  // Best-effort leaderboard sync if the user opted in (never fail the scan over it).
   try {
     const userDoc = await db.collection("users").doc(uid).get();
     const u = userDoc.data();
@@ -809,7 +936,7 @@ export async function POST(req: Request) {
       await db.collection("leaderboard").doc(uid).set({ displayName: u.displayName, points: result.awarded!.total });
     }
   } catch {
-    // leaderboard is non-critical; never fail the scan over it
+    // non-critical
   }
 
   return NextResponse.json({ ok: true, awarded: result.awarded });
@@ -854,7 +981,8 @@ en:
   "awarded": "+{points} points!", "newBadge": "New badge unlocked!", "signIn": "Sign in to play",
   "badges": "Badges", "leaderboard": "Leaderboard", "rank": "Rank", "you": "You",
   "optIn": "Show me on the leaderboard", "displayName": "Display name", "save": "Save", "saved": "Saved ✓",
-  "locked": "Locked", "noBadges": "No badges yet — start scanning!", "emptyBoard": "No players yet."
+  "locked": "Locked", "noBadges": "No badges yet — start scanning!", "emptyBoard": "No players yet.",
+  "answerPlaceholder": "Your answer", "quizSubmit": "Submit answer", "correct": "Correct!", "wrong": "Wrong answer", "delta": "{points} points"
 }
 ```
 it:
@@ -867,7 +995,8 @@ it:
   "awarded": "+{points} punti!", "newBadge": "Nuovo badge sbloccato!", "signIn": "Accedi per giocare",
   "badges": "Badge", "leaderboard": "Classifica", "rank": "Pos.", "you": "Tu",
   "optIn": "Mostrami in classifica", "displayName": "Nome visualizzato", "save": "Salva", "saved": "Salvato ✓",
-  "locked": "Bloccato", "noBadges": "Ancora nessun badge — inizia a scansionare!", "emptyBoard": "Ancora nessun giocatore."
+  "locked": "Bloccato", "noBadges": "Ancora nessun badge — inizia a scansionare!", "emptyBoard": "Ancora nessun giocatore.",
+  "answerPlaceholder": "La tua risposta", "quizSubmit": "Invia risposta", "correct": "Giusto!", "wrong": "Risposta sbagliata", "delta": "{points} punti"
 }
 ```
 
@@ -877,22 +1006,40 @@ it:
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import jsQR from "jsqr";
 import { useAuth } from "@/hooks/useAuth";
 import { userFetch } from "@/lib/user-client";
 import { parseQrPayload } from "@/lib/gamification";
+import { localized } from "@/lib/localize";
 import { Button } from "@/components/ui/button";
+import type { LocalizedString } from "@/types/models";
 
-type Result = { kind: "awarded"; points: number; newBadge: boolean } | { kind: "already" } | { kind: "error"; msg: string };
+type Parsed = { checkpointId: string; token: string };
+type Result =
+  | { kind: "awarded"; pointsDelta: number; correct: boolean | null; newBadge: boolean }
+  | { kind: "already" }
+  | { kind: "error"; msg: string };
+
+/** POST a scan; map the response to either an award result or a quiz prompt. */
+async function postScan(parsed: Parsed, answer?: string) {
+  const res = await userFetch("/api/scan", {
+    method: "POST",
+    body: JSON.stringify(answer === undefined ? parsed : { ...parsed, answer }),
+  });
+  const data = await res.json().catch(() => ({}));
+  return { res, data };
+}
 
 export function Scanner() {
   const { user, enabled, signIn } = useAuth();
   const t = useTranslations("play");
+  const locale = useLocale();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [scanning, setScanning] = useState(false);
-  const stopRef = useRef<() => void>(() => {});
+  const [quiz, setQuiz] = useState<{ parsed: Parsed; question: LocalizedString | null } | null>(null);
+  const [answer, setAnswer] = useState("");
 
   useEffect(() => {
     if (!user) return;
@@ -900,6 +1047,33 @@ export function Scanner() {
     let stream: MediaStream | null = null;
     let active = true;
     const canvas = document.createElement("canvas");
+
+    function stop() {
+      active = false; setScanning(false);
+      cancelAnimationFrame(raf);
+      stream?.getTracks().forEach((tr) => tr.stop());
+    }
+
+    async function handle(data: Record<string, unknown>, res: Response, parsed: Parsed) {
+      if (res.ok && (data as { quiz?: unknown }).quiz) {
+        setQuiz({ parsed, question: (data as { quiz: { question: LocalizedString | null } }).quiz.question });
+      } else if (res.ok && (data as { already?: boolean }).already) {
+        setResult({ kind: "already" });
+      } else if (res.ok && (data as { awarded?: { pointsDelta: number; correct: boolean | null; newBadgeIds?: string[] } }).awarded) {
+        const a = (data as { awarded: { pointsDelta: number; correct: boolean | null; newBadgeIds?: string[] } }).awarded;
+        setResult({ kind: "awarded", pointsDelta: a.pointsDelta, correct: a.correct, newBadge: (a.newBadgeIds?.length ?? 0) > 0 });
+      } else {
+        setResult({ kind: "error", msg: t("invalidQr") });
+      }
+    }
+
+    async function onDecode(text: string) {
+      const parsed = parseQrPayload(text);
+      stop();
+      if (!parsed) { setResult({ kind: "error", msg: t("invalidQr") }); return; }
+      const { res, data } = await postScan(parsed);
+      await handle(data, res, parsed);
+    }
 
     async function start() {
       if (!navigator.mediaDevices?.getUserMedia) { setResult({ kind: "error", msg: t("noCamera") }); return; }
@@ -926,41 +1100,55 @@ export function Scanner() {
       }
     }
 
-    async function onDecode(text: string) {
-      const parsed = parseQrPayload(text);
-      if (!parsed) { setResult({ kind: "error", msg: t("invalidQr") }); raf = requestAnimationFrame(() => {}); stop(); return; }
-      stop();
-      const res = await userFetch("/api/scan", { method: "POST", body: JSON.stringify(parsed) });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.already) setResult({ kind: "already" });
-      else if (res.ok && data.awarded) setResult({ kind: "awarded", points: data.awarded.points, newBadge: data.awarded.newBadgeIds?.length > 0 });
-      else setResult({ kind: "error", msg: t("invalidQr") });
-    }
-
-    function stop() {
-      active = false; setScanning(false);
-      cancelAnimationFrame(raf);
-      stream?.getTracks().forEach((tr) => tr.stop());
-    }
-    stopRef.current = stop;
     void start();
     return () => stop();
   }, [user, t]);
+
+  async function submitAnswer() {
+    if (!quiz) return;
+    const { res, data } = await postScan(quiz.parsed, answer);
+    setQuiz(null);
+    if (res.ok && (data as { already?: boolean }).already) { setResult({ kind: "already" }); return; }
+    const a = (data as { awarded?: { pointsDelta: number; correct: boolean | null; newBadgeIds?: string[] } }).awarded;
+    if (res.ok && a) setResult({ kind: "awarded", pointsDelta: a.pointsDelta, correct: a.correct, newBadge: (a.newBadgeIds?.length ?? 0) > 0 });
+    else setResult({ kind: "error", msg: t("invalidQr") });
+  }
 
   if (!enabled) return <Shell><p className="text-muted-foreground">{t("signIn")}</p></Shell>;
   if (!user) return <Shell><Button onClick={() => void signIn()}>{t("signIn")}</Button></Shell>;
 
   return (
     <Shell>
-      {!result && (
+      {!result && !quiz && (
         <>
           <video ref={videoRef} playsInline muted className="mx-auto aspect-square w-full max-w-sm rounded-2xl bg-black object-cover" />
           <p className="mt-3 text-sm text-muted-foreground">{scanning ? t("scanning") : "…"}</p>
         </>
       )}
+
+      {quiz && (
+        <div className="rounded-2xl border border-border p-6 text-left">
+          {quiz.question && <p className="mb-3 font-medium">{localized(quiz.question, locale)}</p>}
+          <input
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder={t("answerPlaceholder")}
+            className="h-11 w-full rounded-lg border border-border bg-background px-3"
+          />
+          <Button className="mt-3" onClick={() => void submitAnswer()} disabled={!answer.trim()}>{t("quizSubmit")}</Button>
+        </div>
+      )}
+
       {result?.kind === "awarded" && (
         <div className="rounded-2xl border border-border p-8">
-          <p className="font-display text-3xl font-bold text-gdg-green">{t("awarded", { points: result.points })}</p>
+          {result.correct !== null && (
+            <p className={`font-medium ${result.correct ? "text-gdg-green" : "text-gdg-red"}`}>
+              {result.correct ? t("correct") : t("wrong")}
+            </p>
+          )}
+          <p className={`mt-1 font-display text-3xl font-bold ${result.pointsDelta < 0 ? "text-gdg-red" : "text-gdg-green"}`}>
+            {t("delta", { points: result.pointsDelta > 0 ? `+${result.pointsDelta}` : result.pointsDelta })}
+          </p>
           {result.newBadge && <p className="mt-2">{t("newBadge")}</p>}
           <Button className="mt-4" onClick={() => location.reload()}>{t("scan")}</Button>
         </div>

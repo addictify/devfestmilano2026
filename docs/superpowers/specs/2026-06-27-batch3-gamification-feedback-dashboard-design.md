@@ -58,7 +58,7 @@ a signed-in user from self-granting points or reading other people's data.
 
 | Collection / doc | Shape | Read | Write |
 |---|---|---|---|
-| `checkpoints/{id}` | `{ name: LocalizedString, points: number, badgeId?: string, active: boolean, secret: string }` | **admin only** | admin |
+| `checkpoints/{id}` | `{ name: LocalizedString, points: number, badgeId?: string, active: boolean, secret: string, question?: LocalizedString, answer?: string, quizMode?: "add"\|"multiply", quizValue?: number, wrongPenalty?: number }` | **admin only** | admin |
 | `badges/{id}` | `{ name: LocalizedString, description: LocalizedString, icon: string, milestone?: number }` | public | admin |
 | `gameProfiles/{uid}` | `{ points: number, badgeIds: string[], scanCount: number }` | owner | **server only** |
 | `gameProfiles/{uid}/scans/{checkpointId}` | `{ at: Timestamp, points: number }` | owner | **server only** |
@@ -104,9 +104,15 @@ fields. Favorites stay under `users/{uid}/favorites`.)
   signed-in user's ID token; content-type json on body).
 - `src/lib/gamification.ts` (pure, TDD):
   - `validateScan(checkpoint, token): "ok" | "not-found" | "inactive" | "bad-token"`.
-  - `awardForScan(profile, checkpoint, milestoneBadges): { points, badgeIds, scanCount }` —
-    returns the NEW profile after a first-time scan: `points += checkpoint.points`,
-    add `checkpoint.badgeId` (if any), increment `scanCount`, then add any
+  - `normalizeAnswer(s): string` — `trim().toLowerCase()` + collapse internal whitespace.
+  - `quizOutcome(checkpoint, submittedAnswer?): { correct: boolean | null; pointsDelta: number }`
+    — a checkpoint "has a quiz" iff it has an `answer`. **No quiz** → `{ correct: null,
+    pointsDelta: points }`. **Correct** (normalized submitted === normalized answer): `add`
+    → `points + quizValue`; `multiply` → `points * (quizValue || 1)`. **Wrong** → `points -
+    wrongPenalty` (base minus penalty; total may go negative — no clamp).
+  - `awardForScan(profile, pointsDelta, badgeId, milestoneBadges): { points, badgeIds, scanCount }`
+    — NEW profile after a first-time scan: `points += pointsDelta` (delta computed by
+    `quizOutcome`; **not** clamped), add `badgeId` if any, increment `scanCount`, add any
     `milestoneBadges` whose `milestone <= scanCount` and not already held. Idempotent
     callers guarantee first-time-only.
   - `parseQrPayload(text): { checkpointId, token } | null` — payload format
@@ -122,29 +128,37 @@ fields. Favorites stay under `users/{uid}/favorites`.)
 
 ### Admin
 - **Checkpoints** (`/admin/checkpoints`, `/api/admin/checkpoints`) — CRUD like sponsors.
-  Fields: name (it/en), points, badge (select from badges), active. On create the
-  server generates a random `secret` (e.g. 16 hex chars) — never editable, never sent
-  to non-admins. A per-row **"QR"** action opens a printable view that renders the QR
-  for `DFQ:{id}:{secret}` via `qrcode` (client, to a canvas/data-URL) + the checkpoint
-  name. (Admins can read the secret; that's intended.)
+  Fields: name (it/en), points, badge (select from badges), active, plus an optional
+  **quiz**: question (it/en), answer, mode (`none` / `add` / `multiply`), value (bonus or
+  multiplier), wrong-penalty. On create the server generates a random `secret` (hex) —
+  never editable, never sent to non-admins. A per-row **"QR"** action opens a printable
+  view rendering the QR for `DFQ:{id}:{secret}` via `qrcode` + the checkpoint name.
+  (Admins can read the secret + answer; that's intended.)
 - **Badges** (`/admin/badges`, `/api/admin/badges`) — CRUD. Fields: name (it/en),
   description (it/en), icon (emoji/URL), milestone (optional number).
 - Both added to the admin nav.
 
-### Scan flow
-- `/api/scan` (POST, **verifyUser**): body `{ checkpointId, token }`.
+### Scan flow (2-phase, to support the quiz)
+- `/api/scan` (POST, **verifyUser**): body `{ checkpointId, token, answer? }`.
   - `uid = verifyUser(req)`; 401 if null. `getAdminDb()` null → 503.
   - Load `checkpoints/{checkpointId}`; `validateScan` → 404/403 as appropriate.
-  - **Idempotent, transactional:** if `gameProfiles/{uid}/scans/{checkpointId}` exists →
-    return `{ ok: true, already: true }` (no re-award). Else, in a transaction: write the
-    scan doc, compute `awardForScan`, write `gameProfiles/{uid}` (points/badgeIds/scanCount),
-    and if `users/{uid}.leaderboardOptIn` is true, upsert `leaderboard/{uid}` =
-    `{ displayName, points }`. Return `{ ok: true, awarded: { points, newBadgeIds } }`.
+  - **Peek phase** — checkpoint has a quiz (`answer` set) AND `answer` NOT in the body:
+    if already scanned → `{ ok: true, already: true }`; else return `{ ok: true, quiz: {
+    question } }` and write NOTHING (the question is safe to expose; the answer never is).
+  - **Award phase** — no quiz, OR an `answer` was submitted: in a transaction, if
+    `gameProfiles/{uid}/scans/{checkpointId}` exists → `{ already: true }`; else compute
+    `quizOutcome(checkpoint, answer)` → `{ correct, pointsDelta }`, `awardForScan(current,
+    pointsDelta, badgeId, milestones)`, write the scan doc `{ at, points: pointsDelta,
+    correct }` + `gameProfiles/{uid}`, then if `users/{uid}.leaderboardOptIn` upsert
+    `leaderboard/{uid}`. Return `{ ok: true, awarded: { pointsDelta, correct, newBadgeIds, total } }`.
+  - One scan per checkpoint → one quiz attempt, no retry.
 - **Scanner** `/play/scan` (client, signed-in): `getUserMedia({ video: { facingMode:
-  "environment" } })` → `<video>` → sample frames onto a `<canvas>` → `jsQR(imageData)`
-  on an interval → on decode, `parseQrPayload`; if valid, stop the camera and POST via
-  `userFetch`. Show the award result (points + any new badge). Handle: permission
-  denied, no camera, already-scanned, invalid QR. Stop tracks on unmount.
+  "environment" } })` → `<video>` → sample frames onto a `<canvas>` → `jsQR(imageData)` on
+  an interval → on decode, `parseQrPayload`; if valid, stop the camera and POST via
+  `userFetch` (no answer). If the response carries `quiz` → show the **question** + an
+  answer input → POST again WITH the answer → show the result (correct/wrong + points
+  delta + any new badge). If the response carries `awarded`/`already` → show it directly.
+  Handle permission-denied / no-camera / already / invalid-QR. Stop tracks on unmount.
 
 ### Player surface (`play` i18n namespace, both locales)
 - `/play` — points total, **badge wall** (earned vs locked from the public `badges`
