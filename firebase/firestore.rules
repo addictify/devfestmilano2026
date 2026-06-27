@@ -11,6 +11,12 @@ service cloud.firestore {
     function isOwner(uid) {
       return request.auth != null && request.auth.uid == uid;
     }
+    function isValidSubscriber() {
+      return request.resource.data.keys().hasOnly(['email', 'createdAt', 'locale', 'source'])
+        && request.resource.data.email is string
+        && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && request.resource.data.email.size() < 254;
+    }
 
     match /speakers/{id} { allow read: if true; allow write: if isAdmin(); }
     match /sessions/{id} { allow read: if true; allow write: if isAdmin(); }
@@ -30,6 +36,11 @@ service cloud.firestore {
       match /{sub=**} {
         allow read, write: if isOwner(uid);
       }
+    }
+
+    match /subscribers/{id} {
+      allow create: if isValidSubscriber();
+      allow read, update, delete: if isAdmin();
     }
 
     // Deny everything else.
