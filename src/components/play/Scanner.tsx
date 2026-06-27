@@ -80,7 +80,8 @@ export function Scanner() {
         await video.play();
         setScanning(true);
         const tick = () => {
-          if (!active || video.readyState !== video.HAVE_ENOUGH_DATA) { raf = requestAnimationFrame(tick); return; }
+          if (!active) return;
+          if (video.readyState !== video.HAVE_ENOUGH_DATA) { raf = requestAnimationFrame(tick); return; }
           canvas.width = video.videoWidth; canvas.height = video.videoHeight;
           const ctx = canvas.getContext("2d")!;
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -117,7 +118,7 @@ export function Scanner() {
       {!result && !quiz && (
         <>
           <video ref={videoRef} playsInline muted className="mx-auto aspect-square w-full max-w-sm rounded-2xl bg-black object-cover" />
-          <p className="mt-3 text-sm text-muted-foreground">{scanning ? t("scanning") : "…"}</p>
+          <p className="mt-3 text-sm text-muted-foreground">{scanning ? t("scanning") : null}</p>
         </>
       )}
 
@@ -155,9 +156,10 @@ export function Scanner() {
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
+  const t = useTranslations("play");
   return (
     <section className="mx-auto max-w-xl px-5 py-16 text-center sm:px-8">
-      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">DevFest Quest</h1>
+      <h1 className="mb-6 font-display text-3xl font-bold tracking-tight">{t("title")}</h1>
       {children}
     </section>
   );
