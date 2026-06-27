@@ -38,6 +38,21 @@ Real content in place: team (Alessandro Persiano, Daniele Bonaldo · GDE,
 Davide Tresoldi, Matteo Rocco), sponsors (Google, Datwave, Randstad Box),
 venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 
+### ✅ Batch 1 (2026-06-27)
+- **Add-to-calendar:** pure `src/lib/calendar.ts` (RFC 5545 ICS + Google
+  Calendar URL, unit-tested with Vitest) + `AddToCalendar` dropdown. Event-level
+  on the hero; per-session in `SessionCard` (renders only when a session has
+  times — live on seed, dormant publicly until `schedulePublished`).
+- **PWA:** `src/app/manifest.ts` + icons (`public/icons/`, upscaled from the
+  192px brand source — swap in native 512px art later), `public/sw.js`
+  (network-first navigations → cached `/offline`, SWR for static assets, never
+  caches `/api`), prod-only `RegisterSW`. Works on Vercel and the static export.
+- **Notify-me capture:** `/api/subscribe` writes to a Firestore `subscribers`
+  collection via the Admin SDK (create-only client rule, admin-read);
+  `NotifyTicketsDialog` now captures an email (honeypot + graceful 503 degrade
+  in seed mode / static export) while keeping the follow-communities links.
+- Test harness added: **Vitest** (`pnpm test`); calendar + email suites green.
+
 ## ⏳ Pending / next steps
 - **Go-live config:** create Firebase project → fill `NEXT_PUBLIC_FIREBASE_*` +
   `FIREBASE_ADMIN_*`; set `SESSIONIZE_EVENT_ID`, Bevy URL, `REVALIDATE_SECRET`,
@@ -48,9 +63,12 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers, and `ticketsAvailable: true` when Bevy opens.
-- **Not built yet:** lightweight admin (sponsors/news CRUD, claim-gated).
-- **Phase 2:** Google Sign-In UI + "My Schedule" favorites
-  (`users/{uid}/favorites`, rules present), PWA offline, add-to-calendar.
+- **Not built yet:** lightweight admin (sponsors/news CRUD, claim-gated). Note a
+  `subscribers` collection now exists (notify-me emails, admin-read) — export it
+  manually until an admin UI lands in Batch 2.
+- **Phase 2 (Batch 2):** Google Sign-In UI + "My Schedule" favorites
+  (`users/{uid}/favorites`, rules present); offline SHELL already shipped in
+  Batch 1, full offline content caching is still open.
 - **Phase 3:** gamification (QR scavenger hunt, points, badges, leaderboard) +
   live session feedback + organizer dashboard.
 
