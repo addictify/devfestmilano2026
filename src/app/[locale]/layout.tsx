@@ -9,6 +9,7 @@ import { Providers } from "@/components/providers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SkipLink } from "@/components/layout/SkipLink";
+import { RegisterSW } from "@/components/pwa/RegisterSW";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -82,6 +83,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <Providers>
             <SkipLink />
+            <RegisterSW />
             <Header />
             <main id="main">{children}</main>
             <Footer />
