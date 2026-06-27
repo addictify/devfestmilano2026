@@ -92,5 +92,6 @@ export function PlayHome({ badges }: { badges: Badge[] }) {
 }
 
 function Section({ children }: { children: React.ReactNode }) {
-  return <section className="mx-auto max-w-xl px-5 py-16 text-center sm:px-8"><h1 className="mb-6 font-display text-3xl font-bold tracking-tight">DevFest Quest</h1>{children}</section>;
+  const t = useTranslations("play");
+  return <section className="mx-auto max-w-xl px-5 py-16 text-center sm:px-8"><h1 className="mb-6 font-display text-3xl font-bold tracking-tight">{t("title")}</h1>{children}</section>;
 }

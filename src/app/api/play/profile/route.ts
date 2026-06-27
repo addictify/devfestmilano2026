@@ -20,12 +20,14 @@ export async function POST(req: Request) {
     : "";
   if (optIn && !displayName) return NextResponse.json({ ok: false, reason: "name-required" }, { status: 400 });
 
-  await db.collection("users").doc(uid).set({ displayName, leaderboardOptIn: optIn }, { merge: true });
+  const userUpdate: Record<string, unknown> = { leaderboardOptIn: optIn };
+  if (displayName) userUpdate.displayName = displayName;
+  await db.collection("users").doc(uid).set(userUpdate, { merge: true });
 
   const lbRef = db.collection("leaderboard").doc(uid);
   if (optIn) {
     const prof = await db.collection("gameProfiles").doc(uid).get();
-    await lbRef.set({ displayName, points: prof.data()?.points ?? 0 });
+    await lbRef.set({ displayName, points: prof.data()?.points ?? 0 }, { merge: true });
   } else {
     await lbRef.delete().catch(() => {});
   }

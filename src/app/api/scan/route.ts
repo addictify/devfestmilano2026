@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     const userDoc = await db.collection("users").doc(uid).get();
     const u = userDoc.data();
     if (u?.leaderboardOptIn && u?.displayName) {
-      await db.collection("leaderboard").doc(uid).set({ displayName: u.displayName, points: result.awarded!.total });
+      await db.collection("leaderboard").doc(uid).set({ displayName: u.displayName, points: result.awarded!.total }, { merge: true });
     }
   } catch {
     // non-critical
