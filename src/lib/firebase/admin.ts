@@ -7,6 +7,7 @@ import {
   type App,
 } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
@@ -34,4 +35,11 @@ export function getAdminDb(): Firestore | null {
   // Sessionize-derived docs carry optional fields; allow undefined.
   cachedDb.settings({ ignoreUndefinedProperties: true });
   return cachedDb;
+}
+
+/** Returns the Admin Auth instance, or null when not configured. */
+export function getAdminAuth(): Auth | null {
+  const db = getAdminDb(); // ensures the default app is initialized
+  if (!db) return null;
+  return getAuth(getApp());
 }
