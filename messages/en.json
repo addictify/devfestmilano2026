@@ -290,5 +290,16 @@
     "myschedule": "My schedule",
     "signedInAs": "Signed in as"
   },
-  "myschedule": { "title": "My schedule", "empty": "No saved sessions yet.", "browse": "Browse the agenda", "add": "Save to my schedule", "remove": "Remove from my schedule", "signInNudge": "Sign in to sync your schedule across devices.", "count": "{count} saved" }
+  "myschedule": { "title": "My schedule", "empty": "No saved sessions yet.", "browse": "Browse the agenda", "add": "Save to my schedule", "remove": "Remove from my schedule", "signInNudge": "Sign in to sync your schedule across devices.", "count": "{count} saved" },
+  "play": {
+    "title": "DevFest Quest", "points": "{points} points", "scan": "Scan a checkpoint",
+    "scanning": "Point your camera at a DevFest QR code…", "noCamera": "No camera available.",
+    "denied": "Camera permission denied. Enable it in your browser settings.",
+    "invalidQr": "That isn't a DevFest Quest code.", "already": "Already scanned ✓",
+    "awarded": "+{points} points!", "newBadge": "New badge unlocked!", "signIn": "Sign in to play",
+    "badges": "Badges", "leaderboard": "Leaderboard", "rank": "Rank", "you": "You",
+    "optIn": "Show me on the leaderboard", "displayName": "Display name", "save": "Save", "saved": "Saved ✓",
+    "locked": "Locked", "noBadges": "No badges yet — start scanning!", "emptyBoard": "No players yet.",
+    "answerPlaceholder": "Your answer", "quizSubmit": "Submit answer", "correct": "Correct!", "wrong": "Wrong answer", "delta": "{points} points"
+  }
 }

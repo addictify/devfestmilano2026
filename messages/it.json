@@ -290,5 +290,16 @@
     "myschedule": "La mia agenda",
     "signedInAs": "Accesso come"
   },
-  "myschedule": { "title": "La mia agenda", "empty": "Nessuna sessione salvata.", "browse": "Sfoglia l'agenda", "add": "Salva nella mia agenda", "remove": "Rimuovi dalla mia agenda", "signInNudge": "Accedi per sincronizzare l'agenda su tutti i dispositivi.", "count": "{count} salvate" }
+  "myschedule": { "title": "La mia agenda", "empty": "Nessuna sessione salvata.", "browse": "Sfoglia l'agenda", "add": "Salva nella mia agenda", "remove": "Rimuovi dalla mia agenda", "signInNudge": "Accedi per sincronizzare l'agenda su tutti i dispositivi.", "count": "{count} salvate" },
+  "play": {
+    "title": "DevFest Quest", "points": "{points} punti", "scan": "Scansiona un checkpoint",
+    "scanning": "Inquadra un codice QR DevFest…", "noCamera": "Nessuna fotocamera disponibile.",
+    "denied": "Permesso fotocamera negato. Abilitalo nelle impostazioni del browser.",
+    "invalidQr": "Questo non è un codice DevFest Quest.", "already": "Già scansionato ✓",
+    "awarded": "+{points} punti!", "newBadge": "Nuovo badge sbloccato!", "signIn": "Accedi per giocare",
+    "badges": "Badge", "leaderboard": "Classifica", "rank": "Pos.", "you": "Tu",
+    "optIn": "Mostrami in classifica", "displayName": "Nome visualizzato", "save": "Salva", "saved": "Salvato ✓",
+    "locked": "Bloccato", "noBadges": "Ancora nessun badge — inizia a scansionare!", "emptyBoard": "Ancora nessun giocatore.",
+    "answerPlaceholder": "La tua risposta", "quizSubmit": "Invia risposta", "correct": "Giusto!", "wrong": "Risposta sbagliata", "delta": "{points} punti"
+  }
 }
