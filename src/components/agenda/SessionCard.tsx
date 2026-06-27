@@ -7,6 +7,7 @@ import { localized } from "@/lib/localize";
 import { formatTimeRange } from "@/lib/time";
 import type { Session, Speaker, Track } from "@/types/models";
 import { AddToCalendar } from "@/components/common/AddToCalendar";
+import { FavoriteButton } from "@/components/agenda/FavoriteButton";
 import { siteConfig } from "@/lib/site";
 
 const LEVEL_DOT: Record<string, string> = {
@@ -39,9 +40,14 @@ export function SessionCard({
         service && "bg-muted/50",
       )}
     >
+      {!service && (
+        <div className="absolute right-3 top-3 z-10">
+          <FavoriteButton sessionId={session.id} />
+        </div>
+      )}
       <span className={cn("absolute inset-y-0 left-0 w-1", service ? "bg-border" : c.bg)} />
 
-      <div className="flex min-w-0 flex-1 flex-col gap-2.5 pl-2">
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5 pl-2 pr-10">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted-foreground">
           {showTime && session.startsAt && (
             <span className="inline-flex items-center gap-1.5">

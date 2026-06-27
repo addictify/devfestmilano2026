@@ -289,5 +289,6 @@
     "account": "Menu account",
     "myschedule": "La mia agenda",
     "signedInAs": "Accesso come"
-  }
+  },
+  "myschedule": { "title": "La mia agenda", "empty": "Nessuna sessione salvata.", "browse": "Sfoglia l'agenda", "add": "Salva nella mia agenda", "remove": "Rimuovi dalla mia agenda", "signInNudge": "Accedi per sincronizzare l'agenda su tutti i dispositivi.", "count": "{count} salvate" }
 }
