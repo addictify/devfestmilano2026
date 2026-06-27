@@ -84,6 +84,11 @@ export async function getSponsors(): Promise<Sponsor[]> {
   return [...list].filter((s) => s.active).sort(byOrder);
 }
 
+export async function getAllSponsors(): Promise<Sponsor[]> {
+  const list = await read<Sponsor>("sponsors", seedSponsors);
+  return [...list].sort(byOrder);
+}
+
 export async function getTeam(): Promise<TeamMember[]> {
   const list = await read<TeamMember>("team", seedTeam);
   return [...list].sort(byOrder);
