@@ -270,5 +270,10 @@
     "external": "si apre in una nuova scheda",
     "theme": "Tema",
     "language": "Lingua"
+  },
+  "calendar": {
+    "add": "Aggiungi al calendario",
+    "google": "Google Calendar",
+    "ics": "Scarica .ics"
   }
 }

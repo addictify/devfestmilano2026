@@ -270,5 +270,10 @@
     "external": "opens in a new tab",
     "theme": "Theme",
     "language": "Language"
+  },
+  "calendar": {
+    "add": "Add to calendar",
+    "google": "Google Calendar",
+    "ics": "Download .ics"
   }
 }
