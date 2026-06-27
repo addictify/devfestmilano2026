@@ -13,8 +13,10 @@ export async function POST(req: Request) {
   if (!body) return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
 
   const optIn = body.leaderboardOptIn === true;
+  // Strip control chars, collapse internal whitespace (keep single spaces so
+  // "Mario Rossi" survives), trim, cap at 40.
   const displayName = typeof body.displayName === "string"
-    ? body.displayName.replace(/[\p{Cc}\s]/gu, "").slice(0, 40)
+    ? body.displayName.replace(/[\p{Cc}]/gu, "").replace(/\s+/g, " ").trim().slice(0, 40)
     : "";
   if (optIn && !displayName) return NextResponse.json({ ok: false, reason: "name-required" }, { status: 400 });
 
