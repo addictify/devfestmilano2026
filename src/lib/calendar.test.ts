@@ -40,10 +40,30 @@ describe("buildIcs", () => {
     expect(ics).toContain("DESCRIPTION:A day of talks\\; demos\\, and code.");
     expect(ics).toContain("END:VCALENDAR");
     expect(ics).toMatch(/\r\n/);
+    // RFC 5545 compliance: trailing CRLF and DTSTAMP present
+    expect(ics.endsWith("\r\n")).toBe(true);
+    expect(ics).toContain("DTSTAMP:");
+  });
+  it("escapes location commas", () => {
+    const ics = buildIcs(ev);
+    expect(ics).toContain("LOCATION:Randstad Box\\, Via San Vigilio 5\\, Milano");
   });
   it("derives a uid when none given", () => {
     const { uid, ...noUid } = ev;
-    expect(buildIcs(noUid)).toMatch(/UID:.+/);
+    const ics = buildIcs(noUid);
+    expect(ics).toMatch(/UID:.+/);
+    expect(ics).toContain("@devfestmilano.it");
+  });
+  it("folds long description lines (>75 octets)", () => {
+    const longDesc = "x".repeat(200);
+    const event: CalendarEvent = {
+      title: "Test",
+      description: longDesc,
+      start: "2026-10-10T09:00:00+02:00",
+      end: "2026-10-10T10:00:00+02:00",
+    };
+    const ics = buildIcs(event);
+    expect(ics).toContain("\r\n ");
   });
 });
 

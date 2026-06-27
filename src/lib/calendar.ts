@@ -24,6 +24,21 @@ function slugUid(e: CalendarEvent): string {
   return `${base}@devfestmilano.it`;
 }
 
+/** RFC 5545 §3.1: fold lines longer than 75 octets (CRLF + space continuation). */
+function foldLine(line: string): string {
+  if (line.length <= 75) return line;
+  const parts: string[] = [];
+  let s = line;
+  parts.push(s.slice(0, 75));
+  s = s.slice(75);
+  while (s.length > 74) {
+    parts.push(" " + s.slice(0, 74));
+    s = s.slice(74);
+  }
+  if (s.length) parts.push(" " + s);
+  return parts.join("\r\n");
+}
+
 export function googleCalendarUrl(e: CalendarEvent): string {
   const params = new URLSearchParams({
     action: "TEMPLATE",
@@ -44,7 +59,7 @@ export function buildIcs(e: CalendarEvent): string {
     "CALSCALE:GREGORIAN",
     "BEGIN:VEVENT",
     `UID:${uid}`,
-    `DTSTAMP:${toCalUtc(e.start)}`,
+    `DTSTAMP:${toCalUtc(new Date().toISOString())}`,
     `DTSTART:${toCalUtc(e.start)}`,
     `DTEND:${toCalUtc(e.end)}`,
     `SUMMARY:${escapeText(e.title)}`,
@@ -54,7 +69,9 @@ export function buildIcs(e: CalendarEvent): string {
     "END:VEVENT",
     "END:VCALENDAR",
   ];
-  return lines.join("\r\n");
+  // RFC 5545 §3.1: fold long lines (75-octet limit) and end with CRLF.
+  // Line folding uses JS string length as pragmatic approximation of octets (ASCII-dominant fields).
+  return lines.map(foldLine).join("\r\n") + "\r\n";
 }
 
 export function icsDataUri(e: CalendarEvent): string {
