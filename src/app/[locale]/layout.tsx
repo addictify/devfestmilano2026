@@ -57,7 +57,7 @@ export async function generateMetadata({
     },
     manifest: "/manifest.webmanifest",
     appleWebApp: { capable: true, title: siteConfig.shortName, statusBarStyle: "default" },
-    icons: { icon: "/icons/icon-192.png", apple: "/icons/icon-256.png" },
+    icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
   };
 }
 

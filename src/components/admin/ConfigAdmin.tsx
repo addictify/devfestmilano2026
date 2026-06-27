@@ -36,7 +36,12 @@ export function ConfigAdmin({ initial }: { initial: SiteSettings }) {
         {(Object.keys(LABELS) as (keyof SiteSettings)[]).map((k) => (
           <label key={k} className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">
             <span>{LABELS[k]}</span>
-            <input type="checkbox" checked={flags[k]} onChange={(e) => setFlags({ ...flags, [k]: e.target.checked })} />
+            <input
+              type="checkbox"
+              aria-label={LABELS[k]}
+              checked={flags[k]}
+              onChange={(e) => setFlags({ ...flags, [k]: e.target.checked })}
+            />
           </label>
         ))}
       </div>
