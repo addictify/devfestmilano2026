@@ -282,5 +282,12 @@
     "google": "Google Calendar",
     "ics": "Scarica .ics",
     "eventDescription": "DevFest Milano 2026 — una giornata di talk e community al Randstad Box."
+  },
+  "auth": {
+    "signIn": "Accedi",
+    "signOut": "Esci",
+    "account": "Menu account",
+    "myschedule": "La mia agenda",
+    "signedInAs": "Accesso come"
   }
 }

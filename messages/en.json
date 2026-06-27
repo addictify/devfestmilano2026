@@ -282,5 +282,12 @@
     "google": "Google Calendar",
     "ics": "Download .ics",
     "eventDescription": "DevFest Milano 2026 — a full day of talks and community at Randstad Box."
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "account": "Account menu",
+    "myschedule": "My schedule",
+    "signedInAs": "Signed in as"
   }
 }
