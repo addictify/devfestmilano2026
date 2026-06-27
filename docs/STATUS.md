@@ -72,6 +72,26 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   (`scripts/static-build.sh`) and absent on GitHub Pages. New Vitest suites:
   favorites, csv, settings-merge, admin-guard (server-only stubbed for tests).
 
+### ✅ Batch 3 (2026-06-28)
+- **DevFest Quest (gamification):** admin defines **checkpoints** (`/admin/checkpoints`
+  — points, optional badge, printable QR via `qrcode`, optional **quiz**: a question
+  whose correct answer adds or multiplies points and whose wrong answer subtracts a
+  penalty) + **badges** (`/admin/badges`, incl. milestone badges). Attendees sign in,
+  scan checkpoints with an **in-app camera scanner** (`jsqr`, 2-phase for quizzes) at
+  `/play`, earning **server-awarded** points/badges; opt-in **leaderboard**. The
+  scanner reads `DFQ:{id}:{secret}`; the secret never leaves the server.
+- **Live feedback:** `FeedbackForm` on each `SessionCard` (1–5★ + comment, one editable
+  response per user/session) → `/api/feedback`. Anonymous to organizers.
+- **Organizer dashboard** (`/admin/dashboard`, default admin landing): per-session
+  feedback aggregates (anonymised), checkpoint scans, badge distribution, top
+  leaderboard, subscriber count.
+- **Security:** game state lives in `gameProfiles/{uid}` — owner-read, **client-write
+  locked** (`write: if false`); points/badges/scans written only by the Admin SDK in
+  `/api/scan` (idempotent transaction, token-validated). New `verifyUser` guard for
+  player routes. New pure Vitest suites: gamification, feedback-stats, user-guard.
+- New deps: `jsqr` (scan), `qrcode` (admin QR). `/play/*` degrades to signed-out on
+  the static export; `/admin/*` + `/api/*` stripped there as before.
+
 ## ⏳ Pending / next steps
 - **Go-live config:** create Firebase project → fill `NEXT_PUBLIC_FIREBASE_*` +
   `FIREBASE_ADMIN_*`; set `SESSIONIZE_EVENT_ID`, Bevy URL, `REVALIDATE_SECRET`,
@@ -88,8 +108,12 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **Admin still open:** news CRUD (intentionally skipped); image upload to Storage
   (admin uses pasted URLs for now).
 - **Offline:** the app SHELL ships (Batch 1); full offline content caching is open.
-- **Phase 3:** gamification (QR scavenger hunt, points, badges, leaderboard) +
-  live session feedback + organizer dashboard.
+- **DevFest Quest ops:** generate + print the checkpoint QR codes from
+  `/admin/checkpoints` and place them physically at the venue before the event
+  (the only non-code step). Camera scanning needs HTTPS (Vercel — fine).
+- **All three phases are now built.** Remaining work is go-live config + content,
+  not features. Possible future polish: image upload to Storage, news/blog, richer
+  anti-cheat, exporting game data.
 
 ## Run locally
 ```bash
