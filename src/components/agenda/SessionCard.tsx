@@ -8,6 +8,7 @@ import { formatTimeRange } from "@/lib/time";
 import type { Session, Speaker, Track } from "@/types/models";
 import { AddToCalendar } from "@/components/common/AddToCalendar";
 import { FavoriteButton } from "@/components/agenda/FavoriteButton";
+import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { siteConfig } from "@/lib/site";
 
 const LEVEL_DOT: Record<string, string> = {
@@ -115,6 +116,8 @@ export function SessionCard({
             />
           </div>
         )}
+
+        {!service && <FeedbackForm sessionId={session.id} />}
 
         {!service && (session.tags.length > 0 || session.level || session.language) && (
           <div className="mt-1 flex flex-wrap items-center gap-2">

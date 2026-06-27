@@ -300,6 +300,7 @@
     "badges": "Badges", "leaderboard": "Leaderboard", "rank": "Rank", "you": "You",
     "optIn": "Show me on the leaderboard", "displayName": "Display name", "save": "Save", "saved": "Saved ✓",
     "locked": "Locked", "noBadges": "No badges yet — start scanning!", "emptyBoard": "No players yet.",
-    "answerPlaceholder": "Your answer", "quizSubmit": "Submit answer", "correct": "Correct!", "wrong": "Wrong answer", "delta": "{points} points"
+    "answerPlaceholder": "Your answer", "quizSubmit": "Submit answer", "correct": "Correct!", "wrong": "Wrong answer", "delta": "{points} points",
+    "rate": "Rate this session", "yourRating": "Your rating", "comment": "Comment (optional)", "submitRating": "Submit", "thanks": "Thanks for your feedback!"
   }
 }

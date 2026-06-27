@@ -300,6 +300,7 @@
     "badges": "Badge", "leaderboard": "Classifica", "rank": "Pos.", "you": "Tu",
     "optIn": "Mostrami in classifica", "displayName": "Nome visualizzato", "save": "Salva", "saved": "Salvato ✓",
     "locked": "Bloccato", "noBadges": "Ancora nessun badge — inizia a scansionare!", "emptyBoard": "Ancora nessun giocatore.",
-    "answerPlaceholder": "La tua risposta", "quizSubmit": "Invia risposta", "correct": "Giusto!", "wrong": "Risposta sbagliata", "delta": "{points} punti"
+    "answerPlaceholder": "La tua risposta", "quizSubmit": "Invia risposta", "correct": "Giusto!", "wrong": "Risposta sbagliata", "delta": "{points} punti",
+    "rate": "Valuta questa sessione", "yourRating": "Il tuo voto", "comment": "Commento (facoltativo)", "submitRating": "Invia", "thanks": "Grazie per il tuo feedback!"
   }
 }
