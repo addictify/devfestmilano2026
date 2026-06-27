@@ -13,11 +13,13 @@ import { Countdown } from "@/components/common/Countdown";
 import { SkylineMilano } from "@/components/common/SkylineMilano";
 import { AddToCalendar } from "@/components/common/AddToCalendar";
 import { eventCalendarEvent } from "@/lib/event-calendar";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 export function Hero() {
   const t = useTranslations("hero");
   const tCal = useTranslations("calendar");
   const reduce = useReducedMotion();
+  const { ticketsAvailable } = useSiteSettings();
 
   const container = {
     hidden: {},
@@ -124,7 +126,7 @@ export function Hero() {
             variants={item}
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
           >
-            {siteConfig.ticketsAvailable ? (
+            {ticketsAvailable ? (
               <>
                 {/* Tickets on sale: tickets lead, CFP secondary. */}
                 <TicketButton size="lg" label={t("ctaTickets")} />

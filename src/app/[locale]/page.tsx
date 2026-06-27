@@ -1,6 +1,6 @@
 import { setRequestLocale } from "next-intl/server";
 import { getFeaturedSpeakers, getSponsors, getTracks } from "@/lib/data/content";
-import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/data/settings";
 import { Hero } from "@/components/sections/Hero";
 import { ThemeSection } from "@/components/sections/ThemeSection";
 import { WhatToExpect } from "@/components/sections/WhatToExpect";
@@ -23,9 +23,10 @@ export default async function Home({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const { speakersPublished } = await getSiteSettings();
 
   const [speakers, tracks, sponsors] = await Promise.all([
-    siteConfig.speakersPublished ? getFeaturedSpeakers(8) : Promise.resolve([]),
+    speakersPublished ? getFeaturedSpeakers(8) : Promise.resolve([]),
     getTracks(),
     getSponsors(),
   ]);
@@ -35,7 +36,7 @@ export default async function Home({
       <Hero />
       <ThemeSection />
       <WhatToExpect />
-      {siteConfig.speakersPublished ? (
+      {speakersPublished ? (
         <FeaturedSpeakers speakers={speakers} />
       ) : (
         <SpeakerTypesSection />

@@ -1,11 +1,14 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { ArrowUpRight } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 /**
  * Ticket CTA. Renders disabled (tickets not on sale yet) until
- * `siteConfig.ticketsAvailable` is true, then links to Bevy.
+ * `ticketsAvailable` is true (from context), then links to Bevy.
  */
 export function TicketButton({
   size = "md",
@@ -18,8 +21,9 @@ export function TicketButton({
   label?: string;
 }) {
   const t = useTranslations("nav");
+  const { ticketsAvailable } = useSiteSettings();
 
-  if (!siteConfig.ticketsAvailable) {
+  if (!ticketsAvailable) {
     return (
       <Button
         variant="accent"

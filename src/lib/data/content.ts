@@ -1,6 +1,5 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import { siteConfig } from "@/lib/site";
 import type {
   Session,
   Speaker,
@@ -15,6 +14,7 @@ import {
   seedTeam,
   seedTracks,
 } from "./seed";
+import { getSiteSettings } from "./settings";
 
 // Read content from Firestore when configured, otherwise serve seed content so
 // the site renders fully during development and before the backend is wired.
@@ -73,7 +73,8 @@ export async function getSessions(): Promise<Session[]> {
 
 /** True once the schedule is published (flag) and a real session has a time. */
 export async function isSchedulePublished(): Promise<boolean> {
-  if (!siteConfig.schedulePublished) return false;
+  const { schedulePublished } = await getSiteSettings();
+  if (!schedulePublished) return false;
   const sessions = await getSessions();
   return sessions.some((s) => !s.isServiceSession && s.startsAt);
 }

@@ -5,7 +5,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { fontVariables } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
+import { getSiteSettings } from "@/lib/data/settings";
 import { Providers } from "@/components/providers";
+import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SkipLink } from "@/components/layout/SkipLink";
@@ -76,17 +78,20 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
+  const settings = await getSiteSettings();
 
   return (
     <html lang={locale} suppressHydrationWarning className={fontVariables}>
       <body className="min-h-dvh antialiased">
         <NextIntlClientProvider>
           <Providers>
-            <SkipLink />
-            <RegisterSW />
-            <Header />
-            <main id="main">{children}</main>
-            <Footer />
+            <SiteSettingsProvider value={settings}>
+              <SkipLink />
+              <RegisterSW />
+              <Header />
+              <main id="main">{children}</main>
+              <Footer />
+            </SiteSettingsProvider>
           </Providers>
         </NextIntlClientProvider>
       </body>

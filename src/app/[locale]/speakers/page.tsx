@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { siteConfig } from "@/lib/site";
 import { getSpeakers } from "@/lib/data/content";
+import { getSiteSettings } from "@/lib/data/settings";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SpeakerDirectory } from "@/components/speakers/SpeakerDirectory";
@@ -29,7 +29,7 @@ export default async function SpeakersPage({
   const t = await getTranslations("speakersPage");
   const tt = await getTranslations("speakerTypes");
 
-  const published = siteConfig.speakersPublished;
+  const { speakersPublished: published } = await getSiteSettings();
   const speakers = published ? await getSpeakers() : [];
 
   return (
