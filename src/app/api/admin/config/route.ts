@@ -17,9 +17,12 @@ export async function POST(req: Request) {
   for (const f of FLAGS) if (typeof body[f] === "boolean") update[f] = body[f];
   if (Object.keys(update).length === 0) return NextResponse.json({ ok: false, reason: "no-flags" }, { status: 400 });
   await db.collection("config").doc("site").set(update, { merge: true });
-  // Affected public routes across both locales.
+  // Affected public routes across both locales. The `[locale]` layout reads
+  // getSiteSettings() to populate SiteSettingsProvider (ticketsAvailable →
+  // Hero/TicketButton), so revalidate the layout segment explicitly — not just
+  // the pages — to guarantee the toggle propagates on the next request.
   for (const l of ["it", "en"]) {
-    revalidatePath(`/${l}`);
+    revalidatePath(`/${l}`, "layout");
     revalidatePath(`/${l}/speakers`);
     revalidatePath(`/${l}/agenda`);
   }
