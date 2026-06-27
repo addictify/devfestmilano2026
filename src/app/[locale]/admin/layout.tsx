@@ -5,6 +5,9 @@ import { AdminGate } from "@/components/admin/AdminGate";
 export const metadata: Metadata = { robots: { index: false }, title: "Admin · DevFest Milano 2026" };
 
 const SECTIONS = [
+  { href: "/admin/dashboard", label: "Cruscotto" },
+  { href: "/admin/checkpoints", label: "Checkpoint" },
+  { href: "/admin/badges", label: "Badge" },
   { href: "/admin/sponsors", label: "Sponsor" },
   { href: "/admin/team", label: "Team" },
   { href: "/admin/subscribers", label: "Iscritti" },
