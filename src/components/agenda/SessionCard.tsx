@@ -6,6 +6,8 @@ import { colorClasses, type GdgColor } from "@/lib/design/tokens";
 import { localized } from "@/lib/localize";
 import { formatTimeRange } from "@/lib/time";
 import type { Session, Speaker, Track } from "@/types/models";
+import { AddToCalendar } from "@/components/common/AddToCalendar";
+import { siteConfig } from "@/lib/site";
 
 const LEVEL_DOT: Record<string, string> = {
   beginner: "bg-gdg-green",
@@ -87,6 +89,24 @@ export function SessionCard({
                 {sp.fullName}
               </Link>
             ))}
+          </div>
+        )}
+
+        {!service && session.startsAt && session.endsAt && (
+          <div className="mt-2">
+            <AddToCalendar
+              size="sm"
+              variant="ghost"
+              filename={`devfest-${session.id}.ics`}
+              event={{
+                title: session.title,
+                description: localized(session.description, locale),
+                location: session.roomName,
+                start: session.startsAt,
+                end: session.endsAt,
+                url: `${siteConfig.url}/${locale}/agenda`,
+              }}
+            />
           </div>
         )}
 
