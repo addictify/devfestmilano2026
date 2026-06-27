@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -52,8 +52,18 @@ export async function generateMetadata({
       title: t("title"),
       description: t("description"),
     },
+    manifest: "/manifest.webmanifest",
+    appleWebApp: { capable: true, title: siteConfig.shortName, statusBarStyle: "default" },
+    icons: { icon: "/icons/icon-192.png", apple: "/icons/icon-256.png" },
   };
 }
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
+};
 
 export default async function LocaleLayout({
   children,
