@@ -37,6 +37,8 @@ cp .env.example .env.local   # fill in Firebase + Sessionize values
 | `pnpm build` | Production build |
 | `pnpm start` | Serve the production build |
 | `pnpm lint` | ESLint |
+| `pnpm test` | Unit tests (Vitest) |
+| `pnpm set-admin <email>` | Grant a user the admin custom claim (needs `FIREBASE_ADMIN_*`) |
 
 ## How content flows
 
@@ -49,6 +51,16 @@ admin (sponsors/news/config) ─────────────────
 - `src/lib/data/content.ts` reads from Firestore when the Admin SDK is configured, **otherwise returns seed content**.
 - `POST|GET /api/sync` — pulls Sessionize → Firestore, then revalidates ISR. Protected by `CRON_SECRET` (Vercel Cron) or `?secret=REVALIDATE_SECRET`.
 - `POST /api/revalidate?secret=…` — on-demand ISR refresh after editing content.
+
+## Admin
+
+IT-only, claim-gated panel at `/admin` for organizers.
+
+1. **Grant access:** `pnpm set-admin you@example.com` (requires `FIREBASE_ADMIN_*`). Sets the `{ admin: true }` custom claim on that Google account. **Sign out and back in** for the claim to take effect.
+2. **Sign in** at `/admin` with that account (header avatar menu → sign in). Non-admins see "access denied"; signed-out users get a sign-in prompt.
+3. **Sections:** Sponsor (CRUD), Team (CRUD), Iscritti (read-only + CSV export of notify-me subscribers), Configurazione (toggle `ticketsAvailable` / `speakersPublished` / `schedulePublished` at runtime).
+4. **Images** (sponsor logos, team photos) are pasted URLs — host them anywhere allowed in `next.config.ts` `remotePatterns` (Firebase Storage / googleusercontent).
+5. **Writes** go through claim-gated `/api/admin/*` routes (Admin SDK + ID-token verification); config toggles write Firestore `config/site` and revalidate the affected public pages. Admin requires a server → it is absent on the static-export (GitHub Pages) build.
 
 ## Project structure
 
@@ -67,7 +79,7 @@ firebase/              firestore.rules · indexes
 ## Phased delivery
 
 - **Phase 1 (this site)** — landing, speaker directory, multi-track agenda with filters, CFP (Sessionize), tickets (Bevy), sponsors, team, venue, FAQ, Code of Conduct. Bilingual, dark mode, SEO.
-- **Phase 2** — Google Sign-In + "My Schedule" favorites (Firestore sync), PWA offline, add-to-calendar. Firestore rules for `users/**` are already in place.
+- **Phase 2 (done)** — Google Sign-In + "My Schedule" favorites (localStorage → Firestore, merge on sign-in), add-to-calendar, installable PWA with offline shell, and an IT-only admin (`/admin`).
 - **Phase 3** — gamification (QR scavenger hunt, points, badges, leaderboard) + live session feedback with an organizer dashboard.
 
 ## What you need to provide
@@ -82,7 +94,7 @@ firebase/              firestore.rules · indexes
 
 - **Frontend** → Vercel (set all env vars; the hourly Sessionize sync runs via `vercel.json` Cron).
 - **Backend** → Firebase: `firebase deploy --only firestore:rules`. Add your Vercel domains to Firebase Auth → Authorized domains.
-- Grant an organizer admin access with a custom claim `{ admin: true }` (Phase 2/3 admin).
+- Grant an organizer admin access: `pnpm set-admin <email>` (see [Admin](#admin)).
 
 ---
 

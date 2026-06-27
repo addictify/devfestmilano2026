@@ -53,6 +53,25 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   in seed mode / static export) while keeping the follow-communities links.
 - Test harness added: **Vitest** (`pnpm test`); calendar + email suites green.
 
+### ✅ Batch 2 (2026-06-27)
+- **Login UI:** `AuthButton` (header + mobile) consuming the existing `useAuth` —
+  Google sign-in button + avatar dropdown (name/email, My Schedule link, sign
+  out). Renders nothing when Firebase is unconfigured (seed / static export).
+- **My Schedule favorites:** pure `src/lib/favorites.ts` (localStorage serialize +
+  merge, unit-tested), `useFavorites` hook (localStorage when signed-out →
+  Firestore `users/{uid}/favorites` when signed-in, merges local→cloud once on
+  sign-in, optimistic + rollback), `FavoriteButton` star on `SessionCard`, and a
+  `/my-schedule` page. Works localStorage-only with zero Firebase.
+- **Admin** (`/admin`, IT-only, claim-gated): `pnpm set-admin <email>` grants the
+  `{admin:true}` claim; `verifyAdmin` (Bearer ID token, unit-tested) guards every
+  `/api/admin/*` route. Sections: sponsors CRUD, team CRUD, subscribers list + CSV
+  export, and runtime config toggles. Toggles write Firestore `config/site`, which
+  a new `getSiteSettings()` (server) + `SiteSettingsProvider` (client) feed back
+  into the 3 feature-flag readers — so flags flip without a redeploy.
+- Admin needs a server → it is stashed out of the static-export build
+  (`scripts/static-build.sh`) and absent on GitHub Pages. New Vitest suites:
+  favorites, csv, settings-merge, admin-guard (server-only stubbed for tests).
+
 ## ⏳ Pending / next steps
 - **Go-live config:** create Firebase project → fill `NEXT_PUBLIC_FIREBASE_*` +
   `FIREBASE_ADMIN_*`; set `SESSIONIZE_EVENT_ID`, Bevy URL, `REVALIDATE_SECRET`,
@@ -63,12 +82,12 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers, and `ticketsAvailable: true` when Bevy opens.
-- **Not built yet:** lightweight admin (sponsors/news CRUD, claim-gated). Note a
-  `subscribers` collection now exists (notify-me emails, admin-read) — export it
-  manually until an admin UI lands in Batch 2.
-- **Phase 2 (Batch 2):** Google Sign-In UI + "My Schedule" favorites
-  (`users/{uid}/favorites`, rules present); offline SHELL already shipped in
-  Batch 1, full offline content caching is still open.
+- **Go-live for admin/favorites:** these need a live Firebase project to function
+  (signed-out / absent without it). After configuring, grant the first admin with
+  `pnpm set-admin <email>` and re-sign-in.
+- **Admin still open:** news CRUD (intentionally skipped); image upload to Storage
+  (admin uses pasted URLs for now).
+- **Offline:** the app SHELL ships (Batch 1); full offline content caching is open.
 - **Phase 3:** gamification (QR scavenger hunt, points, badges, leaderboard) +
   live session feedback + organizer dashboard.
 
