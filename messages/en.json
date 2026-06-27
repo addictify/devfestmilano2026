@@ -40,6 +40,12 @@
   "notify": {
     "title": "Be first to know",
     "body": "Tickets aren't on sale yet. We announce them through our two organizing communities, so follow both on the GDG platform and you won't miss the drop.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "you@example.com",
+    "submit": "Notify me",
+    "success": "You're on the list ✓",
+    "error": "Couldn't save right now — follow below to be notified.",
+    "privacy": "We'll only email you about ticket availability.",
     "follow": "Follow {community}",
     "note": "One free GDG account follows both chapters.",
     "close": "Close"

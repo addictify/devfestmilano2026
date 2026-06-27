@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { ArrowUpRight, Bell, X } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { colorClasses, GDG, GDG_ORDER } from "@/lib/design/tokens";
@@ -22,6 +23,24 @@ export function NotifyTicketsDialog({
 }) {
   const t = useTranslations("notify");
   const tHero = useTranslations("hero");
+  const locale = useLocale();
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, locale, website: "" }),
+      });
+      setStatus(res.ok ? "ok" : "error");
+    } catch {
+      setStatus("error");
+    }
+  }
 
   return (
     <Dialog.Root>
@@ -66,6 +85,34 @@ export function NotifyTicketsDialog({
             <Dialog.Description className="mt-3 text-pretty text-muted-foreground">
               {t("body")}
             </Dialog.Description>
+
+            {status === "ok" ? (
+              <p className="mt-5 rounded-2xl border border-border bg-muted/50 px-4 py-3 text-sm font-medium" aria-live="polite">
+                {t("success")}
+              </p>
+            ) : (
+              <form onSubmit={submit} className="mt-5 flex flex-col gap-2">
+                <label htmlFor="notify-email" className="sr-only">{t("emailLabel")}</label>
+                {/* honeypot */}
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+                <div className="flex gap-2">
+                  <input
+                    id="notify-email"
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder={t("emailPlaceholder")}
+                    className="h-11 flex-1 rounded-full border border-border bg-background px-4 text-sm outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                  />
+                  <Button type="submit" size="md" disabled={status === "loading"}>{t("submit")}</Button>
+                </div>
+                {status === "error" && (
+                  <p className="text-sm text-gdg-red" aria-live="polite">{t("error")}</p>
+                )}
+                <p className="text-xs text-muted-foreground">{t("privacy")}</p>
+              </form>
+            )}
 
             <div className="mt-6 flex flex-col gap-2.5">
               {siteConfig.communities.map((c) => {

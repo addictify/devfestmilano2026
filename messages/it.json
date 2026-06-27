@@ -40,6 +40,12 @@
   "notify": {
     "title": "Sii il primo a saperlo",
     "body": "I biglietti non sono ancora in vendita. Li annunciamo tramite le nostre due community organizzatrici: segui entrambe sulla piattaforma GDG e non ti perderai l'apertura.",
+    "emailLabel": "Email",
+    "emailPlaceholder": "tu@esempio.com",
+    "submit": "Avvisami",
+    "success": "Sei in lista ✓",
+    "error": "Salvataggio non riuscito — segui qui sotto per essere avvisato.",
+    "privacy": "Useremo l'email solo per avvisarti sui biglietti.",
     "follow": "Segui {community}",
     "note": "Un solo account GDG gratuito per seguire entrambe.",
     "close": "Chiudi"
