@@ -6,6 +6,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 import { TicketButton } from "@/components/common/TicketButton";
 import { DevFestMark } from "@/components/common/DevFestMark";
 import { GdgColorBar } from "@/components/common/GdgColorBar";
@@ -40,7 +41,9 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
 
 export function Header() {
   const t = useTranslations("nav");
+  const tPlay = useTranslations("play");
   const pathname = usePathname();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -88,6 +91,11 @@ export function Header() {
             </div>
             <ThemeToggle className="hidden sm:inline-flex" />
             <TicketButton size="sm" className="hidden md:inline-flex" />
+            {user && (
+              <Link href="/play" className="hidden rounded-full px-3 py-2 text-sm font-medium text-gdg-blue hover:bg-muted sm:inline-flex">
+                {tPlay("title")}
+              </Link>
+            )}
             <AuthButton />
 
             {/* Mobile menu */}
@@ -128,6 +136,11 @@ export function Header() {
                     <div className="flex items-center gap-2">
                       <LanguageSwitcher />
                       <ThemeToggle />
+                      {user && (
+                        <Link href="/play" onClick={() => setOpen(false)} className="rounded-full px-3 py-2 text-sm font-medium text-gdg-blue hover:bg-muted">
+                          {tPlay("title")}
+                        </Link>
+                      )}
                       <AuthButton />
                     </div>
                     <TicketButton size="sm" />
