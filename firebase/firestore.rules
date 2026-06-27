@@ -17,6 +17,11 @@ service cloud.firestore {
         && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
         && request.resource.data.email.size() < 254;
     }
+    function validFeedback() {
+      return request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && (!('comment' in request.resource.data) || request.resource.data.comment.size() <= 500);
+    }
 
     match /speakers/{id} { allow read: if true; allow write: if isAdmin(); }
     match /sessions/{id} { allow read: if true; allow write: if isAdmin(); }
@@ -41,6 +46,20 @@ service cloud.firestore {
     match /subscribers/{id} {
       allow create: if isValidSubscriber();
       allow read, update, delete: if isAdmin();
+    }
+
+    match /checkpoints/{id} { allow read, write: if isAdmin(); }
+    match /badges/{id}      { allow read: if true; allow write: if isAdmin(); }
+    match /leaderboard/{uid} { allow read: if true; allow write: if false; }
+    match /gameProfiles/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+      match /scans/{cid} { allow read: if isOwner(uid); allow write: if false; }
+    }
+    match /feedback/{sid}/responses/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+      allow create, update: if isOwner(uid) && validFeedback();
+      allow delete: if false;
     }
 
     // Deny everything else.
