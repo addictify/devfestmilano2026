@@ -1,11 +1,19 @@
 // DevFest Milano 2026 service worker. Conservative: offline shell only.
 const CACHE_VERSION = "devfest-v1";
 const OFFLINE_URL = "/offline";
-const PRECACHE = [OFFLINE_URL, "/icons/icon-192.png"];
+const OFFLINE_URL_SLASH = "/offline/";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches.open(CACHE_VERSION).then(async (cache) => {
+      // Resilient precache: one failed URL must not abort install. Both
+      // /offline and /offline/ are attempted (static export uses trailingSlash).
+      await Promise.allSettled(
+        [OFFLINE_URL, OFFLINE_URL_SLASH, "/icons/icon-192.png"].map((u) =>
+          cache.add(u)
+        )
+      );
+    }).then(() => self.skipWaiting())
   );
 });
 
@@ -26,7 +34,13 @@ self.addEventListener("fetch", (event) => {
 
   // Navigations: network-first, fall back to cached offline page.
   if (request.mode === "navigate") {
-    event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+    event.respondWith(
+      fetch(request).catch(async () =>
+        (await caches.match(OFFLINE_URL)) ||
+        (await caches.match(OFFLINE_URL_SLASH)) ||
+        Response.error()
+      )
+    );
     return;
   }
 
@@ -39,7 +53,7 @@ self.addEventListener("fetch", (event) => {
         const network = fetch(request).then((res) => {
           if (res.ok) cache.put(request, res.clone());
           return res;
-        }).catch(() => cached);
+        }).catch(() => cached || Response.error());
         return cached || network;
       })
     );

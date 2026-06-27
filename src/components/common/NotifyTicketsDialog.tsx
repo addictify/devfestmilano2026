@@ -25,6 +25,7 @@ export function NotifyTicketsDialog({
   const tHero = useTranslations("hero");
   const locale = useLocale();
   const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
 
   async function submit(e: React.FormEvent) {
@@ -34,7 +35,7 @@ export function NotifyTicketsDialog({
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ email, locale, website: "" }),
+        body: JSON.stringify({ email, locale, website }),
       });
       setStatus(res.ok ? "ok" : "error");
     } catch {
@@ -94,7 +95,7 @@ export function NotifyTicketsDialog({
               <form onSubmit={submit} className="mt-5 flex flex-col gap-2">
                 <label htmlFor="notify-email" className="sr-only">{t("emailLabel")}</label>
                 {/* honeypot */}
-                <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />
+                <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" value={website} onChange={(e) => setWebsite(e.target.value)} />
                 <div className="flex gap-2">
                   <input
                     id="notify-email"

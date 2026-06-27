@@ -28,9 +28,13 @@ export async function POST(req: Request) {
   }
 
   const locale = body.locale === "en" || body.locale === "it" ? body.locale : "it";
-  await db.collection("subscribers").doc(email).set(
-    { email, locale, source: "notify-dialog", createdAt: FieldValue.serverTimestamp() },
-    { merge: true },
-  );
+  try {
+    await db.collection("subscribers").doc(email).set(
+      { email, locale, source: "notify-dialog", createdAt: FieldValue.serverTimestamp() },
+      { merge: true },
+    );
+  } catch {
+    return NextResponse.json({ ok: false, reason: "write-failed" }, { status: 503 });
+  }
   return NextResponse.json({ ok: true });
 }
