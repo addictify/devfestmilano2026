@@ -11,9 +11,12 @@ import { TicketButton } from "@/components/common/TicketButton";
 import { NotifyTicketsDialog } from "@/components/common/NotifyTicketsDialog";
 import { Countdown } from "@/components/common/Countdown";
 import { SkylineMilano } from "@/components/common/SkylineMilano";
+import { AddToCalendar } from "@/components/common/AddToCalendar";
+import { eventCalendarEvent } from "@/lib/event-calendar";
 
 export function Hero() {
   const t = useTranslations("hero");
+  const tCal = useTranslations("calendar");
   const reduce = useReducedMotion();
 
   const container = {
@@ -152,6 +155,7 @@ export function Hero() {
                 <NotifyTicketsDialog size="lg" />
               </>
             )}
+            <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
           </motion.div>
 
           <motion.div variants={item} className="mt-12">

@@ -274,6 +274,7 @@
   "calendar": {
     "add": "Add to calendar",
     "google": "Google Calendar",
-    "ics": "Download .ics"
+    "ics": "Download .ics",
+    "eventDescription": "DevFest Milano 2026 — a full day of talks and community at Randstad Box."
   }
 }
