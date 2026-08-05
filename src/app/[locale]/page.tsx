@@ -23,7 +23,7 @@ export default async function Home({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { speakersPublished } = await getSiteSettings();
+  const { speakersPublished, cfpOpen } = await getSiteSettings();
 
   const [speakers, tracks, sponsors] = await Promise.all([
     speakersPublished ? getFeaturedSpeakers(8) : Promise.resolve([]),
@@ -39,12 +39,12 @@ export default async function Home({
       {speakersPublished ? (
         <FeaturedSpeakers speakers={speakers} />
       ) : (
-        <SpeakerTypesSection />
+        <SpeakerTypesSection cfpOpen={cfpOpen} />
       )}
       <AgendaPreview tracks={tracks} />
       <CommunitiesSection />
       <PastEditions />
-      <CfpSection />
+      <CfpSection cfpOpen={cfpOpen} />
       <SponsorsSection sponsors={sponsors} />
       <VenueSection />
       <FaqSection />

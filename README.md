@@ -58,7 +58,7 @@ IT-only, claim-gated panel at `/admin` for organizers.
 
 1. **Grant access:** `pnpm set-admin you@example.com` (requires `FIREBASE_ADMIN_*`). Sets the `{ admin: true }` custom claim on that Google account. **Sign out and back in** for the claim to take effect.
 2. **Sign in** at `/admin` with that account (header avatar menu → sign in). Non-admins see "access denied"; signed-out users get a sign-in prompt.
-3. **Sections:** Cruscotto (dashboard: feedback + game stats), Checkpoint (DevFest Quest QR checkpoints — printable QR + optional quiz), Badge (CRUD), Sponsor (CRUD), Team (CRUD), Iscritti (read-only + CSV export of notify-me subscribers), Configurazione (toggle `ticketsAvailable` / `speakersPublished` / `schedulePublished` at runtime).
+3. **Sections:** Cruscotto (dashboard: feedback + game stats), Checkpoint (DevFest Quest QR checkpoints — printable QR + optional quiz), Badge (CRUD), Sponsor (CRUD), Team (CRUD), Iscritti (read-only + CSV export of notify-me subscribers), Configurazione (toggle `ticketsAvailable` / `speakersPublished` / `schedulePublished` / `cfpOpen` at runtime).
 4. **Images** (sponsor logos, team photos) are pasted URLs — host them anywhere allowed in `next.config.ts` `remotePatterns` (Firebase Storage / googleusercontent).
 5. **Writes** go through claim-gated `/api/admin/*` routes (Admin SDK + ID-token verification); config toggles write Firestore `config/site` and revalidate the affected public pages. Admin requires a server → it is absent on the static-export (GitHub Pages) build.
 

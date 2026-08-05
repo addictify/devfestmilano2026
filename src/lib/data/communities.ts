@@ -5,6 +5,8 @@ export interface Community {
   id: string;
   name: string;
   url: string;
+  /** This chapter's co-host registration page for DevFest Milano 2026. */
+  registrationUrl: string;
   meetup: string;
   color: GdgColor;
   focus: LocalizedString;
@@ -17,6 +19,8 @@ export const communities: Community[] = [
     id: "gdg-cloud-milano",
     name: "GDG Cloud Milano",
     url: "https://gdg.community.dev/gdg-cloud-milano/",
+    registrationUrl:
+      "https://gdg.community.dev/events/details/google-gdg-cloud-milano-presents-devfest-milano-2026/cohost-gdg-cloud-milano/",
     meetup: "https://www.meetup.com/gdg-cloud-milano/",
     color: "green",
     focus: {
@@ -32,6 +36,8 @@ export const communities: Community[] = [
     id: "gdg-milano",
     name: "GDG Milano",
     url: "https://gdg.community.dev/gdg-milano/",
+    registrationUrl:
+      "https://gdg.community.dev/events/details/google-gdg-cloud-milano-presents-devfest-milano-2026/cohost-gdg-milano/",
     meetup: "https://www.meetup.com/gdg-milano/",
     color: "blue",
     focus: {

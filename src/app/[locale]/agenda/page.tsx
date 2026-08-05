@@ -8,6 +8,7 @@ import {
   getTracks,
   isSchedulePublished,
 } from "@/lib/data/content";
+import { getSiteSettings } from "@/lib/data/settings";
 import { siteConfig } from "@/lib/site";
 import { formatLongDate } from "@/lib/time";
 import { Container } from "@/components/common/Container";
@@ -35,11 +36,12 @@ export default async function AgendaPage({
   setRequestLocale(locale);
   const t = await getTranslations("agendaPage");
 
-  const [sessions, tracks, speakers, published] = await Promise.all([
+  const [sessions, tracks, speakers, published, { cfpOpen }] = await Promise.all([
     getSessions(),
     getTracks(),
     getSpeakers(),
     isSchedulePublished(),
+    getSiteSettings(),
   ]);
 
   return (
@@ -67,7 +69,7 @@ export default async function AgendaPage({
                 {t("comingSoonTitle")}
               </h2>
               <p className="text-pretty text-muted-foreground">
-                {t("comingSoonBody")}
+                {cfpOpen ? t("comingSoonBody") : t("comingSoonBodyClosed")}
               </p>
               <Link
                 href="/speakers"

@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowUpRight, BadgeCheck, Briefcase, Building2, Globe } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgeCheck, Briefcase, Building2, Globe } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/lib/site";
 import { speakerTypes, type SpeakerTypeIcon } from "@/lib/data/speaker-types";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,7 @@ const ICONS: Record<SpeakerTypeIcon, typeof Globe> = {
   international: Globe,
 };
 
-export function SpeakerTypesContent() {
+export function SpeakerTypesContent({ cfpOpen }: { cfpOpen: boolean }) {
   const t = useTranslations("speakerTypes");
   const locale = useLocale();
   const le = siteConfig.lastEdition;
@@ -81,23 +82,31 @@ export function SpeakerTypesContent() {
         </div>
       </MotionReveal>
 
-      {/* CFP call-to-action */}
+      {/* CFP call-to-action — swaps to the "in selection" status once the CFP
+          closes: there is nothing left to submit to. */}
       <MotionReveal className="mt-12 flex flex-col items-center gap-4 text-center">
         <h3 className="text-balance font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          {t("cfpTitle")}
+          {cfpOpen ? t("cfpTitle") : t("cfpClosedTitle")}
         </h3>
         <p className="max-w-md text-pretty text-muted-foreground">
-          {t("cfpLead")}
+          {cfpOpen ? t("cfpLead") : t("cfpClosedLead")}
         </p>
         <Button asChild variant="accent" size="lg" className="mt-2">
-          <a
-            href={siteConfig.cfpUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("cfpCta")}
-            <ArrowUpRight className="size-5" />
-          </a>
+          {cfpOpen ? (
+            <a
+              href={siteConfig.cfpUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("cfpCta")}
+              <ArrowUpRight className="size-5" />
+            </a>
+          ) : (
+            <Link href="/agenda">
+              {t("cfpClosedCta")}
+              <ArrowRight className="size-5" />
+            </Link>
+          )}
         </Button>
       </MotionReveal>
     </div>

@@ -17,12 +17,21 @@ export const siteConfig = {
     process.env.NEXT_PUBLIC_CFP_URL ??
     "https://sessionize.com/devfest-milano-2026",
   cfpDeadline: "2026-07-31T23:59:59+02:00",
+  /** Submissions closed on `cfpDeadline` — the committee is now selecting
+   *  talks and building the agenda. Flip back to true only if the CFP
+   *  reopens; the UI shows the "in selection" state while this is false. */
+  cfpOpen: false,
 
-  /** Tickets / registration (Bevy — GDG Community Platform). */
+  /** Tickets / registration (Bevy — GDG Community Platform). The event is
+   *  co-hosted, so it has one registration page per chapter; this is the
+   *  primary CTA target. The other chapter's page lives on its community
+   *  entry below (`registrationUrl`). */
   ticketsUrl:
-    process.env.NEXT_PUBLIC_TICKETS_URL ?? "https://gdg.community.dev/gdg-milano/",
-  /** Tickets are not on sale yet — CTAs render disabled until this is true. */
-  ticketsAvailable: false,
+    process.env.NEXT_PUBLIC_TICKETS_URL ??
+    "https://gdg.community.dev/events/details/google-gdg-cloud-milano-presents-devfest-milano-2026/cohost-gdg-cloud-milano/",
+  /** Registration is open on Bevy. Set to false to render the ticket CTAs
+   *  disabled ("Tickets — soon") and bring back the notify-me dialog. */
+  ticketsAvailable: true,
 
   /** CFP still open → no confirmed speakers / schedule yet. Flip to true to
    *  surface the real speaker directory and agenda grid. */
@@ -42,12 +51,15 @@ export const siteConfig = {
   sponsorEmail: "sponsor@gdgmilano.it",
 
   /** DevFest Milano is organized jointly by two GDG communities. Each carries
-   *  its own platform + social links (`url` is the Bevy / GDG Community page). */
+   *  its own platform + social links (`url` is the Bevy / GDG Community page)
+   *  and its own co-host registration page for the event. */
   communities: [
     {
       id: "gdg-cloud-milano",
       name: "GDG Cloud Milano",
       url: "https://gdg.community.dev/gdg-cloud-milano/",
+      registrationUrl:
+        "https://gdg.community.dev/events/details/google-gdg-cloud-milano-presents-devfest-milano-2026/cohost-gdg-cloud-milano/",
       meetup: "https://www.meetup.com/gdg-cloud-milano/",
       color: "green" as GdgColor,
       social: {
@@ -59,6 +71,8 @@ export const siteConfig = {
       id: "gdg-milano",
       name: "GDG Milano",
       url: "https://gdg.community.dev/gdg-milano/",
+      registrationUrl:
+        "https://gdg.community.dev/events/details/google-gdg-cloud-milano-presents-devfest-milano-2026/cohost-gdg-milano/",
       meetup: "https://www.meetup.com/gdg-milano/",
       color: "blue" as GdgColor,
       social: {

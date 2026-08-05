@@ -8,6 +8,7 @@ describe("mergeSettings", () => {
       ticketsAvailable: siteConfig.ticketsAvailable,
       speakersPublished: siteConfig.speakersPublished,
       schedulePublished: siteConfig.schedulePublished,
+      cfpOpen: siteConfig.cfpOpen,
     });
   });
   it("overrides per-flag only when the doc has a boolean", () => {

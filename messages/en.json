@@ -29,6 +29,7 @@
     "ctaTickets": "Get your ticket",
     "ctaCfp": "Submit a talk",
     "ctaNotify": "Notify me when tickets open",
+    "cfpClosed": "Call for Speakers closed — talk selection under way, agenda coming soon.",
     "countdownTitle": "Countdown to the event",
     "days": "days",
     "hours": "hrs",
@@ -60,7 +61,7 @@
     "speakers": "Speakers",
     "speakersValue": "50+",
     "attendees": "Attendees",
-    "attendeesValue": "800+"
+    "attendeesValue": "300+"
   },
   "expect": {
     "title": "Why attend",
@@ -103,6 +104,7 @@
   },
   "speakerTypes": {
     "eyebrow": "Call for Speakers open",
+    "eyebrowClosed": "Talk selection in progress",
     "title": "Who'll be on stage",
     "lead": "Speakers will be announced after talk selection. Expect Googlers, Google Developer Experts and industry professionals from around the world.",
     "statAttendees": "Attendees",
@@ -112,7 +114,10 @@
     "lastEditionNote": "The {year} edition in numbers",
     "cfpTitle": "It could be you on stage",
     "cfpLead": "The call for speakers is open: pitch your talk or workshop and join the lineup.",
-    "cfpCta": "Submit a talk"
+    "cfpCta": "Submit a talk",
+    "cfpClosedTitle": "Submissions are closed",
+    "cfpClosedLead": "Thanks to everyone who pitched a talk. We're reviewing the proposals and building the agenda — publishing it soon.",
+    "cfpClosedCta": "Go to the agenda"
   },
   "agendaPreview": {
     "eyebrow": "The program",
@@ -142,6 +147,7 @@
     "title": "Two communities, one event",
     "lead": "Since 2024, GDG Cloud Milano and GDG Milano have organized DevFest Milano together: two distinct communities, one big day for developers.",
     "visit": "Visit the community",
+    "register": "Register for DevFest",
     "pastTitle": "What we've done so far"
   },
   "past": {
@@ -157,7 +163,13 @@
     "cta": "Submit your proposal",
     "guidelines": "Guidelines & details",
     "topics": "We're looking for talks on",
-    "topicsList": "AI & ML, Android, Web, Cloud, Flutter, Kotlin, Firebase, Open Source, DevOps, Accessibility"
+    "topicsList": "AI & ML, Android, Web, Cloud, Flutter, Kotlin, Firebase, Open Source, DevOps, Accessibility",
+    "closedTitle": "Submissions are closed",
+    "closedLead": "The call for speakers has closed. The committee is reviewing the proposals and building the DevFest Milano 2026 agenda — publishing it soon.",
+    "closedBadge": "Selection in progress",
+    "closedDeadline": "Submissions closed on",
+    "closedCta": "Go to the agenda",
+    "closedTopics": "This edition's topics"
   },
   "venue": {
     "eyebrow": "Where",
@@ -181,7 +193,8 @@
       },
       {
         "q": "Can I submit a talk?",
-        "a": "Yes! The call for speakers is open on Sessionize until the stated deadline."
+        "a": "Yes! The call for speakers is open on Sessionize until the stated deadline.",
+        "aClosed": "Submissions are closed. The committee is selecting the talks and building the agenda, which we'll publish soon."
       },
       {
         "q": "Is there a code of conduct?",
@@ -202,6 +215,8 @@
     "newsletter": "Ticket news",
     "newsletterBody": "We announce tickets and updates through our two communities. Follow both so you don't miss the drop.",
     "join": "Follow the communities",
+    "tickets": "Registration",
+    "ticketsBody": "Registration is open on the GDG platform. Seats are limited — grab your ticket.",
     "madeWith": "Made with",
     "by": "by the GDG Cloud Milano & GDG Milano volunteers",
     "disclaimer": "DevFest Milano is an independent event organized by the community. Google and the Google logo are not affiliated with and do not sponsor the event.",
@@ -222,6 +237,7 @@
     "lead": "The full program of DevFest Milano 2026.",
     "comingSoonTitle": "The agenda is taking shape",
     "comingSoonBody": "The call for speakers is still open. The detailed program with times and rooms will be published here after talk selection. In the meantime, discover the kind of speakers and talks to expect.",
+    "comingSoonBodyClosed": "The call for speakers has closed and talk selection is under way. The detailed program with times and rooms will be published here soon. In the meantime, discover the kind of speakers and talks to expect.",
     "filters": "Filters",
     "allTracks": "All tracks",
     "allTags": "All topics",
@@ -260,7 +276,8 @@
   },
   "cfpPage": {
     "title": "Call for Speakers",
-    "lead": "Share your knowledge with the community. The DevFest Milano 2026 call for speakers is open."
+    "lead": "Share your knowledge with the community. The DevFest Milano 2026 call for speakers is open.",
+    "leadClosed": "Submissions for DevFest Milano 2026 are closed. The committee is selecting the talks and building the agenda — online soon."
   },
   "sponsorsPage": {
     "title": "Sponsors",

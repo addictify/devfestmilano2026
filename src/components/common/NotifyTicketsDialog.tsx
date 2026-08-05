@@ -16,9 +16,12 @@ import { Button, type ButtonProps } from "@/components/ui/button";
  */
 export function NotifyTicketsDialog({
   size = "lg",
+  variant = "outline",
   className,
 }: {
   size?: ButtonProps["size"];
+  /** Promoted to `accent` when this is the hero's leading action. */
+  variant?: ButtonProps["variant"];
   className?: string;
 }) {
   const t = useTranslations("notify");
@@ -46,7 +49,7 @@ export function NotifyTicketsDialog({
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <Button variant="outline" size={size} className={className}>
+        <Button variant={variant} size={size} className={className}>
           <Bell className="size-4" />
           {tHero("ctaNotify")}
         </Button>

@@ -6,9 +6,15 @@ export type SiteSettings = {
   ticketsAvailable: boolean;
   speakersPublished: boolean;
   schedulePublished: boolean;
+  cfpOpen: boolean;
 };
 
-const FLAGS = ["ticketsAvailable", "speakersPublished", "schedulePublished"] as const;
+const FLAGS = [
+  "ticketsAvailable",
+  "speakersPublished",
+  "schedulePublished",
+  "cfpOpen",
+] as const;
 
 export function mergeSettings(doc: Record<string, unknown> | null): SiteSettings {
   const out = {} as SiteSettings;

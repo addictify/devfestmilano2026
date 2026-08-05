@@ -2,10 +2,10 @@ import { useTranslations } from "next-intl";
 import { ArrowUpRight, Heart } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/lib/site";
-import { Button } from "@/components/ui/button";
 import { GdgColorBar } from "@/components/common/GdgColorBar";
 import { DevFestMark } from "@/components/common/DevFestMark";
 import { Container } from "@/components/common/Container";
+import { FooterTickets } from "./FooterTickets";
 
 const EXPLORE = [
   { href: "/speakers", key: "speakers" },
@@ -102,16 +102,7 @@ export function Footer() {
             ))}
           </nav>
 
-          <div className="flex flex-col gap-4">
-            <h3 className="eyebrow text-muted-foreground">{t("newsletter")}</h3>
-            <p className="text-sm text-muted-foreground">{t("newsletterBody")}</p>
-            <Button asChild variant="outline" size="sm" className="w-fit">
-              <Link href="/communities">
-                {t("join")}
-                <ArrowUpRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
+          <FooterTickets />
         </div>
 
         <p className="mt-14 max-w-3xl text-xs leading-relaxed text-muted-foreground/80">

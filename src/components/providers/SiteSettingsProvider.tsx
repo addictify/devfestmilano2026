@@ -8,6 +8,7 @@ const fallback: SiteSettings = {
   ticketsAvailable: siteConfig.ticketsAvailable,
   speakersPublished: siteConfig.speakersPublished,
   schedulePublished: siteConfig.schedulePublished,
+  cfpOpen: siteConfig.cfpOpen,
 };
 
 const SiteSettingsContext = createContext<SiteSettings>(fallback);

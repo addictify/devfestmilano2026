@@ -9,6 +9,7 @@ const LABELS: Record<keyof SiteSettings, string> = {
   ticketsAvailable: "Biglietti in vendita",
   speakersPublished: "Speaker pubblicati",
   schedulePublished: "Agenda pubblicata",
+  cfpOpen: "Call for Speakers aperta",
 };
 
 export function ConfigAdmin({ initial }: { initial: SiteSettings }) {

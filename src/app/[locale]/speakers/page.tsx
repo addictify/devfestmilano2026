@@ -29,13 +29,19 @@ export default async function SpeakersPage({
   const t = await getTranslations("speakersPage");
   const tt = await getTranslations("speakerTypes");
 
-  const { speakersPublished: published } = await getSiteSettings();
+  const { speakersPublished: published, cfpOpen } = await getSiteSettings();
   const speakers = published ? await getSpeakers() : [];
 
   return (
     <>
       <PageHeader
-        eyebrow={published ? "DevFest Milano 2026" : tt("eyebrow")}
+        eyebrow={
+          published
+            ? "DevFest Milano 2026"
+            : cfpOpen
+              ? tt("eyebrow")
+              : tt("eyebrowClosed")
+        }
         title={t("title")}
         lead={published ? t("lead") : tt("lead")}
         color="red"
@@ -51,7 +57,7 @@ export default async function SpeakersPage({
               </p>
             )
           ) : (
-            <SpeakerTypesContent />
+            <SpeakerTypesContent cfpOpen={cfpOpen} />
           )}
         </Container>
       </section>

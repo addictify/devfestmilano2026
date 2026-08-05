@@ -5,7 +5,12 @@ import { verifyAdmin } from "@/lib/auth/admin-guard";
 
 export const dynamic = "force-dynamic";
 
-const FLAGS = ["ticketsAvailable", "speakersPublished", "schedulePublished"] as const;
+const FLAGS = [
+  "ticketsAvailable",
+  "speakersPublished",
+  "schedulePublished",
+  "cfpOpen",
+] as const;
 
 export async function POST(req: Request) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
@@ -25,6 +30,7 @@ export async function POST(req: Request) {
     revalidatePath(`/${l}`, "layout");
     revalidatePath(`/${l}/speakers`);
     revalidatePath(`/${l}/agenda`);
+    revalidatePath(`/${l}/cfp`);
   }
   return NextResponse.json({ ok: true });
 }

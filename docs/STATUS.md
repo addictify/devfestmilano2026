@@ -13,8 +13,19 @@ next-intl (IT/EN, `proxy.ts`) · Motion · Sessionize (talks/CFP) · Bevy (ticke
 deploy Vercel (frontend) + Firebase (backend).
 
 ## Feature flags — `src/lib/site.ts`
-CFP is open, so there's no real lineup yet. These gate the UI:
-- `ticketsAvailable: false` → ticket CTAs render disabled ("Tickets — soon").
+Submissions closed 31 Jul 2026; talks are being selected, so there's no lineup
+yet. These gate the UI (all four also overridable from `config/site` in
+Firestore via `/admin/config`, no redeploy needed):
+- `ticketsAvailable: true` → registration is **open** on Bevy: ticket CTAs link
+  to the GDG Cloud Milano co-host page (`siteConfig.ticketsUrl`), the footer
+  column becomes a registration CTA, and each community card shows its own
+  chapter link (`communities[].registrationUrl`). Set to `false` to bring back
+  the disabled "Tickets — soon" CTAs + notify-me dialog.
+- `cfpOpen: false` → every "submit a talk" CTA is replaced by the **selection
+  in progress** state (hero status line, CFP section badge + "go to the
+  agenda", speaker-archetypes CTA, FAQ answer, agenda coming-soon copy). No
+  Sessionize link renders anywhere while this is false. Flip to `true` next
+  edition to reopen the CFP with the same flow.
 - `speakersPublished: false` → home/`/speakers` show **speaker archetypes**
   (Googlers, GDEs, industry pros, international) + 2025 stats + CFP CTA.
 - `schedulePublished: false` → `/agenda` shows "coming soon".
@@ -67,7 +78,7 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `/api/admin/*` route. Sections: sponsors CRUD, team CRUD, subscribers list + CSV
   export, and runtime config toggles. Toggles write Firestore `config/site`, which
   a new `getSiteSettings()` (server) + `SiteSettingsProvider` (client) feed back
-  into the 3 feature-flag readers — so flags flip without a redeploy.
+  into the 4 feature-flag readers — so flags flip without a redeploy.
 - Admin needs a server → it is stashed out of the static-export build
   (`scripts/static-build.sh`) and absent on GitHub Pages. New Vitest suites:
   favorites, csv, settings-merge, admin-guard (server-only stubbed for tests).
@@ -97,11 +108,12 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `FIREBASE_ADMIN_*`; set `SESSIONIZE_EVENT_ID`, Bevy URL, `REVALIDATE_SECRET`,
   `CRON_SECRET`. Deploy to Vercel; `firebase deploy --only firestore:rules`;
   add prod domains to Firebase Auth.
-- **When CFP closes:** set `speakersPublished` / `schedulePublished` to `true`
-  and run the Sessionize sync.
+- **After talk selection:** set `speakersPublished` / `schedulePublished` to
+  `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
+  shows the "selection in progress" state).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
-  numbers, and `ticketsAvailable: true` when Bevy opens.
+  numbers.
 - **Go-live for admin/favorites:** these need a live Firebase project to function
   (signed-out / absent without it). After configuring, grant the first admin with
   `pnpm set-admin <email>` and re-sign-in.

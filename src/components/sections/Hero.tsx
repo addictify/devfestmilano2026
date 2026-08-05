@@ -19,7 +19,7 @@ export function Hero() {
   const t = useTranslations("hero");
   const tCal = useTranslations("calendar");
   const reduce = useReducedMotion();
-  const { ticketsAvailable } = useSiteSettings();
+  const { ticketsAvailable, cfpOpen } = useSiteSettings();
 
   const container = {
     hidden: {},
@@ -128,19 +128,21 @@ export function Hero() {
           >
             {ticketsAvailable ? (
               <>
-                {/* Tickets on sale: tickets lead, CFP secondary. */}
+                {/* Tickets on sale: tickets lead, CFP secondary while it's open. */}
                 <TicketButton size="lg" label={t("ctaTickets")} />
-                <Button asChild variant="outline" size="lg">
-                  <a
-                    href={siteConfig.cfpUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t("ctaCfp")}
-                  </a>
-                </Button>
+                {cfpOpen && (
+                  <Button asChild variant="outline" size="lg">
+                    <a
+                      href={siteConfig.cfpUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t("ctaCfp")}
+                    </a>
+                  </Button>
+                )}
               </>
-            ) : (
+            ) : cfpOpen ? (
               <>
                 {/* CFP-open phase: the live action (submit a talk) leads;
                     ticket intent is captured via the notify dialog. */}
@@ -156,9 +158,22 @@ export function Hero() {
                 </Button>
                 <NotifyTicketsDialog size="lg" />
               </>
+            ) : (
+              /* CFP closed, tickets not on sale: nothing external to click, so
+                 the notify dialog is promoted to the leading action. */
+              <NotifyTicketsDialog size="lg" variant="accent" />
             )}
             <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
           </motion.div>
+
+          {!cfpOpen && (
+            <motion.p
+              variants={item}
+              className="mt-4 font-mono text-sm text-muted-foreground"
+            >
+              {t("cfpClosed")}
+            </motion.p>
+          )}
 
           <motion.div variants={item} className="mt-12">
             <Countdown target={siteConfig.eventDate} />

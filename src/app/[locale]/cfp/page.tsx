@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getSiteSettings } from "@/lib/data/settings";
 import { PageHeader } from "@/components/common/PageHeader";
 import { CfpSection } from "@/components/sections/CfpSection";
 
@@ -12,7 +13,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "cfpPage" });
-  return { title: t("title"), description: t("lead") };
+  const { cfpOpen } = await getSiteSettings();
+  return {
+    title: t("title"),
+    description: cfpOpen ? t("lead") : t("leadClosed"),
+  };
 }
 
 export default async function CfpPage({
@@ -23,11 +28,16 @@ export default async function CfpPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("cfpPage");
+  const { cfpOpen } = await getSiteSettings();
 
   return (
     <>
-      <PageHeader title={t("title")} lead={t("lead")} color="blue" />
-      <CfpSection />
+      <PageHeader
+        title={t("title")}
+        lead={cfpOpen ? t("lead") : t("leadClosed")}
+        color="blue"
+      />
+      <CfpSection cfpOpen={cfpOpen} />
     </>
   );
 }

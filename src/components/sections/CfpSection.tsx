@@ -1,5 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowUpRight, Mic } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Loader, Mic } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/lib/site";
 import { GDG, GDG_ORDER } from "@/lib/design/tokens";
 import { formatLongDate } from "@/lib/time";
@@ -7,7 +8,9 @@ import { Container } from "@/components/common/Container";
 import { MotionReveal } from "@/components/common/MotionReveal";
 import { Button } from "@/components/ui/button";
 
-export function CfpSection() {
+/** `cfpOpen` comes from the caller (server pages read `getSiteSettings()`), so
+ *  the Firestore flag can close the CFP without a redeploy. */
+export function CfpSection({ cfpOpen }: { cfpOpen: boolean }) {
   const t = useTranslations("cfp");
   const locale = useLocale();
   const topics = t("topicsList")
@@ -41,35 +44,64 @@ export function CfpSection() {
                 {t("eyebrow")}
               </span>
               <h2 className="mt-4 text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-                {t("title")}
+                {cfpOpen ? t("title") : t("closedTitle")}
               </h2>
               <p className="mt-5 max-w-xl text-pretty text-lg opacity-80">
-                {t("lead")}
+                {cfpOpen ? t("lead") : t("closedLead")}
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <Button asChild variant="accent" size="lg">
-                  <a
-                    href={siteConfig.cfpUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              {cfpOpen ? (
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Button asChild variant="accent" size="lg">
+                    <a
+                      href={siteConfig.cfpUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t("cta")}
+                      <ArrowUpRight className="size-5" />
+                    </a>
+                  </Button>
+                  <p className="font-mono text-sm opacity-70">
+                    {t("deadline")}{" "}
+                    <span className="text-gdg-yellow">
+                      {formatLongDate(siteConfig.cfpDeadline, locale)}
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-8 flex flex-col gap-4">
+                  <span
+                    className="inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-xs uppercase tracking-[0.15em] text-gdg-yellow"
+                    style={{ borderColor: `${GDG.yellow}66` }}
                   >
-                    {t("cta")}
-                    <ArrowUpRight className="size-5" />
-                  </a>
-                </Button>
-                <p className="font-mono text-sm opacity-70">
-                  {t("deadline")}{" "}
-                  <span className="text-gdg-yellow">
-                    {formatLongDate(siteConfig.cfpDeadline, locale)}
+                    <Loader
+                      aria-hidden
+                      className="size-3.5 motion-safe:animate-[spin_3s_linear_infinite]"
+                    />
+                    {t("closedBadge")}
                   </span>
-                </p>
-              </div>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <Button asChild variant="accent" size="lg">
+                      <Link href="/agenda">
+                        {t("closedCta")}
+                        <ArrowRight className="size-5" />
+                      </Link>
+                    </Button>
+                    <p className="font-mono text-sm opacity-70">
+                      {t("closedDeadline")}{" "}
+                      <span className="text-gdg-yellow">
+                        {formatLongDate(siteConfig.cfpDeadline, locale)}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col gap-3">
               <span className="font-mono text-xs uppercase tracking-[0.2em] opacity-60">
-                {t("topics")}
+                {cfpOpen ? t("topics") : t("closedTopics")}
               </span>
               <div className="flex flex-wrap gap-2">
                 {topics.map((topic, i) => (

@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { colorClasses } from "@/lib/design/tokens";
 import { localized } from "@/lib/localize";
 import type { Community } from "@/lib/data/communities";
+import { CommunityRegisterLink } from "./CommunityRegisterLink";
 
 export function CommunityCard({ community }: { community: Community }) {
   const locale = useLocale();
@@ -44,6 +45,7 @@ export function CommunityCard({ community }: { community: Community }) {
           Meetup
           <ArrowUpRight className="size-4 text-muted-foreground" />
         </a>
+        <CommunityRegisterLink href={community.registrationUrl} />
       </div>
     </div>
   );
