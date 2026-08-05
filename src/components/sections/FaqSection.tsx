@@ -11,9 +11,17 @@ export function FaqSection() {
     <section className="py-20 sm:py-28" id="faq">
       <Container className="max-w-3xl">
         <SectionHeading
-          eyebrow={t("eyebrow")}
           title={t("title")}
-          lead={t("lead")}
+          lead={t.rich("lead", {
+            contact: (chunks) => (
+              <a
+                href="mailto:infogdgmi+devfest@gmail.com"
+                className="underline decoration-1 underline-offset-2 hover:text-foreground"
+              >
+                {chunks}
+              </a>
+            ),
+          })}
           color="green"
         />
         <MotionReveal className="mt-10">

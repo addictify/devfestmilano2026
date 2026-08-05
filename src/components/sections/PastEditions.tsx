@@ -31,10 +31,6 @@ export function PastEditions() {
     <section className="overflow-hidden py-20 sm:py-28">
       <Container>
         <MotionReveal className="flex flex-col gap-3">
-          <span className="eyebrow flex items-center gap-2 text-muted-foreground">
-            <span className="size-2 rounded-full bg-gdg-yellow" />
-            {t("eyebrow")}
-          </span>
           <h2 className="max-w-2xl text-balance text-3xl font-bold sm:text-4xl">
             {t("title")}
           </h2>

@@ -6,6 +6,9 @@ colors:
   gdg-red: "#EA4335"
   gdg-yellow: "#FBBC04"
   gdg-green: "#34A853"
+  gdg-blue-solid: "#1A73E8"
+  gdg-red-solid: "#D93025"
+  gdg-green-solid: "#188038"
   background: "#FBFAF6"
   foreground: "#17150F"
   card: "#FFFFFF"
@@ -73,7 +76,7 @@ components:
     backgroundColor: "{colors.foreground}"
     textColor: "{colors.background}"
   button-accent:
-    backgroundColor: "{colors.gdg-blue}"
+    backgroundColor: "{colors.gdg-blue-solid}"
     textColor: "#FFFFFF"
     rounded: "{rounded.pill}"
     padding: "0 1.75rem"
@@ -140,6 +143,8 @@ A warm, near-neutral canvas that exists to make the four saturated Google colors
 
 **The No-Lonely-Color Rule.** Color is never the only carrier of meaning (WCAG, color-blind safety). A GDG hue always rides alongside text, an icon, or a position. A green dot without a label is forbidden.
 
+**The Accessible-Fill Rule.** The raw GDG hues (`#4285F4`/`#EA4335`/`#34A853`) are ~3-3.9:1 against white, under WCAG AA's 4.5:1 for text. Any element that sets white text *directly on* a full-strength brand fill (filled buttons, active/selected pills) uses the darkened `-solid` shade instead (`gdg-blue-solid` `#1A73E8`, `gdg-red-solid` `#D93025`, `gdg-green-solid` `#188038`, each ≥4.5:1 with white) — see `colorClasses[color].solidBg` / `.onSolid` in `src/lib/design/tokens.ts`. Yellow has no `-solid` variant: it pairs with ink text (`onSolid: text-foreground`) instead, since darkening it enough for white text would kill the hue. The raw hues stay unchanged everywhere else (blobs, rings, dots, borders, soft tints) — those are decorative signal, not a text background, so the Accent Glow's `rgba(66,133,244,0.6)` tint is deliberately the raw blue, not the solid shade.
+
 ## 3. Typography
 
 **Display Font:** Bricolage Grotesque (with ui-sans-serif, system-ui fallback)
@@ -157,6 +162,8 @@ A warm, near-neutral canvas that exists to make the four saturated Google colors
 
 ### Named Rules
 **The Mono-Is-Accent Rule.** JetBrains Mono never sets body copy or headings. It is confined to eyebrows, the countdown, badges, and save-the-date labels. Mono as body would tip the brand into the "sterile cold dev-tool" anti-reference.
+
+**The Thinned-Eyebrow Rule.** The `.eyebrow` kicker is voice, not scaffolding: it does not appear above every section. On the home page it's reserved for sections where it adds information the heading doesn't already carry (Hero's presenting line, live CFP/selection state, organizer/sponsor framing) — sections whose kicker only restated the `<h2>` (Agenda, Venue, FAQ, Past Editions) ship without one. Never stack two `.eyebrow`-styled elements in the same section (a second in-section label, e.g. a sub-heading over a stats grid, uses plain `text-sm font-semibold text-muted-foreground` instead). Before adding a new one, ask whether the section reads fine without it; default to no.
 
 **The Tight-Display Rule.** Display and headline always track at -0.02em with line-height ≤0.98. Headlines hug; body breathes (1.6). Never flatten the contrast between them.
 

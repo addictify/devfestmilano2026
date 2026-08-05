@@ -82,9 +82,10 @@ export function AgendaView({
                 onClick={() => setTrack(tr.id)}
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
-                  active ? "border-transparent text-white" : "border-border hover:bg-muted",
+                  active
+                    ? cn("border-transparent", c.solidBg, c.onSolid)
+                    : "border-border hover:bg-muted",
                 )}
-                style={active ? { backgroundColor: `var(--color-gdg-${tr.color})` } : undefined}
               >
                 <span className={cn("size-2 rounded-full", c.bg)} />
                 {localized(tr.name, locale)}

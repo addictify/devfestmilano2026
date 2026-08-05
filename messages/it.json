@@ -110,19 +110,16 @@
     "statAttendees": "Partecipanti",
     "statSpeakers": "Speaker",
     "statSessions": "Sessioni",
-    "statTracks": "Track",
+    "statTracks": "Tracce",
     "lastEditionNote": "L'edizione {year} in numeri",
-    "cfpTitle": "Potresti essere tu sul palco",
-    "cfpLead": "La call for speakers è aperta: proponi il tuo talk o workshop e unisciti alla lineup.",
-    "cfpCta": "Proponi un talk",
-    "cfpClosedTitle": "Le proposte sono chiuse",
-    "cfpClosedLead": "Grazie a chi ha inviato un talk. Stiamo valutando le proposte e costruendo l'agenda: la pubblichiamo a breve.",
+    "cfpPointer": "Vedi la Call for Speakers",
     "cfpClosedCta": "Vai all'agenda"
   },
   "agendaPreview": {
     "eyebrow": "Il programma",
     "title": "Agenda",
     "lead": "Quattro track in parallelo dalla mattina alla sera.",
+    "trackLabel": "Traccia",
     "viewAll": "Vedi l'agenda completa",
     "comingSoon": "L'agenda dettagliata sarà pubblicata dopo la selezione dei talk."
   },
@@ -147,7 +144,7 @@
     "title": "Due community, un evento",
     "lead": "Dal 2024 GDG Cloud Milano e GDG Milano organizzano insieme DevFest Milano: due community diverse, una sola grande giornata per chi sviluppa.",
     "visit": "Vai alla community",
-    "register": "Registrati al DevFest",
+    "register": "Registrati via {community}",
     "pastTitle": "Cosa abbiamo fatto finora"
   },
   "past": {
@@ -181,7 +178,7 @@
   "faq": {
     "eyebrow": "Domande frequenti",
     "title": "FAQ",
-    "lead": "Tutto quello che c'è da sapere. Non trovi la risposta? Scrivici.",
+    "lead": "Tutto quello che c'è da sapere. Non trovi la risposta? <contact>Scrivici</contact>, o trova le community sui social qui sotto.",
     "items": [
       {
         "q": "Quanto costa il biglietto?",
@@ -219,7 +216,7 @@
     "ticketsBody": "Le registrazioni sono aperte sulla piattaforma GDG. I posti sono limitati: prendi il tuo biglietto.",
     "madeWith": "Fatto con",
     "by": "dai volontari di GDG Cloud Milano & GDG Milano",
-    "disclaimer": "DevFest Milano è un evento indipendente organizzato dalla community. Google e il logo Google non sono affiliati e non sponsorizzano l'evento.",
+    "disclaimer": "DevFest Milano è un evento indipendente organizzato dalla community, non da Google. Google contribuisce come sponsor a sostegno dei volontari GDG, ma non è affiliata all'organizzazione dell'evento.",
     "rights": "Tutti i diritti riservati."
   },
   "speakersPage": {

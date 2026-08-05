@@ -15,12 +15,7 @@ export function VenueSection() {
       <Container>
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
-            <SectionHeading
-              eyebrow={t("eyebrow")}
-              title={t("title")}
-              lead={t("lead")}
-              color="red"
-            />
+            <SectionHeading title={t("title")} lead={t("lead")} color="red" />
             <MotionReveal className="mt-8 flex flex-col gap-4">
               <div className="flex items-start gap-3">
                 <MapPin className="mt-1 size-5 shrink-0 text-gdg-red" />

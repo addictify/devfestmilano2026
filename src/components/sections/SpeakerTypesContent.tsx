@@ -1,5 +1,5 @@
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowRight, ArrowUpRight, BadgeCheck, Briefcase, Building2, Globe } from "lucide-react";
+import { ArrowRight, BadgeCheck, Briefcase, Building2, Globe } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { siteConfig } from "@/lib/site";
 import { speakerTypes, type SpeakerTypeIcon } from "@/lib/data/speaker-types";
@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import { colorClasses, GDG, GDG_ORDER } from "@/lib/design/tokens";
 import { localized } from "@/lib/localize";
 import { MotionReveal } from "@/components/common/MotionReveal";
-import { Button } from "@/components/ui/button";
 
 const ICONS: Record<SpeakerTypeIcon, typeof Globe> = {
   googler: Building2,
@@ -62,7 +61,7 @@ export function SpeakerTypesContent({ cfpOpen }: { cfpOpen: boolean }) {
 
       {/* Last edition in numbers */}
       <MotionReveal className="mt-12">
-        <p className="eyebrow mb-4 text-center text-muted-foreground">
+        <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">
           {t("lastEditionNote", { year: le.year })}
         </p>
         <div className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border lg:grid-cols-4">
@@ -82,32 +81,27 @@ export function SpeakerTypesContent({ cfpOpen }: { cfpOpen: boolean }) {
         </div>
       </MotionReveal>
 
-      {/* CFP call-to-action — swaps to the "in selection" status once the CFP
-          closes: there is nothing left to submit to. */}
-      <MotionReveal className="mt-12 flex flex-col items-center gap-4 text-center">
-        <h3 className="text-balance font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          {cfpOpen ? t("cfpTitle") : t("cfpClosedTitle")}
-        </h3>
-        <p className="max-w-md text-pretty text-muted-foreground">
-          {cfpOpen ? t("cfpLead") : t("cfpClosedLead")}
-        </p>
-        <Button asChild variant="accent" size="lg" className="mt-2">
-          {cfpOpen ? (
-            <a
-              href={siteConfig.cfpUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("cfpCta")}
-              <ArrowUpRight className="size-5" />
-            </a>
-          ) : (
-            <Link href="/agenda">
-              {t("cfpClosedCta")}
-              <ArrowRight className="size-5" />
-            </Link>
-          )}
-        </Button>
+      {/* Points forward to the full CFP section instead of restating its
+          title/lead/CTA here — that section already carries the richer
+          treatment (topics, deadline, status badge). */}
+      <MotionReveal className="mt-12 flex justify-center">
+        {cfpOpen ? (
+          <a
+            href="#cfp"
+            className="group inline-flex items-center gap-2 font-display text-lg font-semibold transition-colors hover:text-gdg-red"
+          >
+            {t("cfpPointer")}
+            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+          </a>
+        ) : (
+          <Link
+            href="/agenda"
+            className="group inline-flex items-center gap-2 font-display text-lg font-semibold transition-colors hover:text-gdg-red"
+          >
+            {t("cfpClosedCta")}
+            <ArrowRight className="size-5 transition-transform group-hover:translate-x-1" />
+          </Link>
+        )}
       </MotionReveal>
     </div>
   );

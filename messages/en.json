@@ -112,17 +112,14 @@
     "statSessions": "Sessions",
     "statTracks": "Tracks",
     "lastEditionNote": "The {year} edition in numbers",
-    "cfpTitle": "It could be you on stage",
-    "cfpLead": "The call for speakers is open: pitch your talk or workshop and join the lineup.",
-    "cfpCta": "Submit a talk",
-    "cfpClosedTitle": "Submissions are closed",
-    "cfpClosedLead": "Thanks to everyone who pitched a talk. We're reviewing the proposals and building the agenda — publishing it soon.",
+    "cfpPointer": "See the Call for Speakers",
     "cfpClosedCta": "Go to the agenda"
   },
   "agendaPreview": {
     "eyebrow": "The program",
     "title": "Agenda",
     "lead": "Four parallel tracks from morning to evening.",
+    "trackLabel": "Track",
     "viewAll": "See the full agenda",
     "comingSoon": "The detailed agenda will be published after talk selection."
   },
@@ -147,7 +144,7 @@
     "title": "Two communities, one event",
     "lead": "Since 2024, GDG Cloud Milano and GDG Milano have organized DevFest Milano together: two distinct communities, one big day for developers.",
     "visit": "Visit the community",
-    "register": "Register for DevFest",
+    "register": "Register via {community}",
     "pastTitle": "What we've done so far"
   },
   "past": {
@@ -181,7 +178,7 @@
   "faq": {
     "eyebrow": "Frequently asked",
     "title": "FAQ",
-    "lead": "Everything you need to know. Can't find an answer? Reach out.",
+    "lead": "Everything you need to know. Can't find an answer? <contact>Reach out</contact>, or find the communities on social below.",
     "items": [
       {
         "q": "How much is a ticket?",
@@ -219,7 +216,7 @@
     "ticketsBody": "Registration is open on the GDG platform. Seats are limited — grab your ticket.",
     "madeWith": "Made with",
     "by": "by the GDG Cloud Milano & GDG Milano volunteers",
-    "disclaimer": "DevFest Milano is an independent event organized by the community. Google and the Google logo are not affiliated with and do not sponsor the event.",
+    "disclaimer": "DevFest Milano is an independent, community-organized event — not run by Google. Google contributes as a sponsor to support the GDG volunteers, but isn't affiliated with organizing the event.",
     "rights": "All rights reserved."
   },
   "speakersPage": {

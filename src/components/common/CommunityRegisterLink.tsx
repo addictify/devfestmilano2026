@@ -10,7 +10,13 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
  * other. Renders nothing until `ticketsAvailable` flips (client-side because
  * the community cards are static server components).
  */
-export function CommunityRegisterLink({ href }: { href: string }) {
+export function CommunityRegisterLink({
+  href,
+  communityName,
+}: {
+  href: string;
+  communityName: string;
+}) {
   const t = useTranslations("communities");
   const { ticketsAvailable } = useSiteSettings();
 
@@ -24,7 +30,7 @@ export function CommunityRegisterLink({ href }: { href: string }) {
       className="inline-flex items-center gap-1.5 rounded-full border border-border px-4 py-2 text-sm font-medium transition-colors hover:border-foreground/30"
     >
       <Ticket className="size-4 text-muted-foreground" />
-      {t("register")}
+      {t("register", { community: communityName })}
       <ArrowUpRight className="size-4 text-muted-foreground" />
     </a>
   );

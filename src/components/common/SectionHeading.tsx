@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { colorClasses, type GdgColor } from "@/lib/design/tokens";
 import { MotionReveal } from "./MotionReveal";
@@ -13,7 +14,7 @@ export function SectionHeading({
 }: {
   eyebrow?: string;
   title: string;
-  lead?: string;
+  lead?: ReactNode;
   color?: GdgColor;
   align?: "left" | "center";
   className?: string;

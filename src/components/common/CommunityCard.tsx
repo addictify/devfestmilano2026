@@ -29,8 +29,9 @@ export function CommunityCard({ community }: { community: Community }) {
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
-            "group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium text-white transition-transform hover:-translate-y-0.5",
-            c.bg,
+            "group inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition-transform hover:-translate-y-0.5",
+            c.solidBg,
+            c.onSolid,
           )}
         >
           {t("visit")}
@@ -45,7 +46,10 @@ export function CommunityCard({ community }: { community: Community }) {
           Meetup
           <ArrowUpRight className="size-4 text-muted-foreground" />
         </a>
-        <CommunityRegisterLink href={community.registrationUrl} />
+        <CommunityRegisterLink
+          href={community.registrationUrl}
+          communityName={community.name}
+        />
       </div>
     </div>
   );

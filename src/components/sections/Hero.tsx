@@ -87,6 +87,7 @@ export function Hero() {
 
           <motion.h1
             variants={item}
+            aria-label={siteConfig.name}
             className="mt-5 text-[clamp(3rem,11vw,8rem)] font-extrabold leading-[0.9] tracking-tight"
           >
             DevFest
@@ -169,7 +170,7 @@ export function Hero() {
           {!cfpOpen && (
             <motion.p
               variants={item}
-              className="mt-4 font-mono text-sm text-muted-foreground"
+              className="mt-4 max-w-xl font-mono text-sm text-muted-foreground"
             >
               {t("cfpClosed")}
             </motion.p>
@@ -178,9 +179,49 @@ export function Hero() {
           <motion.div variants={item} className="mt-12">
             <Countdown target={siteConfig.eventDate} />
           </motion.div>
+
+          {/* Compact ticket stub — mobile/tablet only; the CTAs and countdown
+              above lead, this is the brand flourish that follows, not the
+              full desktop panel (which starts at lg, see below). */}
+          <motion.div variants={item} className="relative mt-8 lg:hidden">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]">
+              <div
+                aria-hidden
+                className="h-1.5 w-full motion-safe:animate-[beam-shimmer_6s_linear_infinite]"
+                style={{
+                  backgroundImage: `linear-gradient(90deg, ${GDG.blue}, ${GDG.red}, ${GDG.yellow}, ${GDG.green}, ${GDG.blue})`,
+                  backgroundSize: "200% 100%",
+                }}
+              />
+              <div className="flex items-center justify-between gap-4 p-5">
+                <div>
+                  <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
+                    Save the date
+                  </p>
+                  <p className="mt-1 font-display text-5xl font-extrabold leading-none tracking-tighter">
+                    10<span className="text-gdg-red">.</span>10
+                  </p>
+                  <p className="mt-1 font-mono text-sm text-muted-foreground">
+                    / 2026 · Milano
+                  </p>
+                </div>
+                <SkylineMilano className="w-28 shrink-0 bg-foreground/80" />
+              </div>
+              {/* ticket perforation */}
+              <div
+                aria-hidden
+                className="absolute -left-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-background"
+              />
+              <div
+                aria-hidden
+                className="absolute -right-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-background"
+              />
+            </div>
+          </motion.div>
         </motion.div>
 
-        {/* Decorative ticket panel */}
+        {/* Decorative ticket panel — desktop/tablet-wide (lg+); the compact
+            stub above covers mobile. */}
         <motion.div
           initial={reduce ? false : { opacity: 0, scale: 0.96, y: 20 }}
           animate={reduce ? {} : { opacity: 1, scale: 1, y: 0 }}

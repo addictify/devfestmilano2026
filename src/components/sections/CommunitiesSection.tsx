@@ -27,7 +27,9 @@ export function CommunitiesSection() {
         </div>
 
         <MotionReveal className="mt-16 mb-6">
-          <h3 className="eyebrow text-muted-foreground">{t("pastTitle")}</h3>
+          <h3 className="text-sm font-semibold text-muted-foreground">
+            {t("pastTitle")}
+          </h3>
         </MotionReveal>
         <PastEventsGrid />
       </Container>

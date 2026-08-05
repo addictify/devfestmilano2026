@@ -16,12 +16,7 @@ export function AgendaPreview({ tracks }: { tracks: Track[] }) {
   return (
     <section className="py-20 sm:py-28" id="agenda">
       <Container>
-        <SectionHeading
-          eyebrow={t("eyebrow")}
-          title={t("title")}
-          lead={t("lead")}
-          color="green"
-        />
+        <SectionHeading title={t("title")} lead={t("lead")} color="green" />
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tracks.map((track, i) => {
@@ -39,7 +34,7 @@ export function AgendaPreview({ tracks }: { tracks: Track[] }) {
                     c.text,
                   )}
                 >
-                  Track {String(i + 1).padStart(2, "0")}
+                  {t("trackLabel")}
                 </span>
                 <h3 className="mt-10 font-display text-2xl font-bold leading-tight tracking-tight">
                   {localized(track.name, locale)}

@@ -105,7 +105,7 @@ export function Footer() {
           <FooterTickets />
         </div>
 
-        <p className="mt-14 max-w-3xl text-xs leading-relaxed text-muted-foreground/80">
+        <p className="mt-14 max-w-[65ch] text-xs leading-relaxed text-muted-foreground/80">
           {t("disclaimer")}
         </p>
 

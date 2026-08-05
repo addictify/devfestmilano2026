@@ -10,6 +10,15 @@
   --color-gdg-yellow: #fbbc04;
   --color-gdg-green: #34a853;
 
+  /* Darkened per-hue shades for white text directly on a filled brand color
+     (buttons, filled pills). The raw hues above are ~3-3.9:1 against white,
+     under WCAG AA's 4.5:1 — these clear it while staying recognizably on-hue.
+     Yellow has no solid variant: it pairs with ink text instead (see onSolid
+     in colorClasses), since darkening it to pass with white would kill the hue. */
+  --color-gdg-blue-solid: #1a73e8;
+  --color-gdg-red-solid: #d93025;
+  --color-gdg-green-solid: #188038;
+
   /* Semantic — driven by runtime vars so dark mode swaps live */
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -24,7 +24,19 @@ export function colorForKey(key: string | number): GdgColor {
 /** Tailwind utility class fragments per brand color, kept literal so they aren't purged. */
 export const colorClasses: Record<
   GdgColor,
-  { text: string; bg: string; bgSoft: string; border: string; ring: string; dot: string }
+  {
+    text: string;
+    bg: string;
+    bgSoft: string;
+    border: string;
+    ring: string;
+    dot: string;
+    /** Fill for elements carrying text directly on the color (filled buttons,
+     *  active pills) — passes 4.5:1 with `onSolid`, unlike the raw `bg`. */
+    solidBg: string;
+    /** Text color to pair with `solidBg`. */
+    onSolid: string;
+  }
 > = {
   blue: {
     text: "text-gdg-blue",
@@ -33,6 +45,8 @@ export const colorClasses: Record<
     border: "border-gdg-blue",
     ring: "ring-gdg-blue",
     dot: "bg-gdg-blue",
+    solidBg: "bg-gdg-blue-solid",
+    onSolid: "text-white",
   },
   red: {
     text: "text-gdg-red",
@@ -41,6 +55,8 @@ export const colorClasses: Record<
     border: "border-gdg-red",
     ring: "ring-gdg-red",
     dot: "bg-gdg-red",
+    solidBg: "bg-gdg-red-solid",
+    onSolid: "text-white",
   },
   yellow: {
     text: "text-gdg-yellow",
@@ -49,6 +65,8 @@ export const colorClasses: Record<
     border: "border-gdg-yellow",
     ring: "ring-gdg-yellow",
     dot: "bg-gdg-yellow",
+    solidBg: "bg-gdg-yellow",
+    onSolid: "text-foreground",
   },
   green: {
     text: "text-gdg-green",
@@ -57,5 +75,7 @@ export const colorClasses: Record<
     border: "border-gdg-green",
     ring: "ring-gdg-green",
     dot: "bg-gdg-green",
+    solidBg: "bg-gdg-green-solid",
+    onSolid: "text-white",
   },
 };
