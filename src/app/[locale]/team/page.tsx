@@ -46,7 +46,7 @@ export default async function TeamPage({
               {t("comingSoon")}
             </p>
           ) : (
-            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
+            <div className="grid auto-rows-fr grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
               {team.map((member, i) => (
                 <MotionReveal
                   key={member.id}

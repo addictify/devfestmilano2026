@@ -29,7 +29,7 @@ export function SpeakerTypesContent({ cfpOpen }: { cfpOpen: boolean }) {
 
   return (
     <div>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {speakerTypes.map((st, i) => {
           const c = colorClasses[st.color];
           const Icon = ICONS[st.icon];
@@ -64,7 +64,7 @@ export function SpeakerTypesContent({ cfpOpen }: { cfpOpen: boolean }) {
         <p className="mb-4 text-center text-sm font-semibold text-muted-foreground">
           {t("lastEditionNote", { year: le.year })}
         </p>
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border lg:grid-cols-4">
+        <div className="grid auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border lg:grid-cols-4">
           {stats.map((s, i) => (
             <div key={s.label} className="flex flex-col gap-1 bg-card p-6">
               <span

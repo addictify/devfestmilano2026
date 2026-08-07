@@ -18,7 +18,7 @@ export function CommunitiesSection() {
           lead={t("lead")}
           color="green"
         />
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
+        <div className="mt-12 grid auto-rows-fr gap-5 md:grid-cols-2">
           {communities.map((community, i) => (
             <MotionReveal key={community.id} delay={i * 0.08}>
               <CommunityCard community={community} />

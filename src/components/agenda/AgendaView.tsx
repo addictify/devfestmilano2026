@@ -135,7 +135,7 @@ export function AgendaView({
                   {time === "tba" ? "TBA" : formatTime(time, locale)}
                 </span>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid auto-rows-fr gap-4 md:grid-cols-2">
                 {items.map((session) => {
                   const isFull =
                     session.isServiceSession || items.length === 1;

@@ -39,7 +39,7 @@ export default async function CommunitiesPage({
       />
       <section className="py-16 sm:py-20">
         <Container className="max-w-5xl">
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid auto-rows-fr gap-5 md:grid-cols-2">
             {communities.map((community) => (
               <MotionReveal key={community.id}>
                 <CommunityCard community={community} />

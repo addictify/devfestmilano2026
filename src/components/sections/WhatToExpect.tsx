@@ -42,7 +42,7 @@ export function WhatToExpect() {
     <section className="py-20 sm:py-28" id="about">
       <Container>
         {/* Stats band */}
-        <MotionReveal className="grid grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border lg:grid-cols-4">
+        <MotionReveal className="grid auto-rows-fr grid-cols-2 gap-px overflow-hidden rounded-card border border-border bg-border lg:grid-cols-4">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
@@ -68,7 +68,7 @@ export function WhatToExpect() {
             title={e("title")}
             color="yellow"
           />
-          <div className="mt-12 grid gap-5 md:grid-cols-3">
+          <div className="mt-12 grid auto-rows-fr gap-5 md:grid-cols-3">
             {cards.map((card, i) => {
               const c = colorClasses[card.color];
               const Icon = card.icon;

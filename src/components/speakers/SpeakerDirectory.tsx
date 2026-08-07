@@ -39,7 +39,7 @@ export function SpeakerDirectory({ speakers }: { speakers: Speaker[] }) {
       {filtered.length === 0 ? (
         <p className="py-12 text-center text-muted-foreground">{t("empty")}</p>
       ) : (
-        <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid auto-rows-fr grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
           {filtered.map((speaker, i) => (
             <MotionReveal key={speaker.id} delay={(i % 4) * 0.05}>
               <SpeakerCard speaker={speaker} />

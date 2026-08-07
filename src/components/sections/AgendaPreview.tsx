@@ -18,7 +18,7 @@ export function AgendaPreview({ tracks }: { tracks: Track[] }) {
       <Container>
         <SectionHeading title={t("title")} lead={t("lead")} color="green" />
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {tracks.map((track, i) => {
             const c = colorClasses[track.color];
             return (

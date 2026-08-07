@@ -29,7 +29,7 @@ export function ThemeSection() {
           lead={t("lead")}
           color="red"
         />
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid auto-rows-fr gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {PILLARS.map((pillar, i) => {
             const c = colorClasses[pillar.color];
             const Icon = pillar.icon;
