@@ -104,10 +104,19 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   the static export; `/admin/*` + `/api/*` stripped there as before.
 
 ## ⏳ Pending / next steps
-- **Go-live config:** create Firebase project → fill `NEXT_PUBLIC_FIREBASE_*` +
-  `FIREBASE_ADMIN_*`; set `SESSIONIZE_EVENT_ID`, Bevy URL, `REVALIDATE_SECRET`,
-  `CRON_SECRET`. Deploy to Vercel; `firebase deploy --only firestore:rules`;
-  add prod domains to Firebase Auth.
+- **Go-live config:** Firebase project `devfestmilano26` exists and the local
+  `.env` is filled in — client config, `FIREBASE_ADMIN_*`, `SESSIONIZE_EVENT_ID`,
+  `REVALIDATE_SECRET`, `CRON_SECRET` all verified working (Firestore reads +
+  writes confirmed end-to-end, both locally and from the Docker image).
+  Still to do:
+  - **Enable Firebase Authentication** — currently returns
+    `auth/configuration-not-found`, i.e. no sign-in provider is turned on yet.
+    Console → Authentication → Sign-in method → enable **Google**. Without it,
+    login, My Schedule, `/admin` and DevFest Quest can't work.
+  - `firebase deploy --only firestore:rules` (rules are written, not deployed —
+    Firestore is currently on its default rules).
+  - Deploy to Vercel, set the same env vars there, add the prod domains to
+    Firebase Auth's authorized domains.
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
@@ -131,4 +140,9 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 ```bash
 pnpm install
 PORT=3100 pnpm dev   # open http://localhost:3100  (port 3000 may be taken)
+```
+
+Or the production build in Docker (`docs/DOCKER.md`):
+```bash
+docker compose up --build   # http://localhost:3100
 ```

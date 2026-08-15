@@ -1,0 +1,51 @@
+# Compose reads ./.env automatically, both for ${...} interpolation below and
+# for `env_file`. See docs/DOCKER.md for the workflow.
+services:
+  # Production server build: ISR, route handlers, image optimization.
+  web:
+    build:
+      context: .
+      target: runner
+      # Inlined into the client bundle at build time, so a change to any of
+      # these needs a rebuild (`docker compose up --build`), not just a restart.
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3100}
+        NEXT_PUBLIC_TICKETS_URL: ${NEXT_PUBLIC_TICKETS_URL:-}
+        NEXT_PUBLIC_CFP_URL: ${NEXT_PUBLIC_CFP_URL:-}
+        NEXT_PUBLIC_FIREBASE_API_KEY: ${NEXT_PUBLIC_FIREBASE_API_KEY:-}
+        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:-}
+        NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${NEXT_PUBLIC_FIREBASE_PROJECT_ID:-}
+        NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET:-}
+        NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:-}
+        NEXT_PUBLIC_FIREBASE_APP_ID: ${NEXT_PUBLIC_FIREBASE_APP_ID:-}
+    image: devfestmilano2026:latest
+    # Server-only secrets (FIREBASE_ADMIN_*, REVALIDATE_SECRET, CRON_SECRET)
+    # reach the app here, at runtime — never baked into an image layer.
+    env_file: .env
+    environment:
+      PORT: 3000
+    ports:
+      - "${WEB_PORT:-3100}:3000"
+    restart: unless-stopped
+
+  # Optional hot-reload container: `docker compose --profile dev up dev`.
+  # Next's own docs recommend plain `pnpm dev` on macOS/Windows instead —
+  # bind-mounted source is noticeably slower there.
+  dev:
+    profiles: ["dev"]
+    build:
+      context: .
+      target: base
+    command: sh -c "pnpm install --frozen-lockfile && pnpm dev"
+    env_file: .env
+    environment:
+      PORT: 3000
+      # Bind-mounted volumes don't emit native FS events on macOS/Windows.
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "${DEV_PORT:-3101}:3000"
+    volumes:
+      - .:/app
+      # Keep container-built dependencies and build output out of the host tree.
+      - /app/node_modules
+      - /app/.next

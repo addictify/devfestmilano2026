@@ -8,12 +8,18 @@ const withNextIntl = createNextIntlPlugin();
 // server build — ISR, route handlers, and image optimization all intact.
 const isStaticExport = process.env.STATIC_EXPORT === "1";
 
+// Docker builds set STANDALONE=1 to emit `.next/standalone` (a self-contained
+// server + only the traced node_modules). Left off by default so the Vercel
+// build keeps its current shape.
+const isStandalone = !isStaticExport && process.env.STANDALONE === "1";
+
 const nextConfig: NextConfig = {
   // GitHub Pages serves static assets only: emit an `out/` folder, skip the
   // server-side image optimizer, and write `/it/index.html`-style paths.
   ...(isStaticExport
     ? { output: "export" as const, trailingSlash: true }
     : {}),
+  ...(isStandalone ? { output: "standalone" as const } : {}),
   images: {
     // The default optimizer needs a server; on static export use raw images.
     unoptimized: isStaticExport,

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { Timestamp } from "firebase-admin/firestore";
-import { getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
+import { Timestamp, type Firestore } from "firebase-admin/firestore";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { fetchSessionizeAll } from "@/lib/sessionize/client";
 import { normalizeSessionize } from "@/lib/sessionize/normalize";
 import { routing } from "@/i18n/routing";
@@ -24,10 +24,10 @@ function authorized(request: Request): boolean {
 }
 
 async function writeCollection(
+  db: Firestore,
   collection: string,
   items: { id: string }[],
 ): Promise<void> {
-  const db = getAdminDb()!;
   for (let i = 0; i < items.length; i += 400) {
     const batch = db.batch();
     for (const { id, ...rest } of items.slice(i, i + 400)) {
@@ -46,7 +46,9 @@ async function handler(request: Request) {
   if (!authorized(request)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
-  if (!isAdminConfigured) {
+  // Also covers credentials that are well-formed but rejected at init.
+  const db = getAdminDb();
+  if (!db) {
     return NextResponse.json(
       { ok: false, error: "Firebase Admin not configured" },
       { status: 503 },
@@ -70,10 +72,10 @@ async function handler(request: Request) {
   }
 
   const { speakers, sessions, tracks } = normalizeSessionize(data);
-  await writeCollection("tracks", tracks);
-  await writeCollection("speakers", speakers);
-  await writeCollection("sessions", sessions);
-  await getAdminDb()!
+  await writeCollection(db, "tracks", tracks);
+  await writeCollection(db, "speakers", speakers);
+  await writeCollection(db, "sessions", sessions);
+  await db
     .collection("config")
     .doc("site")
     .set({ lastSync: Timestamp.now() }, { merge: true });

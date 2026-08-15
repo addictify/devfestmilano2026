@@ -1,0 +1,32 @@
+# Build context hygiene: keep secrets and local build output out of the image.
+.env
+.env.*
+!.env.example
+
+node_modules
+.next
+out
+dist
+coverage
+
+.git
+.gitignore
+*.log
+.DS_Store
+
+# Local tooling / docs that the runtime never needs
+.claude
+.impeccable
+.gemini
+.vscode
+.idea
+docs
+README.md
+CLAUDE.md
+AGENTS.md
+PRODUCT.md
+DESIGN.md
+
+Dockerfile
+docker-compose.yaml
+.dockerignore

@@ -29,6 +29,12 @@ Optional, to use live data:
 cp .env.example .env.local   # fill in Firebase + Sessionize values
 ```
 
+Or run the production build in Docker — see [docs/DOCKER.md](docs/DOCKER.md):
+
+```bash
+docker compose up --build    # http://localhost:3100
+```
+
 ### Scripts
 
 | Command | Description |
