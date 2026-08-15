@@ -20,6 +20,10 @@ dependencies or any `NEXT_PUBLIC_*` value (see the caveat below).
 | `docker compose --profile dev up dev` | Hot-reload dev container (port 3101) |
 
 Override ports with `WEB_PORT` / `DEV_PORT` in `.env` (defaults 3100 / 3101).
+The container listens on the same port it publishes, mapped 1:1, so the URL
+Next prints on boot (`- Local: http://localhost:3100`) is exactly the one that
+works from the host — no mental translation between an internal and an external
+port. Changing a port only needs a restart, not a rebuild.
 
 ## Which one should I use?
 

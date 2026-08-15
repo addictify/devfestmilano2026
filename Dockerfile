@@ -54,6 +54,8 @@ COPY --from=builder --chown=node:node /app/.next/static ./.next/static
 COPY --from=builder --chown=node:node /app/public ./public
 
 USER node
+# Default when the image is run directly; Compose overrides PORT so that the
+# container listens on exactly the port it publishes (see docker-compose.yaml).
 EXPOSE 3000
 
 # Node 24 ships fetch globally, so this needs no extra packages in the image.

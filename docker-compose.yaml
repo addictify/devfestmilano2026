@@ -23,9 +23,11 @@ services:
     # reach the app here, at runtime — never baked into an image layer.
     env_file: .env
     environment:
-      PORT: 3000
+      # Listen on the same port that's published, and map it 1:1, so the URL
+      # Next prints on boot is the one that actually works from the host.
+      PORT: ${WEB_PORT:-3100}
     ports:
-      - "${WEB_PORT:-3100}:3000"
+      - "${WEB_PORT:-3100}:${WEB_PORT:-3100}"
     restart: unless-stopped
 
   # Optional hot-reload container: `docker compose --profile dev up dev`.
@@ -39,11 +41,12 @@ services:
     command: sh -c "pnpm install --frozen-lockfile && pnpm dev"
     env_file: .env
     environment:
-      PORT: 3000
+      # Same 1:1 mapping as `web`, so the printed URL matches the real one.
+      PORT: ${DEV_PORT:-3101}
       # Bind-mounted volumes don't emit native FS events on macOS/Windows.
       WATCHPACK_POLLING: "true"
     ports:
-      - "${DEV_PORT:-3101}:3000"
+      - "${DEV_PORT:-3101}:${DEV_PORT:-3101}"
     volumes:
       - .:/app
       # Keep container-built dependencies and build output out of the host tree.
