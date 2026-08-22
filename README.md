@@ -98,8 +98,17 @@ firebase/              firestore.rules · indexes
 
 ## Deployment
 
-- **Frontend** → Vercel (set all env vars; the hourly Sessionize sync runs via `vercel.json` Cron).
-- **Backend** → Firebase: `firebase deploy --only firestore:rules`. Add your Vercel domains to Firebase Auth → Authorized domains.
+Everything runs on Firebase — see **[docs/DEPLOY.md](docs/DEPLOY.md)** for the
+full procedure.
+
+- **App** → Firebase App Hosting (`apphosting.yaml`). Needs the Blaze plan: the
+  app is server-rendered, so it runs on Cloud Run.
+- **Rules** → `firebase deploy --only firestore:rules` (independent of the plan).
+- **Hourly Sessionize sync** → Cloud Scheduler hitting `/api/sync` with
+  `Authorization: Bearer $CRON_SECRET`. This used to be a `vercel.json` cron;
+  see DEPLOY.md for the `gcloud scheduler` command.
+- Add the live domain to Firebase Auth → Authorized domains, or Google sign-in
+  fails there.
 - Grant an organizer admin access: `pnpm set-admin <email>` (see [Admin](#admin)).
 
 ---

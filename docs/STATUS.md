@@ -10,7 +10,7 @@ and **GDG Milano** (Android · Web · AI). Venue: **Randstad Box**, Via San Vigi
 ## Stack
 Next.js 16 (App Router, Turbopack) · Tailwind v4 · Firebase (Firestore/Auth/Admin) ·
 next-intl (IT/EN, `proxy.ts`) · Motion · Sessionize (talks/CFP) · Bevy (tickets) ·
-deploy Vercel (frontend) + Firebase (backend).
+deploy Firebase App Hosting (see `docs/DEPLOY.md`).
 
 ## Feature flags — `src/lib/site.ts`
 Submissions closed 31 Jul 2026; talks are being selected, so there's no lineup

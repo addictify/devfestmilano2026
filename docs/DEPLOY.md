@@ -48,6 +48,26 @@ secrets. After setup, every push to the connected branch builds and rolls out.
 - Point `NEXT_PUBLIC_SITE_URL` at the real origin if it changes — it drives
   canonical URLs, the sitemap and OG tags.
 
+## The hourly Sessionize sync
+
+`/api/sync` pulls speakers/sessions/tracks from Sessionize and writes them to
+Firestore. It used to be triggered by a `vercel.json` cron, which App Hosting has
+no equivalent for, so schedule it with Cloud Scheduler (also Blaze-only):
+
+```bash
+gcloud scheduler jobs create http devfest-sessionize-sync \
+  --project devfestmilano26 \
+  --location europe-west1 \
+  --schedule "0 * * * *" \
+  --uri "https://<your-app-hosting-domain>/api/sync" \
+  --http-method GET \
+  --headers "Authorization=Bearer $CRON_SECRET"
+```
+
+The route accepts either `Authorization: Bearer $CRON_SECRET` or
+`?secret=$REVALIDATE_SECRET`, and returns 503 while Firebase Admin is
+unconfigured, so it fails safe rather than half-writing.
+
 ## Firestore rules
 
 Deployed separately, and independently of the hosting plan:
