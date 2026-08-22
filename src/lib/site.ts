@@ -6,7 +6,14 @@ import type { GdgColor } from "@/lib/design/tokens";
 export const siteConfig = {
   name: "DevFest Milano 2026",
   shortName: "DevFest Milano",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://2026.devfestmilano.it",
+  // Trailing slash stripped: every consumer appends its own path
+  // (`${url}/sitemap.xml`, sitemap entries, calendar links), so a URL ending in
+  // "/" silently produced "//it" everywhere — URLs that disagree with the
+  // canonical tags Next normalizes on its own.
+  url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://2026.devfestmilano.it").replace(
+    /\/+$/,
+    "",
+  ),
 
   /** Event start — 10 October 2026, 09:00 Europe/Rome (CEST, +02:00). */
   eventDate: "2026-10-10T09:00:00+02:00",
