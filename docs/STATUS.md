@@ -114,7 +114,9 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   needs no `--project`.
 
   `d.tresoldi5@gmail.com` is **already an admin** (claim provisioned ahead of
-  first sign-in via `pnpm set-admin <email> --create`).
+  first sign-in via `pnpm set-admin <email> --create`) and is the *bootstrap*
+  admin: `/admin/admins` can add and remove other admins, but never that
+  account, so there's always a way back in.
 
   The project is on **Blaze**, so App Hosting and Storage are both available.
   The five Secret Manager entries exist and match `.env` byte for byte.
@@ -126,8 +128,14 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
     rollout ships the pre-fix tree.
   - Run `firebase apphosting:secrets:grantaccess <secret> --backend <id>` for
     each of the five once the backend exists.
+  - Run `firebase apphosting:secrets:grantaccess` for the five secrets once the
+    backend exists.
   - Schedule the hourly Sessionize sync (`gcloud scheduler`, see DEPLOY.md) —
     this replaced the old `vercel.json` cron.
+  - **Point `2026.devfestmilano.it` at the App Hosting backend** (custom domain
+    + DNS records). It's authorized for sign-in and set as
+    `NEXT_PUBLIC_SITE_URL`, but nothing serves it yet — the only live host is
+    the unused default `devfestmilano26.web.app`.
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
@@ -147,7 +155,8 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `/my-schedule` and `/play` are deliberately never cached.
 - **DevFest Quest ops:** generate + print the checkpoint QR codes from
   `/admin/checkpoints` and place them physically at the venue before the event
-  (the only non-code step). Camera scanning needs HTTPS (Vercel — fine).
+  (the only non-code step) — the checkpoints and badges themselves also need
+  defining in `/admin`. Camera scanning needs HTTPS, which App Hosting provides.
 - **All three phases are now built.** Remaining work is go-live config + content,
   not features. Possible future polish: image upload to Storage, news/blog, richer
   anti-cheat, exporting game data.
