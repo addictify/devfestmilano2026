@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
+import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
 import type { TeamMember } from "@/types/models";
 
@@ -60,7 +61,7 @@ export function TeamAdmin({ initial }: { initial: TeamMember[] }) {
           <F label="Nome" v={form.name} on={(v) => setForm({ ...form, name: v })} />
           <F label="Ruolo (IT)" v={form.roleIt} on={(v) => setForm({ ...form, roleIt: v })} />
           <F label="Ruolo (EN)" v={form.roleEn} on={(v) => setForm({ ...form, roleEn: v })} />
-          <F label="Foto URL" v={form.photo} on={(v) => setForm({ ...form, photo: v })} />
+          <ImageField label="Foto" category="team" value={form.photo} onChange={(v) => setForm({ ...form, photo: v })} />
           <F label="Ordine" v={String(form.order)} on={(v) => setForm({ ...form, order: Number(v) || 999 })} />
         </div>
         {error && <p className="mt-3 text-sm text-gdg-red">{error}</p>}

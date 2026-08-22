@@ -8,6 +8,7 @@ import {
 } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getAuth, type Auth } from "firebase-admin/auth";
+import { getStorage } from "firebase-admin/storage";
 
 const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
@@ -74,4 +75,17 @@ export function getAdminAuth(): Auth | null {
   const db = getAdminDb(); // ensures the default app is initialized
   if (!db) return null;
   return getAuth(getApp());
+}
+
+/**
+ * Returns the default Storage bucket, or null when not configured.
+ *
+ * The bucket name comes from the public client var — it's the same bucket, and
+ * keeping one source avoids the two drifting apart.
+ */
+export function getAdminBucket() {
+  const db = getAdminDb(); // ensures the default app is initialized
+  const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  if (!db || !bucketName) return null;
+  return getStorage(getApp()).bucket(bucketName);
 }

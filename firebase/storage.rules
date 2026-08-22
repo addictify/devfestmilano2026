@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Images uploaded from /admin (sponsor logos, team photos) are shown on the
+// public site, so they must be world-readable. Writes never happen from the
+// browser: /api/admin/upload does them with the Admin SDK, which bypasses these
+// rules — so client writes are denied outright rather than gated on a claim.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /images/{category}/{fileName} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Deny everything else.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

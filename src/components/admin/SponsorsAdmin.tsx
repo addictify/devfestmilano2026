@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
+import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
 import { SPONSOR_TIERS, type Sponsor } from "@/types/models";
 
@@ -73,8 +74,8 @@ export function SponsorsAdmin({ initial }: { initial: Sponsor[] }) {
           </label>
           <Field label="Sito web" value={form.website ?? ""} onChange={(v) => setForm({ ...form, website: v })} />
           <Field label="Ordine" value={String(form.order ?? 999)} onChange={(v) => setForm({ ...form, order: Number(v) || 999 })} />
-          <Field label="Logo (light) URL" value={form.logoLight ?? ""} onChange={(v) => setForm({ ...form, logoLight: v })} />
-          <Field label="Logo (dark) URL" value={form.logoDark ?? ""} onChange={(v) => setForm({ ...form, logoDark: v })} />
+          <ImageField label="Logo (light)" category="sponsors" value={form.logoLight ?? ""} onChange={(v) => setForm({ ...form, logoLight: v })} />
+          <ImageField label="Logo (dark)" category="sponsors" value={form.logoDark ?? ""} onChange={(v) => setForm({ ...form, logoDark: v })} />
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" checked={form.active !== false} onChange={(e) => setForm({ ...form, active: e.target.checked })} />
             Attivo
