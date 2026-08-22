@@ -302,7 +302,8 @@
     "signOut": "Sign out",
     "account": "Account menu",
     "myschedule": "My schedule",
-    "signedInAs": "Signed in as"
+    "signedInAs": "Signed in as",
+    "admin": "Admin"
   },
   "myschedule": { "title": "My schedule", "empty": "No saved sessions yet.", "browse": "Browse the agenda", "add": "Save to my schedule", "remove": "Remove from my schedule", "signInNudge": "Sign in to sync your schedule across devices.", "count": "{count} saved" },
   "play": {

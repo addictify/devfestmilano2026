@@ -3,8 +3,9 @@
 import Image from "next/image";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslations } from "next-intl";
-import { LogOut, CalendarHeart } from "lucide-react";
+import { LogOut, CalendarHeart, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,7 @@ function initials(name: string | null, email: string | null): string {
 
 export function AuthButton() {
   const { user, loading, enabled, signIn, signOut } = useAuth();
+  const isAdmin = useIsAdmin();
   const t = useTranslations("auth");
 
   if (!enabled) return null;
@@ -65,6 +67,20 @@ export function AuthButton() {
               {t("myschedule")}
             </Link>
           </DropdownMenu.Item>
+          {/* Organizers only — /admin is otherwise reachable by URL alone, which
+              is easy to forget. Hiding it isn't the access control: AdminGate
+              and every /api/admin/* route check the claim server-side. */}
+          {isAdmin === true && (
+            <DropdownMenu.Item asChild>
+              <Link
+                href="/admin"
+                className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-muted"
+              >
+                <ShieldCheck className="size-4 text-muted-foreground" />
+                {t("admin")}
+              </Link>
+            </DropdownMenu.Item>
+          )}
           <DropdownMenu.Item
             onSelect={() => void signOut()}
             className="flex cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-muted"

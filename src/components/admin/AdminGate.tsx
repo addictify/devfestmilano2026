@@ -1,27 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { Button } from "@/components/ui/button";
 
 export function AdminGate({ children }: { children: React.ReactNode }) {
   const { user, loading, enabled, signIn } = useAuth();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if (!user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsAdmin(null);
-      return;
-    }
-    let active = true;
-    user.getIdTokenResult().then((r) => {
-      if (active) setIsAdmin(r.claims.admin === true);
-    });
-    return () => {
-      active = false;
-    };
-  }, [user]);
+  const isAdmin = useIsAdmin();
 
   if (!enabled) return <Shell>Backend non configurato.</Shell>;
   if (loading) return <Shell>Caricamento…</Shell>;
