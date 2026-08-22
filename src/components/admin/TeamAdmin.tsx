@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { notifyContentChanged } from "./PublishBar";
 import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,13 @@ export function TeamAdmin() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Reload the list and let the publish banner know the live site is now
+  // behind the data.
+  const afterWrite = () => {
+    void reload();
+    notifyContentChanged();
+  };
+
   async function save() {
     setBusy(true);
     setError(null);
@@ -31,14 +39,14 @@ export function TeamAdmin() {
     setBusy(false);
     if (res.ok) {
       setForm(EMPTY);
-      void reload();
+      afterWrite();
     } else setError(`Errore (${res.status}).`);
   }
 
   async function remove(id: string) {
     if (!confirm("Eliminare questo membro?")) return;
     const res = await adminFetch(`/api/admin/team?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) void reload();
+    if (res.ok) afterWrite();
     else setError(`Errore (${res.status}).`);
   }
 

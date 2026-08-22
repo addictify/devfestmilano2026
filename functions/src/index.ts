@@ -1,6 +1,8 @@
 import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
-import { GITHUB_TOKEN, requestSiteRebuild, takeStalePaths } from "./rebuild.js";
+import { defineSecret } from "firebase-functions/params";
+import { takeTouchedPaths } from "./shims/next-cache.js";
+import { markPendingPublish } from "@/lib/publish";
 
 // The Next route handlers, reused as-is. Each exports plain
 // (Request) => Response functions, so nothing here reimplements their rules.
@@ -19,6 +21,7 @@ import * as adminSubscribers from "@/app/api/admin/subscribers/route";
 import * as adminSubscribersExport from "@/app/api/admin/subscribers/export/route";
 import * as adminTeam from "@/app/api/admin/team/route";
 import * as adminUpload from "@/app/api/admin/upload/route";
+import * as adminPublish from "@/app/api/admin/publish/route";
 
 type Handler = (req: Request) => Promise<Response> | Response;
 type RouteModule = Partial<Record<"GET" | "POST" | "PUT" | "DELETE" | "PATCH", Handler>>;
@@ -40,6 +43,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/admin/subscribers/export": adminSubscribersExport,
   "/api/admin/team": adminTeam,
   "/api/admin/upload": adminUpload,
+  "/api/admin/publish": adminPublish,
 };
 
 /**
@@ -54,6 +58,17 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3100",
   "http://localhost:3000",
 ];
+
+// What the admin banner shows as "what changed".
+const LABELS: Record<string, string> = {
+  "/api/admin/sponsors": "sponsor",
+  "/api/admin/team": "team",
+  "/api/admin/config": "configurazione",
+  "/api/admin/badges": "badge",
+  "/api/admin/checkpoints": "checkpoint",
+  "/api/admin/upload": "immagine",
+  "/api/sync": "sync Sessionize",
+};
 
 function corsHeaders(origin: string | undefined): Record<string, string> {
   const allowed = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -87,6 +102,9 @@ function toWebRequest(req: import("firebase-functions/v2/https").Request): Reque
   });
 }
 
+// Only /api/admin/publish uses it, but secrets are declared per function.
+const GITHUB_TOKEN = defineSecret("GITHUB_REBUILD_TOKEN");
+
 export const api = onRequest(
   { region: "europe-west1", secrets: [GITHUB_TOKEN], cors: false, maxInstances: 10 },
   async (req, res) => {
@@ -119,13 +137,10 @@ export const api = onRequest(
       return;
     }
 
-    // Content edits call revalidatePath(); with a static frontend that means
-    // asking GitHub Actions to rebuild. Done after responding is impossible in
-    // this runtime, so it's awaited — it's a single fast API call, and it never
-    // throws, so a rebuild failure can't fail the edit that already succeeded.
-    const stale = takeStalePaths();
-    if (stale.length > 0 && response.ok) {
-      await requestSiteRebuild(`${req.method} ${path}`);
+    // One entry per edit, not one per invalidated locale path.
+    const touched = takeTouchedPaths();
+    if (touched.length > 0 && response.ok) {
+      await markPendingPublish(LABELS[path] ?? path.replace("/api/admin/", ""));
     }
 
     const body = Buffer.from(await response.arrayBuffer());

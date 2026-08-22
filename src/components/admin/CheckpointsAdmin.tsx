@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { adminFetch } from "@/lib/admin-client";
+import { notifyContentChanged } from "./PublishBar";
 import { Button } from "@/components/ui/button";
 import type { Badge, Checkpoint } from "@/lib/data/game";
 
@@ -52,16 +53,23 @@ export function CheckpointsAdmin() {
 
   const reload = () => fetchCheckpoints().then(apply).catch((s) => setError(`Errore (${s}).`));
 
+  // Reload the list and let the publish banner know the live site is now
+  // behind the data.
+  const afterWrite = () => {
+    void reload();
+    notifyContentChanged();
+  };
+
   async function save() {
     setBusy(true); setError(null);
     const res = await adminFetch("/api/admin/checkpoints", { method: "POST", body: JSON.stringify(form) });
     setBusy(false);
-    if (res.ok) { setForm(EMPTY); await reload(); } else setError(`Errore (${res.status}).`);
+    if (res.ok) { setForm(EMPTY); afterWrite(); } else setError(`Errore (${res.status}).`);
   }
   async function remove(id: string) {
     if (!confirm("Eliminare questo checkpoint?")) return;
     const res = await adminFetch(`/api/admin/checkpoints?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) await reload(); else setError(`Errore (${res.status}).`);
+    if (res.ok) afterWrite(); else setError(`Errore (${res.status}).`);
   }
   async function showQr(c: Checkpoint) {
     const dataUrl = await QRCode.toDataURL(`DFQ:${c.id}:${c.secret}`, { width: 512, margin: 2 });

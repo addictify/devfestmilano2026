@@ -48,13 +48,13 @@ firebase functions:secrets:set GITHUB_REBUILD_TOKEN
 ```
 
 A GitHub fine-grained PAT with **Actions: read and write** on this repo. Without
-it the API still works; admin edits just won't trigger a rebuild (it logs and
-carries on rather than failing the edit).
+it everything still works except the Pubblica button, which reports that
+publishing isn't configured.
 
 ## Deploying the frontend
 
 Automatic: `.github/workflows/deploy-pages.yml` builds and publishes on every
-push to `main`, and on `workflow_dispatch` (what the API calls after an edit).
+push to `main`, and on `workflow_dispatch` (what the Pubblica button fires).
 
 Set these as **repository variables** (Settings → Secrets and variables →
 Actions → Variables). They're `NEXT_PUBLIC_*`, so they're inlined into the
@@ -70,12 +70,22 @@ The workflow refuses to publish if a service-account key ever appears in `out/`.
 Then point the domain: Pages → Custom domain → `2026.devfestmilano.it`
 (`public/CNAME` already carries it), and a DNS CNAME to `addictify.github.io`.
 
-## Content updates
+## Content updates: edit freely, publish once
 
-Published content is baked at build time. When you change sponsors, team, or a
-feature flag in `/admin`, the API fires a `workflow_dispatch` and the site
-rebuilds — live in a couple of minutes, not instantly. That's the trade for a
-static frontend.
+Published content is baked at build time, so a Firestore change is invisible
+until the site is rebuilt. Edits do **not** rebuild on their own — an organizer
+usually changes several things in a row, and a rebuild per save would waste
+minutes of CI and leave the public site mid-update.
+
+Instead, each edit marks the site as having unpublished changes (recorded in
+Firestore at `config/publish`, since function instances don't survive between
+requests). A banner across the top of `/admin` shows how many are waiting and
+what they touched, and **Pubblica sito** fires the `workflow_dispatch`. The site
+goes live a couple of minutes later.
+
+If publishing fails — most often a missing `GITHUB_REBUILD_TOKEN` — the pending
+state is deliberately left alone, so the banner keeps showing that the live site
+is behind rather than quietly claiming it's current.
 
 ## Firestore and Storage rules
 

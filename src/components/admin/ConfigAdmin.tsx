@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
 import { useAdminData } from "@/hooks/useAdminData";
+import { notifyContentChanged } from "./PublishBar";
 import { Button } from "@/components/ui/button";
 import type { SiteSettings } from "@/lib/data/settings";
 
@@ -32,7 +33,12 @@ export function ConfigAdmin() {
     setMsg(null);
     try {
       const res = await adminFetch("/api/admin/config", { method: "POST", body: JSON.stringify(flags) });
-      setMsg(res.ok ? "Salvato. Le pagine pubbliche sono state rigenerate." : `Errore (${res.status}).`);
+      if (res.ok) {
+        setMsg("Salvato. Ricordati di pubblicare per aggiornare il sito pubblico.");
+        notifyContentChanged();
+      } else {
+        setMsg(`Errore (${res.status}).`);
+      }
     } catch {
       setMsg("Errore di rete.");
     } finally {

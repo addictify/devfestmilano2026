@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminGate } from "@/components/admin/AdminGate";
+import { PublishBar } from "@/components/admin/PublishBar";
 
 export const metadata: Metadata = { robots: { index: false }, title: "Admin · DevFest Milano 2026" };
 
@@ -37,6 +38,7 @@ export default async function AdminLayout({
             </Link>
           ))}
         </nav>
+        <PublishBar />
         {children}
       </div>
     </AdminGate>

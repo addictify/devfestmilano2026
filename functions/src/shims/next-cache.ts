@@ -1,17 +1,27 @@
 /**
- * `revalidatePath` has no meaning here: the site is a static export on GitHub
- * Pages, so there is no ISR cache to invalidate. Refreshing published content
- * means rebuilding the site, which is what requestSiteRebuild does.
+ * `revalidatePath` has no meaning on a static export: there is no ISR cache to
+ * invalidate. Content edits instead mark the site as having unpublished
+ * changes, and an admin publishes when they're done — a rebuild per save would
+ * waste minutes of CI and leave the public site mid-update.
  *
- * Calls are collected during a request and acted on once at the end, so a
- * handler touching five paths triggers one rebuild, not five.
+ * Calls are collected rather than recorded one by one: a single edit typically
+ * invalidates half a dozen locale paths, and "6 unpublished changes" after two
+ * edits would misrepresent what happened. index.ts records one entry per
+ * request.
  */
-import { markSiteStale } from "../rebuild.js";
+let touched: string[] = [];
 
 export function revalidatePath(path: string, _type?: string): void {
-  markSiteStale(path);
+  if (!touched.includes(path)) touched.push(path);
 }
 
 export function revalidateTag(tag: string): void {
-  markSiteStale(`tag:${tag}`);
+  revalidatePath(`tag:${tag}`);
+}
+
+/** Paths invalidated during this request, clearing the buffer. */
+export function takeTouchedPaths(): string[] {
+  const paths = touched;
+  touched = [];
+  return paths;
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { notifyContentChanged } from "./PublishBar";
 import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,13 @@ export function SponsorsAdmin() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Reload the list and let the publish banner know the live site is now
+  // behind the data.
+  const afterWrite = () => {
+    void reload();
+    notifyContentChanged();
+  };
+
   async function save() {
     setBusy(true);
     setError(null);
@@ -26,7 +34,7 @@ export function SponsorsAdmin() {
     setBusy(false);
     if (res.ok) {
       setForm(EMPTY);
-      void reload();
+      afterWrite();
     } else {
       setError(`Errore (${res.status}).`);
     }
@@ -36,7 +44,7 @@ export function SponsorsAdmin() {
     if (!confirm("Eliminare questo sponsor?")) return;
     const res = await adminFetch(`/api/admin/sponsors?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     if (res.ok) {
-      void reload();
+      afterWrite();
     } else {
       setError(`Errore (${res.status}).`);
     }

@@ -28,7 +28,14 @@ service cloud.firestore {
     match /tracks/{id}   { allow read: if true; allow write: if isAdmin(); }
     match /sponsors/{id} { allow read: if true; allow write: if isAdmin(); }
     match /team/{id}     { allow read: if true; allow write: if isAdmin(); }
-    match /config/{id}   { allow read: if true; allow write: if isAdmin(); }
+    // config/site carries the public feature flags and must stay readable.
+    // config/publish is internal deploy bookkeeping — excluded explicitly,
+    // because rules are OR'd: a narrower rule below could not take a read
+    // permission away that this one grants.
+    match /config/{id} {
+      allow read: if id != "publish";
+      allow write: if isAdmin();
+    }
 
     match /news/{id} {
       allow read: if resource.data.published == true || isAdmin();
