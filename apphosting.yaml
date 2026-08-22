@@ -1,0 +1,73 @@
+# Firebase App Hosting — server-side rendered deploy of the Next.js app.
+#
+# Requires the project to be on the Blaze plan; App Hosting runs on Cloud Run.
+# Create the backend once with:
+#   firebase apphosting:backends:create --project devfestmilano26
+# then every push to the connected branch builds and rolls out automatically.
+#
+# Secrets live in Cloud Secret Manager, never here. Create them with:
+#   firebase apphosting:secrets:set firebase-admin-private-key
+#   firebase apphosting:secrets:set firebase-admin-client-email
+#   firebase apphosting:secrets:set revalidate-secret
+#   firebase apphosting:secrets:set cron-secret
+#   firebase apphosting:secrets:set sessionize-event-id
+# and grant the backend access with:
+#   firebase apphosting:secrets:grantaccess <secret> --backend <backend-id>
+
+runConfig:
+  # The site is mostly static/ISR, so it idles at zero and scales on demand.
+  minInstances: 0
+  maxInstances: 10
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  # --- Public config. NEXT_PUBLIC_* is inlined into the client bundle at build
+  # time, so these must be available during BUILD as well as RUNTIME. ---
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: https://2026.devfestmilano.it
+    availability: [BUILD, RUNTIME]
+
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyDoGob1TpOAVQotqgWUjH-fsZY26ryleh8
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: devfestmilano26.firebaseapp.com
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: devfestmilano26
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: devfestmilano26.firebasestorage.app
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "911916014755"
+    availability: [BUILD, RUNTIME]
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:911916014755:web:fec7f35af02dae9c82b316
+    availability: [BUILD, RUNTIME]
+
+  # Public, non-secret pointers.
+  - variable: FIREBASE_ADMIN_PROJECT_ID
+    value: devfestmilano26
+    availability: [RUNTIME]
+
+  # --- Server-only secrets. RUNTIME only: nothing here may reach the client
+  # bundle, and the build has no need for them (the data layer falls back to
+  # seed content when Admin isn't configured). ---
+  - variable: FIREBASE_ADMIN_CLIENT_EMAIL
+    secret: firebase-admin-client-email
+    availability: [RUNTIME]
+  - variable: FIREBASE_ADMIN_PRIVATE_KEY
+    secret: firebase-admin-private-key
+    availability: [RUNTIME]
+  - variable: REVALIDATE_SECRET
+    secret: revalidate-secret
+    availability: [RUNTIME]
+  - variable: CRON_SECRET
+    secret: cron-secret
+    availability: [RUNTIME]
+  - variable: SESSIONIZE_EVENT_ID
+    secret: sessionize-event-id
+    availability: [RUNTIME]
