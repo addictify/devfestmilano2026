@@ -116,16 +116,18 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `d.tresoldi5@gmail.com` is **already an admin** (claim provisioned ahead of
   first sign-in via `pnpm set-admin <email> --create`).
 
-  Still to do — all of it gated on one thing:
-  - **Upgrade the project to the Blaze plan.** Hosting the SSR app on Firebase
-    means App Hosting, which runs on Cloud Run and refuses to enable on Spark.
-    The same upgrade unblocks Firebase Storage (its bucket isn't provisioned
-    yet, which is why admin image upload can't be built). `apphosting.yaml` and
-    `docs/DEPLOY.md` have everything else ready — backend creation, the five
-    Secret Manager entries, and the post-deploy authorized-domain step.
-  - The Spark-compatible alternative is `pnpm build:static`, but it drops the
-    API routes, `/admin`, login, My Schedule, feedback and DevFest Quest. See
-    the last section of `docs/DEPLOY.md`.
+  The project is on **Blaze**, so App Hosting and Storage are both available.
+  The five Secret Manager entries exist and match `.env` byte for byte.
+
+  Still to do:
+  - **Create the App Hosting backend** (`firebase apphosting:backends:create`)
+    and connect it to the GitHub repo. It builds from a branch or commit on the
+    *remote*, so the local commits have to be pushed first — otherwise the first
+    rollout ships the pre-fix tree.
+  - Run `firebase apphosting:secrets:grantaccess <secret> --backend <id>` for
+    each of the five once the backend exists.
+  - Schedule the hourly Sessionize sync (`gcloud scheduler`, see DEPLOY.md) —
+    this replaced the old `vercel.json` cron.
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
@@ -135,10 +137,11 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **Dependencies:** clear. The 28 advisories (18 high) were resolved by bumping
   next/firebase/sharp and pinning seven transitive packages through
   `pnpm.overrides`; `pnpm audit` reports nothing.
-- **Admin still open:** news CRUD (intentionally skipped); image upload to
-  Storage — blocked until Storage is provisioned, which needs Blaze (the bucket
-  `devfestmilano26.firebasestorage.app` does not exist yet). Admin takes pasted
-  URLs meanwhile.
+- **Admin still open:** news CRUD (intentionally skipped). Image upload is
+  **done** — Storage is provisioned (`devfestmilano26.firebasestorage.app`,
+  europe-west3), `firebase/storage.rules` is deployed (public read on
+  `images/**`, all client writes denied), and the sponsor/team forms upload
+  through `POST /api/admin/upload`.
 - **Offline:** done. The service worker (`devfest-v2`) keeps visited pages, so
   the agenda stays readable when signal drops at the venue; `/admin`,
   `/my-schedule` and `/play` are deliberately never cached.
