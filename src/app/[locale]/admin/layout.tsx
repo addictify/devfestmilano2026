@@ -12,6 +12,7 @@ const SECTIONS = [
   { href: "/admin/team", label: "Team" },
   { href: "/admin/subscribers", label: "Iscritti" },
   { href: "/admin/config", label: "Configurazione" },
+  { href: "/admin/admins", label: "Amministratori" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

@@ -32,6 +32,12 @@ describe("verifyAdmin", () => {
   it("true when valid token has admin claim", async () => {
     verifyIdToken.mockResolvedValue({ admin: true, uid: "u1" });
     expect(await verifyAdmin(req({ authorization: "Bearer good" }))).toBe(true);
-    expect(verifyIdToken).toHaveBeenCalledWith("good");
+  });
+  it("asks Firebase to reject revoked tokens", async () => {
+    // Removing an admin revokes their refresh tokens; without checkRevoked
+    // their already-issued token would keep working until it expired.
+    verifyIdToken.mockResolvedValue({ admin: true, uid: "u1" });
+    await verifyAdmin(req({ authorization: "Bearer good" }));
+    expect(verifyIdToken).toHaveBeenCalledWith("good", true);
   });
 });
