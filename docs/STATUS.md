@@ -108,24 +108,26 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `.env` is filled in — client config, `FIREBASE_ADMIN_*`, `SESSIONIZE_EVENT_ID`,
   `REVALIDATE_SECRET`, `CRON_SECRET` all verified working (Firestore reads +
   writes confirmed end-to-end, both locally and from the Docker image).
+  Firebase Authentication is **enabled**, Firestore rules are **deployed**
+  (2026-08-15), and `2026.devfestmilano.it` is in Auth's authorized domains.
+  `.firebaserc` pins the project, so `firebase deploy --only firestore:rules`
+  needs no `--project`.
+
   Still to do:
-  - **Enable Firebase Authentication** — currently returns
-    `auth/configuration-not-found`, i.e. no sign-in provider is turned on yet.
-    Console → Authentication → Sign-in method → enable **Google**. Without it,
-    login, My Schedule, `/admin` and DevFest Quest can't work.
-  - `firebase deploy --only firestore:rules` (rules are written, not deployed —
-    Firestore is currently on its default rules).
-  - Deploy to Vercel, set the same env vars there, add the prod domains to
-    Firebase Auth's authorized domains.
+  - Deploy to Vercel and set the same env vars there. Anything added later as a
+    domain (a `*.vercel.app` preview URL, say) also has to go in Console →
+    Authentication → Settings → Authorized domains, or Google sign-in fails
+    there.
+  - Grant the first admin: `pnpm set-admin <email>` after that person has signed
+    in once, then have them sign in again to pick up the claim.
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers.
-- **Go-live for admin/favorites:** these need a live Firebase project to function
-  (signed-out / absent without it). After configuring, grant the first admin with
-  `pnpm set-admin <email>` and re-sign-in.
+- **Dependencies:** GitHub reports 30 Dependabot vulnerabilities on `main`
+  (15 high, 15 moderate) — untriaged, and none of them from code written here.
 - **Admin still open:** news CRUD (intentionally skipped); image upload to Storage
   (admin uses pasted URLs for now).
 - **Offline:** the app SHELL ships (Batch 1); full offline content caching is open.
