@@ -113,24 +113,35 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   `.firebaserc` pins the project, so `firebase deploy --only firestore:rules`
   needs no `--project`.
 
-  Still to do:
-  - Deploy to Vercel and set the same env vars there. Anything added later as a
-    domain (a `*.vercel.app` preview URL, say) also has to go in Console →
-    Authentication → Settings → Authorized domains, or Google sign-in fails
-    there.
-  - Grant the first admin: `pnpm set-admin <email>` after that person has signed
-    in once, then have them sign in again to pick up the claim.
+  `d.tresoldi5@gmail.com` is **already an admin** (claim provisioned ahead of
+  first sign-in via `pnpm set-admin <email> --create`).
+
+  Still to do — all of it gated on one thing:
+  - **Upgrade the project to the Blaze plan.** Hosting the SSR app on Firebase
+    means App Hosting, which runs on Cloud Run and refuses to enable on Spark.
+    The same upgrade unblocks Firebase Storage (its bucket isn't provisioned
+    yet, which is why admin image upload can't be built). `apphosting.yaml` and
+    `docs/DEPLOY.md` have everything else ready — backend creation, the five
+    Secret Manager entries, and the post-deploy authorized-domain step.
+  - The Spark-compatible alternative is `pnpm build:static`, but it drops the
+    API routes, `/admin`, login, My Schedule, feedback and DevFest Quest. See
+    the last section of `docs/DEPLOY.md`.
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers.
-- **Dependencies:** GitHub reports 30 Dependabot vulnerabilities on `main`
-  (15 high, 15 moderate) — untriaged, and none of them from code written here.
-- **Admin still open:** news CRUD (intentionally skipped); image upload to Storage
-  (admin uses pasted URLs for now).
-- **Offline:** the app SHELL ships (Batch 1); full offline content caching is open.
+- **Dependencies:** clear. The 28 advisories (18 high) were resolved by bumping
+  next/firebase/sharp and pinning seven transitive packages through
+  `pnpm.overrides`; `pnpm audit` reports nothing.
+- **Admin still open:** news CRUD (intentionally skipped); image upload to
+  Storage — blocked until Storage is provisioned, which needs Blaze (the bucket
+  `devfestmilano26.firebasestorage.app` does not exist yet). Admin takes pasted
+  URLs meanwhile.
+- **Offline:** done. The service worker (`devfest-v2`) keeps visited pages, so
+  the agenda stays readable when signal drops at the venue; `/admin`,
+  `/my-schedule` and `/play` are deliberately never cached.
 - **DevFest Quest ops:** generate + print the checkpoint QR codes from
   `/admin/checkpoints` and place them physically at the venue before the event
   (the only non-code step). Camera scanning needs HTTPS (Vercel — fine).
