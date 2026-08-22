@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { AdminGate } from "@/components/admin/AdminGate";
 
@@ -15,7 +16,17 @@ const SECTIONS = [
   { href: "/admin/admins", label: "Amministratori" },
 ];
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  // Without this next-intl falls back to headers(), which forces dynamic
+  // rendering and breaks the static export.
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <AdminGate>
       <div className="mx-auto max-w-5xl px-5 py-10 sm:px-8">

@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+# any nested package (functions/) too
+node_modules/
 /.pnpm-store
 /.pnp
 .pnp.*
@@ -54,3 +56,6 @@ next-env.d.ts
 .claude/
 .cursor/
 .gemini/
+
+# Cloud Functions build output
+functions/lib

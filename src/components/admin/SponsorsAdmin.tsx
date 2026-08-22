@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
+import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
 import { SPONSOR_TIERS, type Sponsor } from "@/types/models";
 
 const EMPTY: Partial<Sponsor> = { name: "", tier: "gold", website: "", logoLight: "", logoDark: "", order: 999, active: true };
 
-export function SponsorsAdmin({ initial }: { initial: Sponsor[] }) {
-  const router = useRouter();
+export function SponsorsAdmin() {
+  const { data: initial, loading, error: loadError, reload } = useAdminData<Sponsor[]>(
+    "/api/admin/sponsors",
+    (j) => (j.sponsors as Sponsor[]) ?? [],
+    [],
+  );
   const [form, setForm] = useState<Partial<Sponsor>>(EMPTY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +26,7 @@ export function SponsorsAdmin({ initial }: { initial: Sponsor[] }) {
     setBusy(false);
     if (res.ok) {
       setForm(EMPTY);
-      router.refresh();
+      void reload();
     } else {
       setError(`Errore (${res.status}).`);
     }
@@ -32,11 +36,14 @@ export function SponsorsAdmin({ initial }: { initial: Sponsor[] }) {
     if (!confirm("Eliminare questo sponsor?")) return;
     const res = await adminFetch(`/api/admin/sponsors?id=${encodeURIComponent(id)}`, { method: "DELETE" });
     if (res.ok) {
-      router.refresh();
+      void reload();
     } else {
       setError(`Errore (${res.status}).`);
     }
   }
+
+  if (loadError) return <p className="text-sm text-gdg-red">{loadError}</p>;
+  if (loading) return <p className="text-muted-foreground">Caricamento…</p>;
 
   return (
     <div>

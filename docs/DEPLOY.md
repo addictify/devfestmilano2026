@@ -1,90 +1,100 @@
-# Deploying to Firebase
+# Deploying
 
-The site is a server-rendered Next.js app: route handlers under `src/app/api`,
-the i18n proxy, ISR, `/admin`, and DevFest Quest all need a server. On Firebase
-that means **App Hosting** (which runs on Cloud Run), not classic Hosting.
+Two pieces, deployed independently:
 
-## Prerequisite: the Blaze plan
+| Piece | Where | What it is |
+|---|---|---|
+| Frontend | **GitHub Pages** | Static export of the Next app, including `/admin` |
+| API | **Cloud Functions for Firebase (2nd gen)** | The `src/app/api` route handlers, bundled into one function |
 
-App Hosting can't be enabled on the free Spark plan — `firebase
-apphosting:backends:create` refuses with "must be on the Blaze (pay-as-you-go)
-plan". Upgrade at:
+The API needs a server because it holds the Firestore Admin SDK, the auth
+guards, and the QR secrets. Everything else is static, so Pages serves it.
 
-    https://console.firebase.google.com/project/devfestmilano26/usage/details
+## Why the API routes aren't duplicated
 
-Blaze is usage-based and keeps Spark's free tiers, so a site this size normally
-costs very little — but it is a real billing account, and `minInstances: 0` in
-`apphosting.yaml` is what keeps it idling at zero. Set a budget alert while
-you're in the console.
+`functions/` does **not** reimplement the endpoints. `functions/build.mjs`
+bundles the very same `src/app/api/**/route.ts` handlers, swapping three
+Next-only imports:
 
-## One-time setup
+- `server-only` → an empty module (it exists to make Next's bundler fail on a
+  client import; meaningless server-side),
+- `next/server` → a tiny `NextResponse` shim over the standard `Response`,
+- `next/cache` → `revalidatePath` becomes "ask GitHub Actions to rebuild",
+  because a static site has no ISR cache to invalidate.
 
-```bash
-# 1. Create the backend and connect it to the GitHub repo.
-firebase apphosting:backends:create --project devfestmilano26
+So every rule about who may do what lives in exactly one place. Adding a route
+means adding one line to `ROUTES` in `functions/src/index.ts`.
 
-# 2. Upload the server-only secrets to Cloud Secret Manager.
-#    Values come from your local .env — never commit them.
-firebase apphosting:secrets:set firebase-admin-client-email
-firebase apphosting:secrets:set firebase-admin-private-key
-firebase apphosting:secrets:set revalidate-secret
-firebase apphosting:secrets:set cron-secret
-firebase apphosting:secrets:set sessionize-event-id
+## Credentials: none to manage
 
-# 3. Let the backend read them.
-firebase apphosting:secrets:grantaccess firebase-admin-client-email --backend <backend-id>
-#    …repeat for each secret.
-```
+Inside Cloud Functions the Admin SDK uses Application Default Credentials, so
+`FIREBASE_ADMIN_PRIVATE_KEY` and friends are **not needed there** — one fewer
+secret to store and rotate. `src/lib/firebase/admin.ts` detects the runtime
+(`K_SERVICE`) and picks ADC there, explicit credentials locally.
 
-`apphosting.yaml` already declares which variables are public (inlined at BUILD,
-because `NEXT_PUBLIC_*` ends up in the client bundle) and which are RUNTIME-only
-secrets. After setup, every push to the connected branch builds and rolls out.
-
-## After the first deploy
-
-- Add the live domain to **Console → Authentication → Settings → Authorized
-  domains**, or Google sign-in fails there. `2026.devfestmilano.it` is already
-  authorized; a `*.web.app` or preview URL is not.
-- Point `NEXT_PUBLIC_SITE_URL` at the real origin if it changes — it drives
-  canonical URLs, the sitemap and OG tags.
-
-## The hourly Sessionize sync
-
-`/api/sync` pulls speakers/sessions/tracks from Sessionize and writes them to
-Firestore. It used to be triggered by a `vercel.json` cron, which App Hosting has
-no equivalent for, so schedule it with Cloud Scheduler (also Blaze-only):
+## Deploying the API
 
 ```bash
-gcloud scheduler jobs create http devfest-sessionize-sync \
-  --project devfestmilano26 \
-  --location europe-west1 \
-  --schedule "0 * * * *" \
-  --uri "https://<your-app-hosting-domain>/api/sync" \
-  --http-method GET \
-  --headers "Authorization=Bearer $CRON_SECRET"
+firebase deploy --only functions
 ```
 
-The route accepts either `Authorization: Bearer $CRON_SECRET` or
-`?secret=$REVALIDATE_SECRET`, and returns 503 while Firebase Admin is
-unconfigured, so it fails safe rather than half-writing.
+The predeploy hook installs and bundles. The function is `api` in
+`europe-west1`; its URL is what `NEXT_PUBLIC_API_BASE_URL` must point at.
 
-## Firestore rules
-
-Deployed separately, and independently of the hosting plan:
+One secret is required, and only for rebuilds:
 
 ```bash
-firebase deploy --only firestore:rules
+firebase functions:secrets:set GITHUB_REBUILD_TOKEN
 ```
 
-`.firebaserc` pins the project, so no `--project` flag is needed. Do this after
-any edit to `firebase/firestore.rules` — the rules are what stop anonymous
-clients reading `subscribers`, `checkpoints` and `gameProfiles` with the public
-web API key.
+A GitHub fine-grained PAT with **Actions: read and write** on this repo. Without
+it the API still works; admin edits just won't trigger a rebuild (it logs and
+carries on rather than failing the edit).
 
-## The Spark-plan fallback
+## Deploying the frontend
 
-`pnpm build:static` (see `scripts/static-build.sh`) produces a static export for
-GitHub Pages. It temporarily removes the API routes, `/admin` and the proxy,
-because none of them can work without a server. That's a genuinely reduced site:
-no ticket-interest capture, no login, no My Schedule sync, no admin, no DevFest
-Quest, no feedback. Fine as a placeholder, not as the event-day site.
+Automatic: `.github/workflows/deploy-pages.yml` builds and publishes on every
+push to `main`, and on `workflow_dispatch` (what the API calls after an edit).
+
+Set these as **repository variables** (Settings → Secrets and variables →
+Actions → Variables). They're `NEXT_PUBLIC_*`, so they're inlined into the
+client bundle and public by construction — not secrets:
+
+- `NEXT_PUBLIC_API_BASE_URL` ← the deployed function URL
+- `NEXT_PUBLIC_SITE_URL` → `https://2026.devfestmilano.it`
+- `NEXT_PUBLIC_FIREBASE_*` (six values, same as `.env`)
+- `NEXT_PUBLIC_TICKETS_URL`, `NEXT_PUBLIC_CFP_URL`
+
+The workflow refuses to publish if a service-account key ever appears in `out/`.
+
+Then point the domain: Pages → Custom domain → `2026.devfestmilano.it`
+(`public/CNAME` already carries it), and a DNS CNAME to `addictify.github.io`.
+
+## Content updates
+
+Published content is baked at build time. When you change sponsors, team, or a
+feature flag in `/admin`, the API fires a `workflow_dispatch` and the site
+rebuilds — live in a couple of minutes, not instantly. That's the trade for a
+static frontend.
+
+## Firestore and Storage rules
+
+Independent of all the above:
+
+```bash
+firebase deploy --only firestore:rules,storage
+```
+
+`.firebaserc` pins the project, so no `--project` flag. These rules are what
+stop anonymous clients reading `subscribers`, `checkpoints` and `gameProfiles`
+with the public web API key.
+
+## Running it all locally
+
+```bash
+PORT=3100 pnpm dev              # full Next app, API included, same-origin
+pnpm --dir functions build && firebase emulators:start --only functions
+```
+
+With `NEXT_PUBLIC_API_BASE_URL` empty, the dev server serves its own API — the
+functions emulator is only needed when testing the deployed shape.

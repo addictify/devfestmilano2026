@@ -20,8 +20,9 @@ STASH=".static-build-stash"
 REDIRECT_LOCALE="it"   # routing.defaultLocale
 
 # Files that must leave the tree during export (server-only).
+# /admin stays in: it's entirely client-side now (AdminGate + fetches against
+# the Cloud Functions API), so it exports fine and ships with the site.
 API_DIR="src/app/api"
-ADMIN_DIR="src/app/[locale]/admin"
 PROXY="src/proxy.ts"
 
 # Pages carrying `export const revalidate = …` (ISR → unsupported in export).
@@ -36,10 +37,6 @@ restore() {
   if [ -d "$STASH/api" ]; then
     rm -rf "$API_DIR"
     mv "$STASH/api" "$API_DIR"
-  fi
-  if [ -d "$STASH/admin" ]; then
-    rm -rf "$ADMIN_DIR"
-    mv "$STASH/admin" "$ADMIN_DIR"
   fi
   if [ -f "$STASH/proxy.ts" ]; then
     mv "$STASH/proxy.ts" "$PROXY"
@@ -59,7 +56,6 @@ echo "→ static export: stashing server-only files"
 mkdir -p "$STASH"
 
 [ -d "$API_DIR" ] && mv "$API_DIR" "$STASH/api"
-[ -d "$ADMIN_DIR" ] && mv "$ADMIN_DIR" "$STASH/admin"
 [ -f "$PROXY" ] && mv "$PROXY" "$STASH/proxy.ts"
 
 # Neutralize ISR by commenting out the export with a reversible marker.

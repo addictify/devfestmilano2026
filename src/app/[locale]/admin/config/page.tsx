@@ -1,9 +1,15 @@
-import { getSiteSettings } from "@/lib/data/settings";
+import { setRequestLocale } from "next-intl/server";
 import { ConfigAdmin } from "@/components/admin/ConfigAdmin";
 
-export const dynamic = "force-dynamic";
-
-export default async function AdminConfigPage() {
-  const settings = await getSiteSettings();
-  return <ConfigAdmin initial={settings} />;
+// No server-side data: the admin panel ships in the static export, so anything
+// read during the render would be frozen at build time. ConfigAdmin loads through
+// the verifyAdmin-guarded API instead.
+export default async function AdminConfigPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  return <ConfigAdmin />;
 }

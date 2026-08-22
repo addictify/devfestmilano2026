@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     ".cursor/**",
     ".gemini/**",
     ".impeccable/**",
+    // esbuild output, not hand-written source.
+    "functions/lib/**",
   ]),
   {
     rules: {

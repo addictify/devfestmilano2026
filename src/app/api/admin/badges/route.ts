@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin } from "@/lib/auth/admin-guard";
+import { getBadges } from "@/lib/data/game";
 
 export const dynamic = "force-dynamic";
+
+export async function GET(req: Request) {
+  if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
+  const db = getAdminDb();
+  if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
+  return NextResponse.json({ ok: true, badges: await getBadges() });
+}
 
 export async function POST(req: Request) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });

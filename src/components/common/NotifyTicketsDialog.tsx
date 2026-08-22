@@ -5,6 +5,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { useTranslations, useLocale } from "next-intl";
 import { ArrowUpRight, Bell, X } from "lucide-react";
 import { siteConfig } from "@/lib/site";
+import { apiUrl } from "@/lib/api-base";
 import { colorClasses, GDG, GDG_ORDER } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
 import { Button, type ButtonProps } from "@/components/ui/button";
@@ -35,7 +36,7 @@ export function NotifyTicketsDialog({
     e.preventDefault();
     setStatus("loading");
     try {
-      const res = await fetch("/api/subscribe", {
+      const res = await fetch(apiUrl("/api/subscribe"), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email, locale, website }),

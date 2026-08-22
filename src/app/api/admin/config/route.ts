@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin } from "@/lib/auth/admin-guard";
+import { getSiteSettings } from "@/lib/data/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,11 @@ const FLAGS = [
   "schedulePublished",
   "cfpOpen",
 ] as const;
+
+export async function GET(req: Request) {
+  if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
+  return NextResponse.json({ ok: true, settings: await getSiteSettings() });
+}
 
 export async function POST(req: Request) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });

@@ -1,9 +1,15 @@
-import { getTeam } from "@/lib/data/content";
+import { setRequestLocale } from "next-intl/server";
 import { TeamAdmin } from "@/components/admin/TeamAdmin";
 
-export const dynamic = "force-dynamic";
-
-export default async function AdminTeamPage() {
-  const team = await getTeam();
-  return <TeamAdmin initial={team} />;
+// No server-side data: the admin panel ships in the static export, so anything
+// read during the render would be frozen at build time. TeamAdmin loads through
+// the verifyAdmin-guarded API instead.
+export default async function AdminTeamPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  return <TeamAdmin />;
 }

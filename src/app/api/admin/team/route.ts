@@ -2,11 +2,19 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin } from "@/lib/auth/admin-guard";
+import { getTeam } from "@/lib/data/content";
 
 export const dynamic = "force-dynamic";
 
 function revalidateTeam() {
   for (const l of ["it", "en"]) revalidatePath(`/${l}/team`);
+}
+
+export async function GET(req: Request) {
+  if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
+  const db = getAdminDb();
+  if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
+  return NextResponse.json({ ok: true, team: await getTeam() });
 }
 
 export async function POST(req: Request) {

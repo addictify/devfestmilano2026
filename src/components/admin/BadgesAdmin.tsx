@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
+import { useAdminData } from "@/hooks/useAdminData";
 import { Button } from "@/components/ui/button";
 import type { Badge } from "@/lib/data/game";
 
@@ -13,8 +13,12 @@ const toDraft = (b: Badge): Draft => ({
   icon: b.icon, milestone: b.milestone ? String(b.milestone) : "",
 });
 
-export function BadgesAdmin({ initial }: { initial: Badge[] }) {
-  const router = useRouter();
+export function BadgesAdmin() {
+  const { data: initial, loading, error: loadError, reload } = useAdminData<Badge[]>(
+    "/api/admin/badges",
+    (j) => (j.badges as Badge[]) ?? [],
+    [],
+  );
   const [form, setForm] = useState<Draft>(EMPTY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,13 +27,16 @@ export function BadgesAdmin({ initial }: { initial: Badge[] }) {
     setBusy(true); setError(null);
     const res = await adminFetch("/api/admin/badges", { method: "POST", body: JSON.stringify(form) });
     setBusy(false);
-    if (res.ok) { setForm(EMPTY); router.refresh(); } else setError(`Errore (${res.status}).`);
+    if (res.ok) { setForm(EMPTY); void reload(); } else setError(`Errore (${res.status}).`);
   }
   async function remove(id: string) {
     if (!confirm("Eliminare questo badge?")) return;
     const res = await adminFetch(`/api/admin/badges?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) router.refresh(); else setError(`Errore (${res.status}).`);
+    if (res.ok) void reload(); else setError(`Errore (${res.status}).`);
   }
+
+  if (loadError) return <p className="text-sm text-gdg-red">{loadError}</p>;
+  if (loading) return <p className="text-muted-foreground">Caricamento…</p>;
 
   return (
     <div>

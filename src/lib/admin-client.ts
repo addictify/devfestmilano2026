@@ -1,4 +1,5 @@
 import { getFirebaseAuth } from "@/lib/firebase/client";
+import { apiUrl } from "@/lib/api-base";
 
 /** fetch() against /api/admin/* with the current user's ID token attached. */
 export async function adminFetch(path: string, init: RequestInit = {}): Promise<Response> {
@@ -8,7 +9,7 @@ export async function adminFetch(path: string, init: RequestInit = {}): Promise<
   // body, and overriding the header makes the payload unparseable server-side.
   const isFormData =
     typeof FormData !== "undefined" && init.body instanceof FormData;
-  return fetch(path, {
+  return fetch(apiUrl(path), {
     ...init,
     headers: {
       ...(init.headers ?? {}),

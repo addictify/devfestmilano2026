@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/admin-client";
+import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
 import { Button } from "@/components/ui/button";
 import type { TeamMember } from "@/types/models";
@@ -14,8 +14,12 @@ function toDraft(m: TeamMember): Draft {
   return { id: m.id, name: m.name, roleIt: m.role.it, roleEn: m.role.en, photo: m.photo ?? "", order: m.order };
 }
 
-export function TeamAdmin({ initial }: { initial: TeamMember[] }) {
-  const router = useRouter();
+export function TeamAdmin() {
+  const { data: initial, loading, error: loadError, reload } = useAdminData<TeamMember[]>(
+    "/api/admin/team",
+    (j) => (j.team as TeamMember[]) ?? [],
+    [],
+  );
   const [form, setForm] = useState<Draft>(EMPTY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,16 +31,19 @@ export function TeamAdmin({ initial }: { initial: TeamMember[] }) {
     setBusy(false);
     if (res.ok) {
       setForm(EMPTY);
-      router.refresh();
+      void reload();
     } else setError(`Errore (${res.status}).`);
   }
 
   async function remove(id: string) {
     if (!confirm("Eliminare questo membro?")) return;
     const res = await adminFetch(`/api/admin/team?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) router.refresh();
+    if (res.ok) void reload();
     else setError(`Errore (${res.status}).`);
   }
+
+  if (loadError) return <p className="text-sm text-gdg-red">{loadError}</p>;
+  if (loading) return <p className="text-muted-foreground">Caricamento…</p>;
 
   return (
     <div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { useAdminData } from "@/hooks/useAdminData";
 import { Button } from "@/components/ui/button";
 import type { SiteSettings } from "@/lib/data/settings";
 
@@ -12,8 +13,17 @@ const LABELS: Record<keyof SiteSettings, string> = {
   cfpOpen: "Call for Speakers aperta",
 };
 
-export function ConfigAdmin({ initial }: { initial: SiteSettings }) {
-  const [flags, setFlags] = useState<SiteSettings>(initial);
+export function ConfigAdmin() {
+  const { data: loaded, loading, error: loadError } = useAdminData<SiteSettings | null>(
+    "/api/admin/config",
+    (j) => (j.settings as SiteSettings) ?? null,
+    null,
+  );
+  // Edits are held as an overlay on what the server returned, so there's no
+  // effect copying one piece of state into another.
+  const [edits, setEdits] = useState<Partial<SiteSettings>>({});
+  const flags = loaded ? { ...loaded, ...edits } : null;
+  const setFlags = (next: SiteSettings) => setEdits(next);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
 
@@ -29,6 +39,9 @@ export function ConfigAdmin({ initial }: { initial: SiteSettings }) {
       setBusy(false);
     }
   }
+
+  if (loadError) return <p className="text-sm text-gdg-red">{loadError}</p>;
+  if (loading || !flags) return <p className="text-muted-foreground">Caricamento…</p>;
 
   return (
     <div className="max-w-lg">

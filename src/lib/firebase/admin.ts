@@ -15,15 +15,23 @@ const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
 // Vercel stores the key with literal "\n" — restore real newlines.
 const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
+// On Cloud Functions / Cloud Run the runtime supplies Application Default
+// Credentials, so there is no service-account key to configure — and shipping
+// one there would be strictly worse than the identity the platform already
+// gives us.
+const onGoogleCloud = Boolean(process.env.K_SERVICE || process.env.FUNCTION_TARGET);
+
 // Shape checks, not just presence: a half-filled .env (a placeholder left in
 // FIREBASE_ADMIN_PRIVATE_KEY, say) would otherwise read as "configured" and
 // blow up inside cert() on the first request, taking the whole page down
 // instead of falling back to seed content.
-const isAdminConfigured = Boolean(
-  projectId &&
-    clientEmail?.includes("@") &&
-    privateKey?.includes("BEGIN PRIVATE KEY"),
-);
+const isAdminConfigured =
+  onGoogleCloud ||
+  Boolean(
+    projectId &&
+      clientEmail?.includes("@") &&
+      privateKey?.includes("BEGIN PRIVATE KEY"),
+  );
 
 let cachedDb: Firestore | null = null;
 let initFailed = false;
@@ -42,9 +50,11 @@ export function getAdminDb(): Firestore | null {
   try {
     const app: App = getApps().length
       ? getApp()
-      : initializeApp({
-          credential: cert({ projectId, clientEmail, privateKey }),
-        });
+      : initializeApp(
+          onGoogleCloud
+            ? {} // Application Default Credentials
+            : { credential: cert({ projectId, clientEmail, privateKey }) },
+        );
 
     const db = getFirestore(app);
     try {
