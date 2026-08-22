@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { adminFetch } from "@/lib/admin-client";
 import { Button } from "@/components/ui/button";
@@ -22,23 +21,47 @@ const toDraft = (c: Checkpoint): Draft => ({
   wrongPenalty: c.wrongPenalty != null ? String(c.wrongPenalty) : "",
 });
 
-export function CheckpointsAdmin({ initial, badges }: { initial: Checkpoint[]; badges: Badge[] }) {
-  const router = useRouter();
+type Loaded = { checkpoints: Checkpoint[]; badges: Badge[] };
+
+async function fetchCheckpoints(): Promise<Loaded> {
+  const res = await adminFetch("/api/admin/checkpoints");
+  if (!res.ok) throw res.status;
+  return res.json();
+}
+
+// Data is fetched client-side rather than passed in as props — see the comment on
+// GET /api/admin/checkpoints for why these docs must not be server-rendered.
+export function CheckpointsAdmin() {
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[] | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]);
   const [form, setForm] = useState<Draft>(EMPTY);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [qr, setQr] = useState<{ name: string; dataUrl: string } | null>(null);
 
+  function apply(d: Loaded) {
+    setCheckpoints(d.checkpoints);
+    setBadges(d.badges);
+  }
+
+  useEffect(() => {
+    fetchCheckpoints()
+      .then(apply)
+      .catch((s) => setError(`Errore (${s}).`));
+  }, []);
+
+  const reload = () => fetchCheckpoints().then(apply).catch((s) => setError(`Errore (${s}).`));
+
   async function save() {
     setBusy(true); setError(null);
     const res = await adminFetch("/api/admin/checkpoints", { method: "POST", body: JSON.stringify(form) });
     setBusy(false);
-    if (res.ok) { setForm(EMPTY); router.refresh(); } else setError(`Errore (${res.status}).`);
+    if (res.ok) { setForm(EMPTY); await reload(); } else setError(`Errore (${res.status}).`);
   }
   async function remove(id: string) {
     if (!confirm("Eliminare questo checkpoint?")) return;
     const res = await adminFetch(`/api/admin/checkpoints?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-    if (res.ok) router.refresh(); else setError(`Errore (${res.status}).`);
+    if (res.ok) await reload(); else setError(`Errore (${res.status}).`);
   }
   async function showQr(c: Checkpoint) {
     const dataUrl = await QRCode.toDataURL(`DFQ:${c.id}:${c.secret}`, { width: 512, margin: 2 });
@@ -48,21 +71,24 @@ export function CheckpointsAdmin({ initial, badges }: { initial: Checkpoint[]; b
   return (
     <div>
       <h2 className="mb-6 font-display text-xl font-bold">Checkpoint</h2>
-      <table className="mb-8 w-full text-sm">
-        <thead className="text-left text-muted-foreground"><tr><th className="py-2">Nome (IT)</th><th>Punti</th><th>Attivo</th><th></th></tr></thead>
-        <tbody>
-          {initial.map((c) => (
-            <tr key={c.id} className="border-t border-border">
-              <td className="py-2">{c.name.it}</td><td>{c.points}</td><td>{c.active ? "sì" : "no"}</td>
-              <td className="text-right">
-                <button onClick={() => showQr(c)} className="mr-3 text-gdg-green hover:underline">QR</button>
-                <button onClick={() => setForm(toDraft(c))} className="mr-3 text-gdg-blue hover:underline">Modifica</button>
-                <button onClick={() => remove(c.id)} className="text-gdg-red hover:underline">Elimina</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {!checkpoints && !error && <p className="mb-8 text-muted-foreground">Caricamento…</p>}
+      {checkpoints && (
+        <table className="mb-8 w-full text-sm">
+          <thead className="text-left text-muted-foreground"><tr><th className="py-2">Nome (IT)</th><th>Punti</th><th>Attivo</th><th></th></tr></thead>
+          <tbody>
+            {checkpoints.map((c) => (
+              <tr key={c.id} className="border-t border-border">
+                <td className="py-2">{c.name.it}</td><td>{c.points}</td><td>{c.active ? "sì" : "no"}</td>
+                <td className="text-right">
+                  <button onClick={() => showQr(c)} className="mr-3 text-gdg-green hover:underline">QR</button>
+                  <button onClick={() => setForm(toDraft(c))} className="mr-3 text-gdg-blue hover:underline">Modifica</button>
+                  <button onClick={() => remove(c.id)} className="text-gdg-red hover:underline">Elimina</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {qr && (
         <div className="mb-8 rounded-2xl border border-border p-5 text-center print:border-0">

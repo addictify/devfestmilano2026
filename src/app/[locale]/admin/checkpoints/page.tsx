@@ -1,9 +1,11 @@
-import { getBadges, getCheckpoints } from "@/lib/data/game";
 import { CheckpointsAdmin } from "@/components/admin/CheckpointsAdmin";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminCheckpointsPage() {
-  const [checkpoints, badges] = await Promise.all([getCheckpoints(), getBadges()]);
-  return <CheckpointsAdmin initial={checkpoints} badges={badges} />;
+// Deliberately renders no data: checkpoint docs hold the QR `secret` and quiz
+// `answer`, and the admin gate above this page is client-side, so server-rendered
+// props would reach unauthenticated visitors. CheckpointsAdmin fetches from the
+// verifyAdmin-guarded GET /api/admin/checkpoints instead.
+export default function AdminCheckpointsPage() {
+  return <CheckpointsAdmin />;
 }

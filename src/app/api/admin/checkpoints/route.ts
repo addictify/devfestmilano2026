@@ -2,8 +2,21 @@ import { NextResponse } from "next/server";
 import { randomBytes } from "node:crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin } from "@/lib/auth/admin-guard";
+import { getBadges, getCheckpoints } from "@/lib/data/game";
 
 export const dynamic = "force-dynamic";
+
+// Checkpoints carry the QR `secret` and the quiz `answer`, so they must never be
+// rendered by the page itself: the admin layout's gate is a client component, and
+// anything a server component renders inside it ships to every visitor in the RSC
+// payload, signed in or not. The admin UI fetches through here instead.
+export async function GET(req: Request) {
+  if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
+  const db = getAdminDb();
+  if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
+  const [checkpoints, badges] = await Promise.all([getCheckpoints(), getBadges()]);
+  return NextResponse.json({ ok: true, checkpoints, badges });
+}
 
 export async function POST(req: Request) {
   if (!(await verifyAdmin(req))) return NextResponse.json({ ok: false }, { status: 403 });
