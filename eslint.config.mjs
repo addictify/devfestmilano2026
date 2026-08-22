@@ -12,7 +12,23 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored agent-skill scripts — not our code, and they drown the real
+    // warnings (397 of them came from here).
+    ".claude/**",
+    ".cursor/**",
+    ".gemini/**",
+    ".impeccable/**",
   ]),
+  {
+    rules: {
+      // `const { uid, ...rest } = obj` is how you omit a key — the discarded
+      // sibling isn't dead code. Underscore-prefixed names stay opt-out too.
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { ignoreRestSiblings: true, argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

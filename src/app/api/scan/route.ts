@@ -37,14 +37,17 @@ export async function POST(req: Request) {
     const status = verdict === "not-found" ? 404 : 403;
     return NextResponse.json({ ok: false, reason: verdict }, { status });
   }
+  // "ok" is only reachable with a non-null checkpoint — assert once here rather
+  // than at each of the five uses below.
+  const checkpoint = cp!;
 
-  const hasQuiz = Boolean(cp!.answer);
+  const hasQuiz = Boolean(checkpoint.answer);
 
   // PEEK phase: quiz checkpoint, no answer submitted yet → return the question (never the answer).
   if (hasQuiz && !answerProvided) {
     const existing = await scanRef.get();
     if (existing.exists) return NextResponse.json({ ok: true, already: true });
-    return NextResponse.json({ ok: true, quiz: { question: cp!.question ?? null } });
+    return NextResponse.json({ ok: true, quiz: { question: checkpoint.question ?? null } });
   }
 
   // Milestone badges = badges carrying a positive `milestone`.
@@ -60,10 +63,10 @@ export async function POST(req: Request) {
       ? { points: profDoc.data()!.points ?? 0, badgeIds: profDoc.data()!.badgeIds ?? [], scanCount: profDoc.data()!.scanCount ?? 0 }
       : { points: 0, badgeIds: [], scanCount: 0 };
     const { correct, pointsDelta } = quizOutcome(
-      { points: cp!.points, answer: cp!.answer, quizMode: cp!.quizMode, quizValue: cp!.quizValue, wrongPenalty: cp!.wrongPenalty },
+      { points: checkpoint.points, answer: checkpoint.answer, quizMode: checkpoint.quizMode, quizValue: checkpoint.quizValue, wrongPenalty: checkpoint.wrongPenalty },
       answer,
     );
-    const next = awardForScan(current, pointsDelta, cp!.badgeId, milestones);
+    const next = awardForScan(current, pointsDelta, checkpoint.badgeId, milestones);
     tx.set(scanRef, { at: FieldValue.serverTimestamp(), points: pointsDelta, correct });
     tx.set(profileRef, next, { merge: true });
     const newBadgeIds = next.badgeIds.filter((b) => !current.badgeIds.includes(b));

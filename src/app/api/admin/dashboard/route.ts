@@ -17,15 +17,21 @@ export async function GET(req: Request) {
     getSessions(), getSubscriberRows(), getCheckpoints(), getBadges(),
   ]);
 
-  // Feedback per session.
-  const feedback = [];
-  for (const s of sessions.filter((x) => !x.isServiceSession)) {
-    const snap = await db.collection("feedback").doc(s.id).collection("responses").get();
-    if (snap.empty) continue;
-    const responses = snap.docs.map((d) => ({ rating: d.data().rating as number, comment: d.data().comment as string | undefined }));
-    const agg = aggregate(responses);
-    feedback.push({ sessionId: s.id, title: s.title, count: agg.count, average: agg.average, distribution: agg.distribution, comments: agg.comments });
-  }
+  // Feedback per session — one round-trip each, so fan them out rather than
+  // walking the sessions serially.
+  const feedback = (
+    await Promise.all(
+      sessions
+        .filter((x) => !x.isServiceSession)
+        .map(async (s) => {
+          const snap = await db.collection("feedback").doc(s.id).collection("responses").get();
+          if (snap.empty) return null;
+          const responses = snap.docs.map((d) => ({ rating: d.data().rating as number, comment: d.data().comment as string | undefined }));
+          const agg = aggregate(responses);
+          return { sessionId: s.id, title: s.title, count: agg.count, average: agg.average, distribution: agg.distribution, comments: agg.comments };
+        }),
+    )
+  ).filter((x) => x !== null);
 
   // Gamification: scans per checkpoint + badge distribution + top leaderboard + players.
   const profiles = await db.collection("gameProfiles").get();
@@ -35,11 +41,9 @@ export async function GET(req: Request) {
     players++;
     for (const b of (p.data().badgeIds ?? []) as string[]) badgeCounts[b] = (badgeCounts[b] ?? 0) + 1;
   });
+  // Scan doc ids are checkpoint ids; checkpoints with no scans fall back to 0
+  // where they're read below.
   const scanCounts: Record<string, number> = {};
-  for (const c of checkpoints) {
-    // count scan docs across players for this checkpoint via collectionGroup
-    scanCounts[c.id] = 0;
-  }
   const scansCG = await db.collectionGroup("scans").get();
   scansCG.forEach((d) => { const id = d.id; scanCounts[id] = (scanCounts[id] ?? 0) + 1; });
   const lb = await db.collection("leaderboard").orderBy("points", "desc").limit(10).get();

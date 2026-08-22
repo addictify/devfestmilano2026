@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
-import { getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
+import { getAdminDb } from "@/lib/firebase/admin";
 import { isValidEmail, normalizeEmail } from "@/lib/email";
 
 export async function POST(req: Request) {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   }
 
   const db = getAdminDb();
-  if (!isAdminConfigured || !db) {
+  if (!db) {
     // Seed mode / static export: nothing to write. Tell client to fall back.
     return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
   }
