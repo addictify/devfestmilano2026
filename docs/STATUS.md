@@ -139,6 +139,12 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **After talk selection:** set `speakersPublished` / `schedulePublished` to
   `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
   shows the "selection in progress" state).
+  - ⚠️ **`SESSIONIZE_EVENT_ID=24146` does not work**: `sessionize.com/api/v2/24146/view/All`
+    returns 404 (checked 2026-08-22), as does the `devfest-milano-2026` slug,
+    while the public CFP page itself is live. The v2 API needs the id of an
+    *API endpoint* created in Sessionize (Event → Embed & API), which is a short
+    alphanumeric code, not the numeric event id. Until that's created and put in
+    `SESSIONIZE_EVENT_ID`, `/api/sync` will keep failing with 502.
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers.
