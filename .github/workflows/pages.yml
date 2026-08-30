@@ -1,22 +1,30 @@
 name: Deploy to GitHub Pages
 
-# Static export of the frontend → GitHub Pages (2026.devfestmilano.it).
-# Rebuilds on every push to main; data is the bundled seed (no Firebase at
-# build time), so a push is what refreshes the live site.
+# Two ways in:
+#  - a push to main (code or content committed to the repo);
+#  - workflow_dispatch, which the API calls after an admin edit. Published
+#    content is baked at build time, so a Firestore change is invisible until
+#    the site is rebuilt.
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      reason:
+        description: "What triggered the rebuild"
+        required: false
+        default: "manual"
+
+# Let a running deploy finish, but collapse queued ones: several admin edits in
+# a row should produce one rebuild, not a queue of them.
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 permissions:
   contents: read
   pages: write
   id-token: write
-
-# One deploy at a time; let an in-progress run finish rather than cancel it.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -24,20 +32,58 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Log what triggered this
+        # Via env, never interpolated into the script: `reason` is supplied by
+        # the API caller, and inlining caller-controlled text into a shell
+        # command is how workflow injection happens.
+        env:
+          REASON: ${{ inputs.reason || github.event_name }}
+        run: echo "Triggered by: $REASON"
+
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.0
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm test
+
       - name: Build static export
+        # NEXT_PUBLIC_* values are inlined into the client bundle, so they are
+        # public by construction — repository variables, not secrets. No
+        # server-side credential is needed or wanted here: the export contains
+        # no server code.
+        env:
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ vars.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ vars.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ vars.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ vars.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_TICKETS_URL: ${{ vars.NEXT_PUBLIC_TICKETS_URL }}
+          NEXT_PUBLIC_CFP_URL: ${{ vars.NEXT_PUBLIC_CFP_URL }}
         run: pnpm build:static
 
-      - uses: actions/configure-pages@v5
+      - name: Fail if a server secret reached the export
+        # Cheap insurance: the export is world-readable once published.
+        run: |
+          set -e
+          for pattern in "BEGIN PRIVATE KEY" "iam.gserviceaccount.com"; do
+            if grep -rl "$pattern" out >/dev/null 2>&1; then
+              echo "::error::'$pattern' found in the static export — refusing to publish"
+              exit 1
+            fi
+          done
+          echo "no server credentials in out/"
 
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

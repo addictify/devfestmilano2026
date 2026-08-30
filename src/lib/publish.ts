@@ -95,7 +95,7 @@ async function clearPending(ok: boolean): Promise<void> {
 }
 
 const REPO = process.env.GITHUB_REPOSITORY ?? "addictify/devfestmilano2026";
-const WORKFLOW = process.env.GITHUB_REBUILD_WORKFLOW ?? "deploy-pages.yml";
+const WORKFLOW = process.env.GITHUB_REBUILD_WORKFLOW ?? "pages.yml";
 const REF = process.env.GITHUB_REBUILD_REF ?? "main";
 
 export type PublishResult =
