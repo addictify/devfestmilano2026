@@ -102,11 +102,25 @@ function toWebRequest(req: import("firebase-functions/v2/https").Request): Reque
   });
 }
 
-// Only /api/admin/publish uses it, but secrets are declared per function.
+// Secrets are declared per function, so everything any route needs at runtime
+// has to be listed here — a route whose secret is missing fails only when
+// someone calls it.
+//   GITHUB_REBUILD_TOKEN  → /api/admin/publish dispatches the rebuild
+//   SESSIONIZE_EVENT_ID   → /api/sync fetches the schedule
+//   CRON_SECRET           → authorizes the scheduled sync
+//   REVALIDATE_SECRET     → authorizes a manual sync
 const GITHUB_TOKEN = defineSecret("GITHUB_REBUILD_TOKEN");
+const SESSIONIZE_EVENT_ID = defineSecret("SESSIONIZE_EVENT_ID");
+const CRON_SECRET = defineSecret("CRON_SECRET");
+const REVALIDATE_SECRET = defineSecret("REVALIDATE_SECRET");
 
 export const api = onRequest(
-  { region: "europe-west1", secrets: [GITHUB_TOKEN], cors: false, maxInstances: 10 },
+  {
+    region: "europe-west1",
+    secrets: [GITHUB_TOKEN, SESSIONIZE_EVENT_ID, CRON_SECRET, REVALIDATE_SECRET],
+    cors: false,
+    maxInstances: 10,
+  },
   async (req, res) => {
     const cors = corsHeaders(req.headers.origin);
 
