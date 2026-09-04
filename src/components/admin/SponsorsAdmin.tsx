@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { notifyContentChanged } from "./PublishBar";
 import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
@@ -55,7 +56,9 @@ export function SponsorsAdmin() {
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl font-bold">Sponsor</h2>
+      <AdminSectionHeader title="Sponsor">
+        I loghi mostrati sul sito pubblico, raggruppati per livello. Il livello determina la dimensione del logo, il campo ordine la posizione all&apos;interno del livello. Le modifiche compaiono online solo dopo la pubblicazione.
+      </AdminSectionHeader>
 
       <table className="mb-8 w-full text-sm">
         <thead className="text-left text-muted-foreground">

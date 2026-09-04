@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { notifyContentChanged } from "./PublishBar";
 import { useAdminData } from "@/hooks/useAdminData";
 import { ImageField } from "./ImageField";
@@ -55,7 +56,9 @@ export function TeamAdmin() {
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl font-bold">Team</h2>
+      <AdminSectionHeader title="Team">
+        Le persone mostrate nella pagina Team del sito. Il ruolo va scritto in entrambe le lingue; l&apos;ordine decide la posizione nella griglia. Online dopo la pubblicazione.
+      </AdminSectionHeader>
       <table className="mb-8 w-full text-sm">
         <thead className="text-left text-muted-foreground"><tr><th className="py-2">Nome</th><th>Ruolo (IT)</th><th>Ordine</th><th></th></tr></thead>
         <tbody>

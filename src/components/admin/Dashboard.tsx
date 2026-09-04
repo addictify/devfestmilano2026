@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { localized } from "@/lib/localize";
 import type { LocalizedString } from "@/types/models";
 
@@ -34,6 +35,14 @@ export function Dashboard() {
 
   return (
     <div className="flex flex-col gap-10">
+      <div className="-mb-6">
+      <AdminSectionHeader title="Cruscotto">
+        Il riepilogo dell&apos;evento: quante persone si sono iscritte agli
+        aggiornamenti, chi sta giocando a DevFest Quest e come stanno andando le
+        sessioni. I numeri si aggiornano ad ogni ricaricamento della pagina.
+      </AdminSectionHeader>
+      </div>
+
       <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Stat label="Iscritti" value={data.subscribers} />
         <Stat label="Giocatori" value={data.game.players} />
@@ -42,7 +51,11 @@ export function Dashboard() {
       </section>
 
       <section>
-        <h2 className="mb-3 font-display text-lg font-bold">Feedback sessioni</h2>
+        <h2 className="mb-1 font-display text-lg font-bold">Feedback sessioni</h2>
+        <p className="mb-3 max-w-2xl text-sm text-muted-foreground">
+          Voti e commenti lasciati dai partecipanti. Sono anonimi: non è
+          possibile risalire a chi li ha scritti.
+        </p>
         {data.feedback.length === 0 ? <p className="text-muted-foreground">Nessun feedback.</p> : (
           <div className="flex flex-col gap-4">
             {data.feedback.map((f) => (
@@ -72,7 +85,10 @@ export function Dashboard() {
 
       <section className="grid gap-8 sm:grid-cols-2">
         <div>
-          <h2 className="mb-3 font-display text-lg font-bold">Checkpoint — scansioni</h2>
+          <h2 className="mb-1 font-display text-lg font-bold">Checkpoint — scansioni</h2>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Quante volte ogni checkpoint è stato scansionato durante l&apos;evento.
+          </p>
           <ul className="flex flex-col gap-1 text-sm">
             {data.game.checkpoints.map((c) => (
               <li key={c.id} className="flex justify-between border-t border-border py-1"><span>{localized(c.name, locale)}</span><span className="font-mono">{c.scans}</span></li>

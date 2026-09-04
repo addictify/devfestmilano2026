@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { notifyContentChanged } from "./PublishBar";
 import { useAdminData } from "@/hooks/useAdminData";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,9 @@ export function BadgesAdmin() {
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl font-bold">Badge</h2>
+      <AdminSectionHeader title="Badge">
+        I riconoscimenti che i partecipanti sbloccano durante DevFest Quest. Un badge può essere assegnato da un checkpoint oppure al raggiungimento di una soglia di punti. Vengono assegnati dal server: nessuno può attribuirseli da sé.
+      </AdminSectionHeader>
       <table className="mb-8 w-full text-sm">
         <thead className="text-left text-muted-foreground"><tr><th className="py-2">Icona</th><th>Nome (IT)</th><th>Milestone</th><th></th></tr></thead>
         <tbody>

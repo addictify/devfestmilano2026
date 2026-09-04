@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { useAdminData } from "@/hooks/useAdminData";
 import { notifyContentChanged } from "./PublishBar";
 import { Button } from "@/components/ui/button";
@@ -51,7 +52,9 @@ export function ConfigAdmin() {
 
   return (
     <div className="max-w-lg">
-      <h2 className="mb-6 font-display text-xl font-bold">Configurazione</h2>
+      <AdminSectionHeader title="Configurazione">
+        Gli interruttori che decidono cosa mostra il sito pubblico: biglietti in vendita, speaker e agenda pubblicati, call for speakers aperta. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
+      </AdminSectionHeader>
       <div className="flex flex-col gap-3">
         {(Object.keys(LABELS) as (keyof SiteSettings)[]).map((k) => (
           <label key={k} className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">

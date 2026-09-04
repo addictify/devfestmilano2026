@@ -31,10 +31,15 @@ export function SubscribersAdmin() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="font-display text-xl font-bold">Iscritti</h2>
+      <div className="mb-2 flex items-center justify-between gap-4">
+        <h2 className="font-display text-xl font-bold tracking-tight">Iscritti</h2>
         <Button onClick={exportCsv} disabled={!rows?.length}>Esporta CSV</Button>
       </div>
+      <p className="mb-6 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground">
+        Gli indirizzi raccolti dal modulo &laquo;avvisami quando aprono i
+        biglietti&raquo;. Sono dati personali: usali solo per comunicazioni
+        sull&apos;evento e non condividerli fuori dall&apos;organizzazione.
+      </p>
       {error && <p className="text-sm text-gdg-red">{error}</p>}
       {!rows && !error && <p className="text-muted-foreground">Caricamento…</p>}
       {rows && (

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { adminFetch } from "@/lib/admin-client";
+import { AdminSectionHeader } from "./AdminSectionHeader";
 import { notifyContentChanged } from "./PublishBar";
 import { Button } from "@/components/ui/button";
 import type { Badge, Checkpoint } from "@/lib/data/game";
@@ -78,7 +79,9 @@ export function CheckpointsAdmin() {
 
   return (
     <div>
-      <h2 className="mb-6 font-display text-xl font-bold">Checkpoint</h2>
+      <AdminSectionHeader title="Checkpoint">
+        I punti da scansionare in venue durante l&apos;evento, con i punti che valgono e un eventuale quiz. Ogni checkpoint genera un QR che contiene un codice segreto: stampalo da qui e non diffonderlo altrove, perché chi lo conosce può ottenere i punti senza essere presente.
+      </AdminSectionHeader>
       {!checkpoints && !error && <p className="mb-8 text-muted-foreground">Caricamento…</p>}
       {checkpoints && (
         <table className="mb-8 w-full text-sm">
