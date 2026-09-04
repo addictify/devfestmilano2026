@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "main": "lib/index.js",
-  "engines": { "node": "22" },
+  "engines": {
+    "node": "22"
+  },
   "scripts": {
     "build": "node build.mjs",
     "serve": "pnpm build && firebase emulators:start --only functions"

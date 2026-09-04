@@ -110,7 +110,11 @@ export type PublishResult =
  */
 export async function publishSite(reason: string): Promise<PublishResult> {
   const token = process.env.GITHUB_REBUILD_TOKEN;
-  if (!token) return { ok: false, reason: "no-token" };
+  // "unset" is the placeholder the secret is seeded with: Secret Manager won't
+  // accept an empty payload, but the function has to deploy before a real PAT
+  // exists. Treating it as absent keeps the banner saying "not configured"
+  // instead of attempting a dispatch that 401s.
+  if (!token || token === "unset") return { ok: false, reason: "no-token" };
 
   try {
     const res = await fetch(

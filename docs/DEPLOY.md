@@ -34,22 +34,46 @@ secret to store and rotate. `src/lib/firebase/admin.ts` detects the runtime
 
 ## Deploying the API
 
+Automatic: `.github/workflows/functions.yml` deploys on pushes that touch
+`functions/`, `src/app/api/`, `src/lib/`, `src/types/` or `firebase.json` — a
+copy change doesn't redeploy the backend. Manually:
+
 ```bash
-firebase deploy --only functions
+firebase deploy --only functions --force
 ```
 
-The predeploy hook installs and bundles. The function is `api` in
-`europe-west1`; its URL is what `NEXT_PUBLIC_API_BASE_URL` must point at.
+CI authenticates with **Workload Identity Federation**, so no service-account
+key is stored in GitHub: Actions presents a short-lived OIDC token, and the
+provider only accepts tokens from this repository. The pieces (already created)
+are the `github` pool + OIDC provider and the `github-deployer` service account.
+
+The live function is `api` in `europe-west1`, reachable at both
+`https://europe-west1-devfestmilano26.cloudfunctions.net/api` (stable — this is
+what `NEXT_PUBLIC_API_BASE_URL` uses) and a hashed `*.run.app` URL that changes
+if the function is recreated.
+
+Two things that are easy to trip over, both already handled:
+
+- **functions/ uses npm, not pnpm.** pnpm 10 refuses to run dependency build
+  scripts unless they're allow-listed, and in Cloud Build that refusal fails the
+  deploy outright. `package-lock.json` must stay committed.
+- **2nd-gen functions run on Cloud Run, which is private by default.** Without
+  `roles/run.invoker` for `allUsers`, every request — including CORS preflights
+  — returns 403 before reaching any code. Authorization is done in the handlers
+  via Firebase ID tokens, so the endpoint itself has to be reachable.
 
 One secret is required, and only for rebuilds:
 
 ```bash
-firebase functions:secrets:set GITHUB_REBUILD_TOKEN
+printf '%s' 'ghp_yourtoken' | gcloud secrets versions add GITHUB_REBUILD_TOKEN --data-file=- --project devfestmilano26
 ```
 
-A GitHub fine-grained PAT with **Actions: read and write** on this repo. Without
-it everything still works except the Pubblica button, which reports that
-publishing isn't configured.
+A GitHub fine-grained PAT with **Actions: read and write** on this repo. It's
+currently seeded with the literal string `unset`, because Secret Manager won't
+accept an empty payload but the function has to deploy before a real token
+exists; `publishSite()` treats that value as "not configured", so the Pubblica
+button reports it cleanly instead of attempting a dispatch that 401s.
+Everything else works without it.
 
 ## Deploying the frontend
 

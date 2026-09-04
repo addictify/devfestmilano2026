@@ -26,8 +26,8 @@
       "codebase": "default",
       "runtime": "nodejs22",
       "predeploy": [
-        "pnpm --dir functions install --ignore-workspace",
-        "pnpm --dir functions build"
+        "npm --prefix functions install",
+        "npm --prefix functions run build"
       ],
       "ignore": [
         "node_modules",
