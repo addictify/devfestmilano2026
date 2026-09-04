@@ -52,6 +52,12 @@ restore() {
 }
 trap restore EXIT
 
+# Start from a clean build. Next reuses prerendered pages from .next, and
+# published content is fetched during that prerender — so a stale cache can
+# silently ship yesterday's Firestore data (or the seed) even though the build
+# "succeeded". CI is always clean; this makes local builds match it.
+rm -rf .next
+
 echo "→ static export: stashing server-only files"
 mkdir -p "$STASH"
 

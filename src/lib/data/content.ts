@@ -1,5 +1,6 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { readPublicCollection } from "./firestore-rest";
 import type {
   Session,
   Speaker,
@@ -16,23 +17,35 @@ import {
 } from "./seed";
 import { getSiteSettings } from "./settings";
 
-// Read content from Firestore when configured, otherwise serve seed content so
-// the site renders fully during development and before the backend is wired.
-
+// Three ways to get published content, in order of preference:
+//   1. the Admin SDK, when credentials are configured (dev, and the API);
+//   2. Firestore's REST API with the public web API key — this is what the
+//      static build in CI uses, since CI deliberately has no service account
+//      and a build that couldn't read Firestore would bake the seed into the
+//      live site, hiding everything edited in /admin;
+//   3. the bundled seed, so the site renders with no backend at all.
 async function read<T extends { id: string }>(
   collection: string,
   fallback: T[],
 ): Promise<T[]> {
   const db = getAdminDb();
-  if (!db) return fallback;
-  try {
-    const snap = await db.collection(collection).get();
-    if (snap.empty) return fallback;
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[];
-  } catch (error) {
-    console.error(`[content] Firestore read failed for "${collection}":`, error);
-    return fallback;
+  if (db) {
+    try {
+      const snap = await db.collection(collection).get();
+      if (snap.empty) return fallback;
+      return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[];
+    } catch (error) {
+      console.error(`[content] Firestore read failed for "${collection}":`, error);
+      return fallback;
+    }
   }
+
+  const publicDocs = await readPublicCollection(collection);
+  // null means the read didn't happen; an empty collection means there is
+  // genuinely nothing published yet. Both fall back to seed, but only the
+  // second is a real answer.
+  if (publicDocs && publicDocs.length > 0) return publicDocs as T[];
+  return fallback;
 }
 
 const byOrder = <T extends { order?: number }>(a: T, b: T) =>
