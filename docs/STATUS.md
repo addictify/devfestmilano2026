@@ -148,9 +148,13 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers.
-- **Dependencies:** clear. The 28 advisories (18 high) were resolved by bumping
-  next/firebase/sharp and pinning seven transitive packages through
-  `pnpm.overrides`; `pnpm audit` reports nothing.
+- **Dependencies:** clear as of 2026-09-05, but this needs re-checking rather
+  than trusting: five Dependabot alerts had reappeared (browserslist ×2 high in
+  eslint's Babel chain, and qs ×2 + uuid in `functions/`, which do run in
+  production). Fixed with overrides in both `package.json` files; `pnpm audit`
+  and `npm audit --prefix functions` both report zero. New transitive alerts
+  will keep appearing — check `gh api repos/.../dependabot/alerts`, not just
+  the local audit, since the two disagreed.
 - **Admin still open:** news CRUD (intentionally skipped). Image upload is
   **done** — Storage is provisioned (`devfestmilano26.firebasestorage.app`,
   europe-west3), `firebase/storage.rules` is deployed (public read on
