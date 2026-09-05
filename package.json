@@ -11,7 +11,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "set-admin": "tsx scripts/set-admin.ts"
+    "set-admin": "tsx scripts/set-admin.ts",
+    "seed:firestore": "tsx scripts/seed-to-firestore.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.13",

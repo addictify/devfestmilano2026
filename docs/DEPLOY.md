@@ -111,6 +111,27 @@ If publishing fails — most often a missing `GITHUB_REBUILD_TOKEN` — the pend
 state is deliberately left alone, so the banner keeps showing that the live site
 is behind rather than quietly claiming it's current.
 
+## Scheduled Sessionize sync
+
+A Cloud Scheduler job (`sessionize-sync`, europe-west1) POSTs to
+`/api/sync` hourly with `Authorization: Bearer $CRON_SECRET`. Recreate with:
+
+```bash
+gcloud scheduler jobs create http sessionize-sync \
+  --location=europe-west1 --schedule="0 * * * *" --time-zone="Europe/Rome" \
+  --uri="https://europe-west1-devfestmilano26.cloudfunctions.net/api/api/sync" \
+  --http-method=POST --headers="Authorization=Bearer $CRON_SECRET"
+```
+
+The sync only writes to Firestore; it marks the site as having unpublished
+changes rather than rebuilding, so new talks appear publicly when someone
+presses Pubblica.
+
+Note: a job run immediately after creation can be dropped silently — the first
+forced run left `status.code: -1` and never reached the function, while a
+retry a minute later returned 200. Confirm with `config/site.lastSync` rather
+than the job's own state.
+
 ## Firestore and Storage rules
 
 Independent of all the above:

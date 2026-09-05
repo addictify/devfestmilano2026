@@ -39,9 +39,20 @@ export function PublishBar() {
 
   useEffect(() => {
     refresh();
-    // Another organizer may be editing at the same time.
-    const id = setInterval(refresh, 30_000);
-    return () => clearInterval(id);
+    // Another organizer may be editing at the same time, so poll — but only
+    // while the tab is actually being looked at. A panel left open in a
+    // background tab was calling the API every 30s indefinitely, which is both
+    // pointless and billable. Refresh once on return, so what you see when you
+    // come back is current.
+    const tick = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    const id = setInterval(tick, 30_000);
+    document.addEventListener("visibilitychange", tick);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", tick);
+    };
   }, [refresh]);
 
   // Edits elsewhere in the panel announce themselves rather than each screen
