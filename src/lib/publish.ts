@@ -108,13 +108,21 @@ export type PublishResult =
  * Pending state is only cleared on success, so a failed publish leaves the
  * banner up rather than quietly pretending the site is current.
  */
+/**
+ * GitHub personal access tokens start with a known prefix. Checking the shape
+ * catches the realistic mistakes — the seeded "unset" placeholder, or a whole
+ * shell command pasted in as the value — and reports them as "not configured",
+ * which points at the fix, instead of a 401 that looks like a broken deploy.
+ */
+function looksLikeGitHubToken(token: string): boolean {
+  return /^(github_pat_|ghp_|gho_|ghs_)[A-Za-z0-9_]+$/.test(token.trim());
+}
+
 export async function publishSite(reason: string): Promise<PublishResult> {
-  const token = process.env.GITHUB_REBUILD_TOKEN;
-  // "unset" is the placeholder the secret is seeded with: Secret Manager won't
-  // accept an empty payload, but the function has to deploy before a real PAT
-  // exists. Treating it as absent keeps the banner saying "not configured"
-  // instead of attempting a dispatch that 401s.
-  if (!token || token === "unset") return { ok: false, reason: "no-token" };
+  const token = process.env.GITHUB_REBUILD_TOKEN?.trim();
+  if (!token || !looksLikeGitHubToken(token)) {
+    return { ok: false, reason: "no-token" };
+  }
 
   try {
     const res = await fetch(
@@ -140,3 +148,6 @@ export async function publishSite(reason: string): Promise<PublishResult> {
   await clearPending(true);
   return { ok: true };
 }
+
+/** Exposed for tests: the shape check is what keeps the error message useful. */
+export const __looksLikeGitHubTokenForTest = looksLikeGitHubToken;
