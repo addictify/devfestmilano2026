@@ -4,6 +4,7 @@ import { Timestamp, type Firestore } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { fetchSessionizeAll } from "@/lib/sessionize/client";
 import { normalizeSessionize } from "@/lib/sessionize/normalize";
+import { contentFingerprint } from "@/lib/sessionize/fingerprint";
 import { routing } from "@/i18n/routing";
 
 export const dynamic = "force-dynamic";
@@ -72,23 +73,40 @@ async function handler(request: Request) {
   }
 
   const { speakers, sessions, tracks } = normalizeSessionize(data);
+
+  // The sync runs hourly whether or not Sessionize changed. Marking the site as
+  // needing a rebuild every time would leave the admin banner permanently
+  // claiming there's something to publish, training everyone to ignore it —
+  // so compare against what was synced last and only flag a real change.
+  const fingerprint = contentFingerprint({ speakers, sessions, tracks });
+  const configRef = db.collection("config").doc("site");
+  const previous = (await configRef.get()).data()?.lastSyncFingerprint as
+    | string
+    | undefined;
+  const changed = previous !== fingerprint;
+
   await writeCollection(db, "tracks", tracks);
   await writeCollection(db, "speakers", speakers);
   await writeCollection(db, "sessions", sessions);
-  await db
-    .collection("config")
-    .doc("site")
-    .set({ lastSync: Timestamp.now() }, { merge: true });
+  await configRef.set(
+    { lastSync: Timestamp.now(), lastSyncFingerprint: fingerprint },
+    { merge: true },
+  );
 
-  for (const locale of routing.locales) {
-    revalidatePath(`/${locale}`);
-    revalidatePath(`/${locale}/speakers`);
-    revalidatePath(`/${locale}/agenda`);
+  if (changed) {
+    for (const locale of routing.locales) {
+      revalidatePath(`/${locale}`);
+      revalidatePath(`/${locale}/speakers`);
+      revalidatePath(`/${locale}/agenda`);
+    }
+    revalidatePath("/[locale]/speakers/[id]", "page");
   }
-  revalidatePath("/[locale]/speakers/[id]", "page");
 
   return NextResponse.json({
     ok: true,
+    // Lets a caller (and the logs) tell a no-op sync from one that found
+    // something new.
+    changed,
     counts: {
       speakers: speakers.length,
       sessions: sessions.length,
