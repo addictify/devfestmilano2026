@@ -88,14 +88,47 @@ export function getAdminAuth(): Auth | null {
 }
 
 /**
- * Returns the default Storage bucket, or null when not configured.
+ * The default Storage bucket name.
  *
- * The bucket name comes from the public client var — it's the same bucket, and
- * keeping one source avoids the two drifting apart.
+ * NEXT_PUBLIC_* variables are inlined by Next at build time, so they exist in
+ * the Next app but NOT inside the Cloud Function, which esbuild bundles and
+ * which runs with only the platform's own variables. Relying on that one alone
+ * made every upload fail with "Storage non configurato" in production while
+ * working perfectly in dev.
  */
+function storageBucketName(): string | null {
+  const explicit =
+    process.env.FIREBASE_STORAGE_BUCKET ??
+    process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  if (explicit) return explicit;
+
+  // Cloud Functions injects FIREBASE_CONFIG with the project's own bucket.
+  try {
+    const config = process.env.FIREBASE_CONFIG;
+    if (config) {
+      const parsed = JSON.parse(config) as { storageBucket?: string };
+      if (parsed.storageBucket) return parsed.storageBucket;
+    }
+  } catch {
+    // Malformed FIREBASE_CONFIG shouldn't be fatal; fall through.
+  }
+
+  const project = process.env.GCLOUD_PROJECT ?? projectId;
+  return project ? `${project}.firebasestorage.app` : null;
+}
+
+/** Returns the default Storage bucket, or null when not configured. */
 export function getAdminBucket() {
   const db = getAdminDb(); // ensures the default app is initialized
-  const bucketName = process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+  const bucketName = storageBucketName();
   if (!db || !bucketName) return null;
-  return getStorage(getApp()).bucket(bucketName);
+  try {
+    return getStorage(getApp()).bucket(bucketName);
+  } catch (error) {
+    console.error("[firebase-admin] storage bucket unavailable:", error);
+    return null;
+  }
 }
+
+/** Exposed for tests: resolution order is the whole point of this function. */
+export const __storageBucketNameForTest = storageBucketName;
