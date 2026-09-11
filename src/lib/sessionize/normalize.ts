@@ -47,12 +47,23 @@ export function normalizeSessionize(data: SzAll): {
     }
   }
 
-  const tracks: Track[] = [...(data.rooms ?? [])]
+  // Colour is assigned from a stable ordering by id, not from display order:
+  // DESIGN.md's Signal Rule says a track keeps its hue, and Sessionize's `sort`
+  // changes whenever an organizer rearranges rooms — which would otherwise
+  // repaint the whole agenda on the next sync. Display order still follows
+  // `sort`, so the organizer's arrangement is respected.
+  const rooms = [...(data.rooms ?? [])];
+  const colourIndex = new Map(
+    [...rooms]
+      .sort((a, b) => String(a.id).localeCompare(String(b.id)))
+      .map((r, i) => [String(r.id), i] as const),
+  );
+  const tracks: Track[] = rooms
     .sort((a, b) => a.sort - b.sort)
     .map((r, i) => ({
       id: String(r.id),
       name: { it: r.name, en: r.name },
-      color: GDG_ORDER[i % GDG_ORDER.length],
+      color: GDG_ORDER[(colourIndex.get(String(r.id)) ?? i) % GDG_ORDER.length],
       order: r.sort ?? i,
     }));
 
