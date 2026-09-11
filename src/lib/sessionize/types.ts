@@ -35,6 +35,10 @@ export interface SzSession {
   roomId: number | null;
   room: string | null;
   status: string;
+  /** Speaker has been told they're in. */
+  isInformed?: boolean;
+  /** Speaker has accepted and committed to attending. */
+  isConfirmed?: boolean;
   liveUrl: string | null;
   recordingUrl: string | null;
 }

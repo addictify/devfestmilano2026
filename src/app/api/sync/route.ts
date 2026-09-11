@@ -24,6 +24,31 @@ function authorized(request: Request): boolean {
   );
 }
 
+/**
+ * Remove synced documents that Sessionize no longer returns.
+ *
+ * Without this the sync only ever adds: a talk that gets withdrawn, rejected or
+ * unconfirmed stays on the site forever, announcing someone who isn't speaking.
+ * Only documents this sync wrote are eligible — anything added by hand in
+ * /admin has no `source: "sessionize"` and is left alone.
+ */
+async function removeVanished(
+  db: FirebaseFirestore.Firestore,
+  collection: string,
+  keepIds: Set<string>,
+): Promise<number> {
+  const snap = await db.collection(collection).get();
+  const doomed = snap.docs.filter(
+    (d) => d.data().source === "sessionize" && !keepIds.has(d.id),
+  );
+  for (let i = 0; i < doomed.length; i += 400) {
+    const batch = db.batch();
+    for (const doc of doomed.slice(i, i + 400)) batch.delete(doc.ref);
+    await batch.commit();
+  }
+  return doomed.length;
+}
+
 async function writeCollection(
   db: Firestore,
   collection: string,
@@ -88,12 +113,19 @@ async function handler(request: Request) {
   await writeCollection(db, "tracks", tracks);
   await writeCollection(db, "speakers", speakers);
   await writeCollection(db, "sessions", sessions);
+
+  const removed = {
+    tracks: await removeVanished(db, "tracks", new Set(tracks.map((t) => t.id))),
+    speakers: await removeVanished(db, "speakers", new Set(speakers.map((s) => s.id))),
+    sessions: await removeVanished(db, "sessions", new Set(sessions.map((s) => s.id))),
+  };
+  const removedAny = Object.values(removed).some((n) => n > 0);
   await configRef.set(
     { lastSync: Timestamp.now(), lastSyncFingerprint: fingerprint },
     { merge: true },
   );
 
-  if (changed) {
+  if (changed || removedAny) {
     for (const locale of routing.locales) {
       revalidatePath(`/${locale}`);
       revalidatePath(`/${locale}/speakers`);
@@ -106,7 +138,8 @@ async function handler(request: Request) {
     ok: true,
     // Lets a caller (and the logs) tell a no-op sync from one that found
     // something new.
-    changed,
+    changed: changed || removedAny,
+    removed,
     counts: {
       speakers: speakers.length,
       sessions: sessions.length,

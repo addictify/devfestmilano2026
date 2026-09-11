@@ -12,6 +12,27 @@ function mirror(text: string | null | undefined): LocalizedString {
   return { it: t, en: t };
 }
 
+/**
+ * Whether a session belongs on the public site.
+ *
+ * Sessionize's API returns whatever the endpoint is configured to expose, which
+ * can include proposals that were never accepted — publishing those would
+ * announce people who aren't speaking. Filtering here means the site's rule
+ * doesn't depend on how the endpoint happens to be set up today.
+ *
+ * Service sessions (breaks, lunch) carry no review state and always pass.
+ */
+export function isPubliclyVisible(session: {
+  status?: string;
+  isConfirmed?: boolean;
+  isServiceSession?: boolean;
+}): boolean {
+  if (session.isServiceSession) return true;
+  if ((session.status ?? "").toLowerCase() !== "accepted") return false;
+  // Accepted but not yet confirmed means the speaker hasn't committed.
+  return session.isConfirmed === true;
+}
+
 /** Map a raw Sessionize `/view/All` payload into our content model. */
 export function normalizeSessionize(data: SzAll): {
   speakers: Speaker[];
@@ -35,13 +56,23 @@ export function normalizeSessionize(data: SzAll): {
       order: r.sort ?? i,
     }));
 
-  const speakers: Speaker[] = (data.speakers ?? []).map((s, i) => ({
+  // Only sessions that are actually happening, and only the speakers on them.
+  const visibleSessions = (data.sessions ?? []).filter(isPubliclyVisible);
+  const visibleSessionIds = new Set(visibleSessions.map((s) => String(s.id)));
+  const visibleSpeakerIds = new Set(
+    visibleSessions.flatMap((s) => (s.speakers ?? []).map(String)),
+  );
+
+  const speakers: Speaker[] = (data.speakers ?? [])
+    .filter((s) => visibleSpeakerIds.has(String(s.id)))
+    .map((s, i) => ({
     id: s.id,
     fullName: s.fullName,
     tagLine: s.tagLine ?? "",
     bio: mirror(s.bio),
     profilePicture: s.profilePicture ?? null,
-    sessionIds: (s.sessions ?? []).map(String),
+    // Drop references to sessions that aren't being published.
+    sessionIds: (s.sessions ?? []).map(String).filter((id) => visibleSessionIds.has(id)),
     links: (s.links ?? []).map((l) => ({
       type: l.linkType,
       title: l.title,
@@ -52,7 +83,7 @@ export function normalizeSessionize(data: SzAll): {
     order: i,
   }));
 
-  const sessions: Session[] = (data.sessions ?? []).map((s) => {
+  const sessions: Session[] = visibleSessions.map((s) => {
     let language: "it" | "en" | undefined;
     let level: Session["level"];
     const tags: string[] = [];
