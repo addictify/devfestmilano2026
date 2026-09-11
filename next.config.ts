@@ -24,8 +24,11 @@ const nextConfig: NextConfig = {
     // The default optimizer needs a server; on static export use raw images.
     unoptimized: isStaticExport,
     remotePatterns: [
-      // Sessionize speaker avatars
+      // Sessionize speaker avatars. The profile pictures are served from the
+      // cdn. subdomain, not the apex — allowing only sessionize.com made every
+      // speaker photo throw once real synced data arrived.
       { protocol: "https", hostname: "sessionize.com" },
+      { protocol: "https", hostname: "cdn.sessionize.com" },
       // Google account avatars (Sign-In)
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       // Firebase Storage (sponsor logos, etc.)

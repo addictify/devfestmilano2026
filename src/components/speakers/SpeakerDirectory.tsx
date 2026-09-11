@@ -41,7 +41,7 @@ export function SpeakerDirectory({ speakers }: { speakers: Speaker[] }) {
       ) : (
         <div className="grid auto-rows-fr grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
           {filtered.map((speaker, i) => (
-            <MotionReveal key={speaker.id} delay={(i % 4) * 0.05}>
+            <MotionReveal key={speaker.id} delay={(i % 4) * 0.05} className="h-full">
               <SpeakerCard speaker={speaker} />
             </MotionReveal>
           ))}

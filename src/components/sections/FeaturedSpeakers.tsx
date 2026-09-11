@@ -36,7 +36,7 @@ export function FeaturedSpeakers({ speakers }: { speakers: Speaker[] }) {
         ) : (
           <div className="mt-12 grid auto-rows-fr grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-4">
             {speakers.map((speaker, i) => (
-              <MotionReveal key={speaker.id} delay={(i % 4) * 0.06}>
+              <MotionReveal key={speaker.id} delay={(i % 4) * 0.06} className="h-full">
                 <SpeakerCard speaker={speaker} />
               </MotionReveal>
             ))}

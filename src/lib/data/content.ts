@@ -1,6 +1,7 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { readPublicCollection } from "./firestore-rest";
+import { toPlainObject } from "./plain";
 import type {
   Session,
   Speaker,
@@ -33,7 +34,9 @@ async function read<T extends { id: string }>(
     try {
       const snap = await db.collection(collection).get();
       if (snap.empty) return fallback;
-      return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[];
+      return snap.docs.map(
+        (d) => toPlainObject({ id: d.id, ...d.data() }) as T,
+      );
     } catch (error) {
       console.error(`[content] Firestore read failed for "${collection}":`, error);
       return fallback;

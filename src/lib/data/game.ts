@@ -1,5 +1,6 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { toPlainObject } from "./plain";
 import type { LocalizedString } from "@/types/models";
 
 export type Badge = { id: string; name: LocalizedString; description: LocalizedString; icon: string; milestone?: number };
@@ -13,7 +14,7 @@ async function readAll<T extends { id: string }>(collection: string): Promise<T[
   if (!db) return [];
   try {
     const snap = await db.collection(collection).get();
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() })) as T[];
+    return snap.docs.map((d) => toPlainObject({ id: d.id, ...d.data() }) as T);
   } catch {
     return [];
   }
