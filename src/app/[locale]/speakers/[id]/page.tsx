@@ -39,11 +39,18 @@ export async function generateMetadata({
   const { locale, id } = await params;
   const speaker = await getSpeaker(id);
   if (!speaker) return {};
+  // Self-contained (event name, date, venue) so the description still makes
+  // sense if an LLM or search result surfaces it without the surrounding page.
+  const description =
+    locale === "it"
+      ? `${speaker.tagLine} — parla al ${siteConfig.name}, il 10 ottobre a ${siteConfig.venue.name}, Milano.`
+      : `${speaker.tagLine} — speaking at ${siteConfig.name}, October 10 at ${siteConfig.venue.name}, Milano.`;
   return pageMetadata({
     locale,
     path: `/speakers/${id}`,
     title: speaker.fullName,
-    description: `${speaker.tagLine} — ${siteConfig.name}`,
+    description,
+    image: `/speakers/${id}/opengraph-image`,
   });
 }
 
@@ -63,13 +70,21 @@ export default async function SpeakerDetail({
   const [sessions, tracks] = await Promise.all([getSessions(), getTracks()]);
   const trackById = new Map(tracks.map((tr) => [tr.id, tr]));
   const mySessions = sessions.filter((s) => s.speakerIds.includes(id));
+  const bioText = localized(speaker.bio, requestLocale);
+  const knowsAbout = [...new Set(mySessions.flatMap((s) => s.tags))];
 
   const color = colorForKey(speaker.id);
   const c = colorClasses[color];
 
   return (
     <>
-      <JsonLd data={personJsonLd(locale, speaker)} />
+      <JsonLd
+        data={personJsonLd(
+          locale,
+          { ...speaker, bio: bioText || undefined },
+          knowsAbout,
+        )}
+      />
       <JsonLd
         data={breadcrumbJsonLd(
           locale,
@@ -142,7 +157,7 @@ export default async function SpeakerDetail({
               Bio
             </h2>
             <p className="mt-4 text-pretty text-lg leading-relaxed text-muted-foreground">
-              {localized(speaker.bio, requestLocale) || t("noBio")}
+              {bioText || t("noBio")}
             </p>
           </div>
 

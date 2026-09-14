@@ -17,12 +17,16 @@ export function pageMetadata({
   path,
   title,
   description,
+  image,
 }: {
   locale: string;
   /** Locale-less path, e.g. "" for home, "/agenda", "/speakers/jane-doe". */
   path: string;
   title: string;
   description: string;
+  /** Route of a page-specific `opengraph-image`, e.g.
+   *  `/speakers/jane-doe/opengraph-image`. Defaults to the shared one. */
+  image?: string;
 }): Metadata {
   const url = `/${locale}${path}`;
   const languages = Object.fromEntries(
@@ -36,7 +40,7 @@ export function pageMetadata({
   // below home has its own `openGraph` object here anyway (shallow merge, see
   // above), so point it at the image explicitly rather than relying on
   // depth-dependent auto-detection.
-  const image = `/${locale}/opengraph-image`;
+  const resolvedImage = `/${locale}${image ?? "/opengraph-image"}`;
 
   return {
     title,
@@ -49,13 +53,13 @@ export function pageMetadata({
       description,
       locale,
       url,
-      images: [image],
+      images: [resolvedImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [image],
+      images: [resolvedImage],
     },
   };
 }
@@ -143,28 +147,46 @@ export function faqJsonLd(
   };
 }
 
-/** `Person` — one per speaker detail page. */
+/** `Person` — one per speaker detail page. Built from the same Firestore-backed
+ *  fields the page renders (bio, country, session tags), so it's as rich as
+ *  the real Sessionize-synced data allows rather than a placeholder shape. */
 export function personJsonLd(
   locale: string,
   speaker: {
     id: string;
     fullName: string;
     tagLine: string;
+    bio?: string;
     profilePicture: string | null;
     company?: string;
+    country?: string;
     links: { url: string }[];
   },
+  knowsAbout?: string[],
 ) {
   return {
     "@context": "https://schema.org",
     "@type": "Person",
     name: speaker.fullName,
     jobTitle: speaker.tagLine || undefined,
+    description: speaker.bio || undefined,
     worksFor: speaker.company
       ? { "@type": "Organization", name: speaker.company }
+      : undefined,
+    // `country` is Sessionize's free-text location field, not a verified
+    // legal nationality — homeLocation makes that distinction honestly.
+    homeLocation: speaker.country
+      ? { "@type": "Place", name: speaker.country }
       : undefined,
     image: speaker.profilePicture ?? undefined,
     url: `${siteConfig.url}/${locale}/speakers/${speaker.id}`,
     sameAs: speaker.links.map((l) => l.url),
+    knowsAbout: knowsAbout?.length ? knowsAbout : undefined,
+    subjectOf: {
+      "@type": "Event",
+      name: siteConfig.name,
+      startDate: siteConfig.eventDate,
+      url: `${siteConfig.url}/${locale}`,
+    },
   };
 }
