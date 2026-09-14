@@ -6,28 +6,29 @@
 
 - Date: 10 October 2026, 09:00–19:00 (Europe/Rome, CEST)
 - Venue: Randstad Box, Via San Vigilio 5, 20142 Milano (Famagosta, M2)
-- Organizers: GDG Cloud Milano (https://gdg.community.dev/gdg-cloud-milano/)
-  and GDG Milano (https://gdg.community.dev/gdg-milano/)
+- Organizers: [GDG Cloud Milano](https://gdg.community.dev/gdg-cloud-milano/)
+  and [GDG Milano](https://gdg.community.dev/gdg-milano/)
 - Languages: talks in Italian and English
-- Tickets: community event, symbolic price — https://2026.devfestmilano.it/it/venue
-  and registration via https://gdg.community.dev
-- Call for Speakers (Sessionize): https://sessionize.com/devfest-milano-2026
-- Code of Conduct: https://2026.devfestmilano.it/it/code-of-conduct
+- Tickets: community event, symbolic price — see the [venue page](https://2026.devfestmilano.it/it/venue)
+  and register via [GDG Community](https://gdg.community.dev)
+- Call for Speakers: submit via [Sessionize](https://sessionize.com/devfest-milano-2026)
+- [Code of Conduct](https://2026.devfestmilano.it/it/code-of-conduct)
 - Last edition (2025): ~300 attendees, 20+ speakers, 20+ sessions, 3 tracks
 
 ## Site sections
 
-- Home: https://2026.devfestmilano.it/it — event overview, theme, countdown
-- Agenda: https://2026.devfestmilano.it/it/agenda — schedule (published closer to the event)
-- Speakers: https://2026.devfestmilano.it/it/speakers — confirmed speakers (published after CFP review)
-- Sponsors: https://2026.devfestmilano.it/it/sponsors — sponsor tiers and contact
-- Team: https://2026.devfestmilano.it/it/team — organizing team
-- Communities: https://2026.devfestmilano.it/it/communities — GDG Cloud Milano & GDG Milano
-- Venue: https://2026.devfestmilano.it/it/venue — location and directions
-- FAQ: https://2026.devfestmilano.it/it/faq — common questions
-- Call for Speakers: https://2026.devfestmilano.it/it/cfp
+- [Home](https://2026.devfestmilano.it/it) — event overview, theme, countdown
+- [Agenda](https://2026.devfestmilano.it/it/agenda) — schedule (published closer to the event)
+- [Speakers](https://2026.devfestmilano.it/it/speakers) — confirmed speakers (published after CFP review)
+- [Sponsors](https://2026.devfestmilano.it/it/sponsors) — sponsor tiers and contact
+- [Team](https://2026.devfestmilano.it/it/team) — organizing team
+- [Communities](https://2026.devfestmilano.it/it/communities) — GDG Cloud Milano & GDG Milano
+- [Venue](https://2026.devfestmilano.it/it/venue) — location and directions
+- [FAQ](https://2026.devfestmilano.it/it/faq) — common questions
+- [Call for Speakers](https://2026.devfestmilano.it/it/cfp)
 
 English versions of every page are available under the `/en/` prefix
-(e.g. https://2026.devfestmilano.it/en/agenda). Machine-readable data:
-sitemap.xml, robots.txt, and JSON-LD (Event, FAQPage, Person, BreadcrumbList)
-embedded in each page's `<head>`.
+(e.g. [https://2026.devfestmilano.it/en/agenda](https://2026.devfestmilano.it/en/agenda)).
+Machine-readable data: [sitemap.xml](https://2026.devfestmilano.it/sitemap.xml),
+[robots.txt](https://2026.devfestmilano.it/robots.txt), and JSON-LD (Event,
+FAQPage, Person, BreadcrumbList) embedded in each page's `<head>`.

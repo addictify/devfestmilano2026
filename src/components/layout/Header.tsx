@@ -30,11 +30,11 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       href="/"
       onClick={onClick}
       className="group flex items-center gap-2.5"
-      aria-label="DevFest Milano 2026 — home"
     >
       <DevFestMark className="h-5 transition-transform duration-300 group-hover:scale-105" />
       <span className="font-display text-lg font-extrabold tracking-tight">
         DevFest<span className="text-muted-foreground"> Milano</span>
+        <span className="sr-only"> 2026 — home</span>
       </span>
     </Link>
   );
