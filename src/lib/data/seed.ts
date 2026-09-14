@@ -460,23 +460,28 @@ export const seedSponsors: Sponsor[] = [
 // Real DevFest Milano core team (carried over from the 2025 edition).
 export const seedTeam: TeamMember[] = [
   {
-    id: "alessandro-persiano",
-    name: "Alessandro Persiano",
-    role: { it: "Organizzatore GDG", en: "GDG Organizer" },
-    photo: null,
+    id: "davide-tresoldi",
+    name: "Davide Tresoldi",
+    role: {
+      it: "Organizzatore GDG Cloud Milano · Senior Cloud Architect @ Datwave",
+      en: "GDG Cloud Milano Organizer · Senior Cloud Architect @ Datwave",
+    },
+    photo:
+      "https://firebasestorage.googleapis.com/v0/b/devfestmilano26.firebasestorage.app/o/images%2Fteam%2Fdavide-tresoldi.jpg?alt=media",
     links: [
-      {
-        type: "LinkedIn",
-        url: "https://www.linkedin.com/in/alessandro-persiano/",
-      },
+      { type: "LinkedIn", url: "https://www.linkedin.com/in/tresoldidavide/" },
     ],
     order: 1,
   },
   {
     id: "daniele-bonaldo",
     name: "Daniele Bonaldo",
-    role: { it: "Organizzatore GDG · GDE", en: "GDG Organizer · GDE" },
-    photo: null,
+    role: {
+      it: "Organizzatore GDG Milano · Google Developer Expert Android",
+      en: "GDG Milano Organizer · Google Developer Expert for Android",
+    },
+    photo:
+      "https://firebasestorage.googleapis.com/v0/b/devfestmilano26.firebasestorage.app/o/images%2Fteam%2Fdaniele-bonaldo.jpg?alt=media",
     links: [
       { type: "LinkedIn", url: "https://www.linkedin.com/in/danielebonaldo" },
       { type: "Twitter", url: "https://twitter.com/danybony_" },
@@ -485,21 +490,52 @@ export const seedTeam: TeamMember[] = [
     order: 2,
   },
   {
-    id: "davide-tresoldi",
-    name: "Davide Tresoldi",
-    role: { it: "Organizzatore GDG", en: "GDG Organizer" },
-    photo: null,
+    id: "manuel-caldarese",
+    name: "Manuel Caldarese",
+    role: {
+      it: "Organizzatore GDG Milano · AI Specialist",
+      en: "GDG Milano Organizer · AI Specialist",
+    },
+    photo:
+      "https://firebasestorage.googleapis.com/v0/b/devfestmilano26.firebasestorage.app/o/images%2Fteam%2Fmanuel-caldarese.jpg?alt=media",
     links: [
-      { type: "LinkedIn", url: "https://www.linkedin.com/in/tresoldidavide/" },
+      {
+        type: "LinkedIn",
+        url: "https://www.linkedin.com/in/manuel-caldarese-2a174ba9/",
+      },
     ],
     order: 3,
   },
   {
+    id: "lorenzo-de-francesco",
+    name: "Lorenzo De Francesco",
+    role: {
+      it: "Organizzatore GDG Milano · CTO @ Azimut Marketplace",
+      en: "GDG Milano Organizer · CTO @ Azimut Marketplace",
+    },
+    photo:
+      "https://firebasestorage.googleapis.com/v0/b/devfestmilano26.firebasestorage.app/o/images%2Fteam%2Florenzo-de-francesco.jpg?alt=media",
+    links: [
+      {
+        type: "LinkedIn",
+        url: "https://www.linkedin.com/in/lorenzodefrancesco/",
+      },
+    ],
+    order: 4,
+  },
+  {
     id: "matteo-rocco",
     name: "Matteo Rocco",
-    role: { it: "Organizzatore GDG", en: "GDG Organizer" },
-    photo: null,
-    links: [],
-    order: 4,
+    role: {
+      it: "Organizzatore GDG Cloud Milano · Cloud & Data Engineer @ Datwave",
+      en: "GDG Cloud Milano Organizer · Cloud & Data Engineer @ Datwave",
+    },
+    photo:
+      "https://firebasestorage.googleapis.com/v0/b/devfestmilano26.firebasestorage.app/o/images%2Fteam%2Fmatteo-rocco.png?alt=media",
+    links: [
+      { type: "LinkedIn", url: "https://www.linkedin.com/in/matteorocco1997/" },
+      { type: "Website", url: "https://rokkian.github.io/" },
+    ],
+    order: 5,
   },
 ];

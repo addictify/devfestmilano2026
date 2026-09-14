@@ -26,13 +26,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
   const id = typeof body.id === "string" && body.id ? body.id : db.collection("team").doc().id;
-  const data = {
+  const data: Record<string, unknown> = {
     name: body.name,
     role: { it: body.roleIt ?? "", en: body.roleEn ?? "" },
     photo: body.photo ?? null,
-    links: Array.isArray(body.links) ? body.links : [],
     order: Number.isFinite(body.order) ? Number(body.order) : 999,
   };
+  // The admin form has no editor for social links, so it never sends them.
+  // Writing [] here (the old default) silently erased every member's links the
+  // first time anyone edited their name or photo — merge only what was sent.
+  if (Array.isArray(body.links)) data.links = body.links;
   await db.collection("team").doc(id).set(data, { merge: true });
   revalidateTeam();
   return NextResponse.json({ ok: true, id });

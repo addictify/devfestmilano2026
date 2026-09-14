@@ -34,7 +34,7 @@ export default async function TeamPage({
   return (
     <>
       <PageHeader
-        eyebrow="GDG Milano"
+        eyebrow="GDG Cloud Milano & GDG Milano"
         title={t("title")}
         lead={t("lead")}
         color="yellow"

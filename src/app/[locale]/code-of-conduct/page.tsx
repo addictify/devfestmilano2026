@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { codeOfConduct } from "@/lib/data/code-of-conduct";
 import { localized } from "@/lib/localize";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 
@@ -14,7 +17,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "cocPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({
+    locale,
+    path: "/code-of-conduct",
+    title: t("title"),
+    description: t("lead"),
+  });
 }
 
 export default async function CodeOfConductPage({
@@ -29,6 +37,13 @@ export default async function CodeOfConductPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(
+          locale,
+          [{ name: t("title"), path: "/code-of-conduct" }],
+          siteConfig.shortName,
+        )}
+      />
       <PageHeader title={t("title")} lead={t("lead")} color="red" />
       <section className="py-16 sm:py-20">
         <Container className="max-w-3xl">

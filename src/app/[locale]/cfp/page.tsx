@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getSiteSettings } from "@/lib/data/settings";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { PageHeader } from "@/components/common/PageHeader";
 import { CfpSection } from "@/components/sections/CfpSection";
 
@@ -14,10 +17,12 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "cfpPage" });
   const { cfpOpen } = await getSiteSettings();
-  return {
+  return pageMetadata({
+    locale,
+    path: "/cfp",
     title: t("title"),
     description: cfpOpen ? t("lead") : t("leadClosed"),
-  };
+  });
 }
 
 export default async function CfpPage({
@@ -32,6 +37,9 @@ export default async function CfpPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [{ name: t("title"), path: "/cfp" }], siteConfig.shortName)}
+      />
       <PageHeader
         title={t("title")}
         lead={cfpOpen ? t("lead") : t("leadClosed")}

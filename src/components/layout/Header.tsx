@@ -18,6 +18,7 @@ const NAV = [
   { href: "/speakers", key: "speakers" },
   { href: "/agenda", key: "agenda" },
   { href: "/communities", key: "communities" },
+  { href: "/team", key: "team" },
   { href: "/sponsors", key: "sponsors" },
   { href: "/venue", key: "venue" },
   { href: "/faq", key: "faq" },

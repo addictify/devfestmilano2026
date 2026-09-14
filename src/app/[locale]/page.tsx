@@ -1,6 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import { getFeaturedSpeakers, getSponsors, getTracks } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
+import { eventJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Hero } from "@/components/sections/Hero";
 import { ThemeSection } from "@/components/sections/ThemeSection";
 import { WhatToExpect } from "@/components/sections/WhatToExpect";
@@ -23,7 +25,8 @@ export default async function Home({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { speakersPublished, cfpOpen } = await getSiteSettings();
+  const settings = await getSiteSettings();
+  const { speakersPublished, cfpOpen } = settings;
 
   const [speakers, tracks, sponsors] = await Promise.all([
     speakersPublished ? getFeaturedSpeakers(8) : Promise.resolve([]),
@@ -33,6 +36,7 @@ export default async function Home({
 
   return (
     <>
+      <JsonLd data={eventJsonLd(locale, settings.ticketsAvailable)} />
       <Hero />
       <ThemeSection />
       <WhatToExpect />

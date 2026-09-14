@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { fontVariables } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/data/settings";
 import { Providers } from "@/components/providers";
 import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
@@ -26,35 +27,23 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "meta" });
 
-  const languages = Object.fromEntries(
-    routing.locales.map((l) => [l, `/${l}`]),
-  );
-
+  // Fallback for the home route (and any page that doesn't set its own
+  // metadata). Every other page overrides `alternates`/`openGraph` in its
+  // own `generateMetadata` via `pageMetadata()` — Next merges metadata
+  // shallowly, so those fields fully replace rather than extend these.
   return {
+    ...pageMetadata({
+      locale,
+      path: "",
+      title: t("title"),
+      description: t("description"),
+    }),
     metadataBase: new URL(siteConfig.url),
     title: {
       default: t("title"),
       template: `%s · ${siteConfig.shortName}`,
     },
-    description: t("description"),
     applicationName: siteConfig.name,
-    alternates: {
-      canonical: `/${locale}`,
-      languages,
-    },
-    openGraph: {
-      type: "website",
-      siteName: siteConfig.name,
-      title: t("title"),
-      description: t("description"),
-      locale,
-      url: `/${locale}`,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: t("title"),
-      description: t("description"),
-    },
     manifest: "/manifest.webmanifest",
     appleWebApp: { capable: true, title: siteConfig.shortName, statusBarStyle: "default" },
     icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },

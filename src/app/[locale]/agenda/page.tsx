@@ -11,6 +11,8 @@ import {
 import { getSiteSettings } from "@/lib/data/settings";
 import { siteConfig } from "@/lib/site";
 import { formatLongDate } from "@/lib/time";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { AgendaView } from "@/components/agenda/AgendaView";
@@ -24,7 +26,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "agendaPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({ locale, path: "/agenda", title: t("title"), description: t("lead") });
 }
 
 export default async function AgendaPage({
@@ -46,6 +48,9 @@ export default async function AgendaPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [{ name: t("title"), path: "/agenda" }], siteConfig.shortName)}
+      />
       <PageHeader
         eyebrow={formatLongDate(siteConfig.eventDate, locale)}
         title={t("title")}

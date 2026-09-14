@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { communities } from "@/lib/data/communities";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { MotionReveal } from "@/components/common/MotionReveal";
@@ -16,7 +19,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "communitiesPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({
+    locale,
+    path: "/communities",
+    title: t("title"),
+    description: t("lead"),
+  });
 }
 
 export default async function CommunitiesPage({
@@ -31,6 +39,13 @@ export default async function CommunitiesPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(
+          locale,
+          [{ name: t("title"), path: "/communities" }],
+          siteConfig.shortName,
+        )}
+      />
       <PageHeader
         eyebrow="DevFest Milano 2026"
         title={t("title")}

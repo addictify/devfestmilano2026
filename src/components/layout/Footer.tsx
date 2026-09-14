@@ -11,6 +11,7 @@ const EXPLORE = [
   { href: "/speakers", key: "speakers" },
   { href: "/agenda", key: "agenda" },
   { href: "/sponsors", key: "sponsors" },
+  { href: "/team", key: "team" },
   { href: "/venue", key: "venue" },
   { href: "/cfp", key: "cfp" },
 ] as const;
