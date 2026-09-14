@@ -182,16 +182,16 @@
     "items": [
       {
         "q": "How much is a ticket?",
-        "a": "DevFest is a community event with a symbolic price. You'll find all the details on the registration page."
+        "a": "DevFest Milano 2026 (October 10, Randstad Box) is a community event with a symbolic price. You'll find the current price and all the details on the registration page."
       },
       {
         "q": "Is the event in Italian or English?",
-        "a": "Both: there will be talks in Italian and English. Each session shows its language in the agenda."
+        "a": "Both: DevFest Milano 2026 hosts talks in Italian and in English. Each session shows its language in the agenda."
       },
       {
         "q": "Can I submit a talk?",
-        "a": "Yes! The call for speakers is open on Sessionize until the stated deadline.",
-        "aClosed": "Submissions are closed. The committee is selecting the talks and building the agenda, which we'll publish soon."
+        "a": "Yes! The call for speakers for DevFest Milano 2026 is open on Sessionize until the stated deadline.",
+        "aClosed": "Submissions for DevFest Milano 2026 are closed. The committee is selecting the talks and building the agenda, which we'll publish soon."
       },
       {
         "q": "Is there a code of conduct?",

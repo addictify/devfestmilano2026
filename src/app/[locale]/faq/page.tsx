@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getSiteSettings } from "@/lib/data/settings";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { FaqList } from "@/components/sections/FaqList";
@@ -13,7 +17,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "faqPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({ locale, path: "/faq", title: t("title"), description: t("lead") });
 }
 
 export default async function FaqPage({
@@ -24,9 +28,16 @@ export default async function FaqPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("faqPage");
+  const tFaq = await getTranslations("faq");
+  const { cfpOpen } = await getSiteSettings();
+  const items = tFaq.raw("items") as { q: string; a: string; aClosed?: string }[];
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [{ name: t("title"), path: "/faq" }], siteConfig.shortName)}
+      />
+      <JsonLd data={faqJsonLd(items, cfpOpen)} />
       <PageHeader title={t("title")} lead={t("lead")} color="green" />
       <section className="py-16 sm:py-20">
         <Container className="max-w-3xl">

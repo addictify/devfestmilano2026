@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getSpeakers } from "@/lib/data/content";
 import { getSiteSettings } from "@/lib/data/settings";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { SpeakerDirectory } from "@/components/speakers/SpeakerDirectory";
@@ -16,7 +19,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "speakersPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({
+    locale,
+    path: "/speakers",
+    title: t("title"),
+    description: t("lead"),
+  });
 }
 
 export default async function SpeakersPage({
@@ -34,6 +42,13 @@ export default async function SpeakersPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(
+          locale,
+          [{ name: t("title"), path: "/speakers" }],
+          siteConfig.shortName,
+        )}
+      />
       <PageHeader
         eyebrow={
           published

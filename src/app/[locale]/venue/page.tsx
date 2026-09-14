@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ArrowUpRight, MapPin, Train } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { MotionReveal } from "@/components/common/MotionReveal";
@@ -16,7 +18,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "venuePage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({ locale, path: "/venue", title: t("title"), description: t("lead") });
 }
 
 export default async function VenuePage({
@@ -31,6 +33,9 @@ export default async function VenuePage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [{ name: t("title"), path: "/venue" }], siteConfig.shortName)}
+      />
       <PageHeader
         eyebrow="Milano"
         title={t("title")}

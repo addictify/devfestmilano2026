@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 import { getTeam } from "@/lib/data/content";
 import { localized } from "@/lib/localize";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { MotionReveal } from "@/components/common/MotionReveal";
@@ -17,7 +20,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "teamPage" });
-  return { title: t("title"), description: t("lead") };
+  return pageMetadata({ locale, path: "/team", title: t("title"), description: t("lead") });
 }
 
 export default async function TeamPage({
@@ -33,6 +36,9 @@ export default async function TeamPage({
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd(locale, [{ name: t("title"), path: "/team" }], siteConfig.shortName)}
+      />
       <PageHeader
         eyebrow="GDG Cloud Milano & GDG Milano"
         title={t("title")}

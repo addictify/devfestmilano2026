@@ -30,6 +30,14 @@ export function pageMetadata({
   ) as Record<string, string>;
   languages["x-default"] = `/${routing.defaultLocale}${path}`;
 
+  // The shared `opengraph-image.tsx` lives in `[locale]/` — Next only
+  // auto-attaches a file-convention image to pages in that *same* route
+  // segment, not to nested ones (`/agenda`, `/speakers/[id]`, …). Every page
+  // below home has its own `openGraph` object here anyway (shallow merge, see
+  // above), so point it at the image explicitly rather than relying on
+  // depth-dependent auto-detection.
+  const image = `/${locale}/opengraph-image`;
+
   return {
     title,
     description,
@@ -41,11 +49,13 @@ export function pageMetadata({
       description,
       locale,
       url,
+      images: [image],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [image],
     },
   };
 }

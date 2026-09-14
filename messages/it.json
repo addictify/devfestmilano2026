@@ -182,16 +182,16 @@
     "items": [
       {
         "q": "Quanto costa il biglietto?",
-        "a": "DevFest è un evento della community a prezzo simbolico. Trovi tutti i dettagli sulla pagina di registrazione."
+        "a": "DevFest Milano 2026 (10 ottobre, Randstad Box) è un evento della community a prezzo simbolico. Trovi il prezzo aggiornato e tutti i dettagli sulla pagina di registrazione."
       },
       {
         "q": "L'evento è in italiano o in inglese?",
-        "a": "Entrambi: ci saranno talk in italiano e in inglese. Ogni sessione indica la lingua nell'agenda."
+        "a": "Entrambi: DevFest Milano 2026 ospita talk in italiano e in inglese. Ogni sessione indica la lingua nell'agenda."
       },
       {
         "q": "Posso proporre un talk?",
-        "a": "Sì! La call for speakers è aperta su Sessionize fino alla deadline indicata.",
-        "aClosed": "Le proposte sono chiuse. Il comitato sta selezionando i talk e costruendo l'agenda, che pubblicheremo a breve."
+        "a": "Sì! La call for speakers per DevFest Milano 2026 è aperta su Sessionize fino alla deadline indicata.",
+        "aClosed": "Le proposte per DevFest Milano 2026 sono chiuse. Il comitato sta selezionando i talk e costruendo l'agenda, che pubblicheremo a breve."
       },
       {
         "q": "C'è un codice di condotta?",

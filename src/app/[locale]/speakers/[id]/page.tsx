@@ -13,6 +13,9 @@ import {
 import { localized } from "@/lib/localize";
 import { colorClasses, colorForKey } from "@/lib/design/tokens";
 import { cn } from "@/lib/utils";
+import { siteConfig } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd, personJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { Avatar } from "@/components/common/Avatar";
 import { SocialLinks } from "@/components/common/SocialLinks";
@@ -33,13 +36,15 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const speaker = await getSpeaker(id);
   if (!speaker) return {};
-  return {
+  return pageMetadata({
+    locale,
+    path: `/speakers/${id}`,
     title: speaker.fullName,
-    description: `${speaker.tagLine} — DevFest Milano 2026`,
-  };
+    description: `${speaker.tagLine} — ${siteConfig.name}`,
+  });
 }
 
 export default async function SpeakerDetail({
@@ -64,6 +69,17 @@ export default async function SpeakerDetail({
 
   return (
     <>
+      <JsonLd data={personJsonLd(locale, speaker)} />
+      <JsonLd
+        data={breadcrumbJsonLd(
+          locale,
+          [
+            { name: t("title"), path: "/speakers" },
+            { name: speaker.fullName, path: `/speakers/${id}` },
+          ],
+          siteConfig.shortName,
+        )}
+      />
       <section className="relative overflow-hidden border-b border-border">
         <div aria-hidden className="absolute inset-0 bg-dot-grid opacity-60" />
         <Container className="relative pt-10 pb-14 sm:pt-14 sm:pb-16">
