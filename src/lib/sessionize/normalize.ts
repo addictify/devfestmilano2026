@@ -58,6 +58,11 @@ export function normalizeSessionize(data: SzAll): {
       .sort((a, b) => String(a.id).localeCompare(String(b.id)))
       .map((r, i) => [String(r.id), i] as const),
   );
+  // /view/All carries only `roomId` on a session — the `room` string exists in
+  // the grid-shaped views, not this one. Reading s.room left roomName undefined
+  // on every session, so the agenda cards showed no room and the calendar
+  // export went out with an empty location.
+  const roomNames = new Map(rooms.map((r) => [String(r.id), r.name] as const));
   const tracks: Track[] = rooms
     .sort((a, b) => a.sort - b.sort)
     .map((r, i) => ({
@@ -123,7 +128,9 @@ export function normalizeSessionize(data: SzAll): {
       startsAt: s.startsAt ?? null,
       endsAt: s.endsAt ?? null,
       trackId: s.roomId != null ? String(s.roomId) : undefined,
-      roomName: s.room ?? undefined,
+      roomName:
+        s.room ??
+        (s.roomId != null ? roomNames.get(String(s.roomId)) : undefined),
       speakerIds: (s.speakers ?? []).map(String),
       tags,
       language,
