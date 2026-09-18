@@ -2,11 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Star, X } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { colorClasses } from "@/lib/design/tokens";
 import { localized } from "@/lib/localize";
 import { formatTime } from "@/lib/time";
+import { collapseServiceSessions, matchesFilters } from "@/lib/agenda";
+import { useFavorites } from "@/hooks/useFavorites";
 import type { Session, Speaker, Track } from "@/types/models";
 import { SessionCard } from "./SessionCard";
 
@@ -22,9 +25,12 @@ export function AgendaView({
   speakers: Speaker[];
 }) {
   const t = useTranslations("agendaPage");
+  const tMine = useTranslations("myschedule");
   const locale = useLocale();
+  const { favorites, count: favoriteCount, ready: favoritesReady } = useFavorites();
   const [track, setTrack] = useState<string>("all");
   const [lang, setLang] = useState<Lang>("all");
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
 
   const speakerById = useMemo(
     () => new Map(speakers.map((s) => [s.id, s])),
@@ -35,14 +41,22 @@ export function AgendaView({
     [tracks],
   );
 
-  const filtered = useMemo(() => {
-    return sessions.filter((s) => {
-      if (s.isServiceSession) return track === "all" && lang === "all";
-      if (track !== "all" && s.trackId !== track) return false;
-      if (lang !== "all" && s.language !== lang) return false;
-      return true;
-    });
-  }, [sessions, track, lang]);
+  // One break is one row, however many rooms Sessionize repeated it across.
+  const schedule = useMemo(
+    () => collapseServiceSessions(sessions, tracks.length),
+    [sessions, tracks.length],
+  );
+
+  const filtered = useMemo(
+    () =>
+      schedule.filter((s) =>
+        matchesFilters(s, { track, lang, onlyFavorites, favorites }),
+      ),
+    [schedule, track, lang, onlyFavorites, favorites],
+  );
+
+  // Service sessions always pass, so they can't stand in for a real result.
+  const talkCount = filtered.filter((s) => !s.isServiceSession).length;
 
   // Group by start time.
   const groups = useMemo(() => {
@@ -55,7 +69,7 @@ export function AgendaView({
     return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
   }, [filtered]);
 
-  const hasFilters = track !== "all" || lang !== "all";
+  const hasFilters = track !== "all" || lang !== "all" || onlyFavorites;
 
   return (
     <div>
@@ -106,11 +120,36 @@ export function AgendaView({
             <option value="en">{t("english")}</option>
           </select>
 
+          <button
+            onClick={() => setOnlyFavorites((v) => !v)}
+            aria-pressed={onlyFavorites}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+              onlyFavorites
+                ? "border-transparent bg-gdg-yellow text-foreground"
+                : "border-border hover:bg-muted",
+            )}
+          >
+            <Star
+              className={cn(
+                "size-3.5",
+                onlyFavorites ? "fill-foreground" : "text-muted-foreground",
+              )}
+            />
+            {t("onlyFavorites")}
+            {favoritesReady && favoriteCount > 0 && (
+              <span className="font-mono text-xs tabular-nums opacity-70">
+                {favoriteCount}
+              </span>
+            )}
+          </button>
+
           {hasFilters && (
             <button
               onClick={() => {
                 setTrack("all");
                 setLang("all");
+                setOnlyFavorites(false);
               }}
               className="inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
@@ -118,14 +157,31 @@ export function AgendaView({
               {t("clear")}
             </button>
           )}
+
+          <Link
+            href="/my-schedule"
+            className="ml-auto text-sm font-medium text-gdg-blue hover:underline"
+          >
+            {tMine("title")}
+          </Link>
         </div>
       </div>
 
       {/* Timeline */}
-      {groups.length === 0 ? (
-        <p className="py-12 text-center text-muted-foreground">
-          {t("noResults")}
-        </p>
+      {talkCount === 0 ? (
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-12 text-center">
+          <p className="text-muted-foreground">
+            {onlyFavorites && favoriteCount === 0
+              ? t("noFavoritesYet")
+              : t("noResults")}
+          </p>
+          {onlyFavorites && favoriteCount === 0 && (
+            <p className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+              <Star className="size-4 fill-gdg-yellow text-gdg-yellow" />
+              {t("favoritesHint")}
+            </p>
+          )}
+        </div>
       ) : (
         <div className="flex flex-col gap-8">
           {groups.map(([time, items]) => (

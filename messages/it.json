@@ -244,7 +244,10 @@
     "clear": "Pulisci filtri",
     "noResults": "Nessuna sessione corrisponde ai filtri.",
     "viewSpeakers": "Vedi gli speaker",
-    "room": "Sala"
+    "room": "Sala",
+    "onlyFavorites": "Preferiti",
+    "noFavoritesYet": "Non hai ancora salvato nessuna sessione.",
+    "favoritesHint": "Tocca la stella su una sessione per aggiungerla alla tua agenda."
   },
   "teamPage": {
     "title": "Il team",

@@ -244,7 +244,10 @@
     "clear": "Clear filters",
     "noResults": "No session matches the filters.",
     "viewSpeakers": "See the speakers",
-    "room": "Room"
+    "room": "Room",
+    "onlyFavorites": "Favorites",
+    "noFavoritesYet": "You haven't saved any sessions yet.",
+    "favoritesHint": "Tap the star on a session to add it to your schedule."
   },
   "teamPage": {
     "title": "The team",
