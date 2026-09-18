@@ -17,11 +17,6 @@ service cloud.firestore {
         && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
         && request.resource.data.email.size() < 254;
     }
-    function validFeedback() {
-      return request.resource.data.rating is int
-        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
-        && (!('comment' in request.resource.data) || request.resource.data.comment.size() <= 500);
-    }
 
     match /speakers/{id} { allow read: if true; allow write: if isAdmin(); }
     match /sessions/{id} { allow read: if true; allow write: if isAdmin(); }
@@ -63,9 +58,21 @@ service cloud.firestore {
       allow write: if false;
       match /scans/{cid} { allow read: if isOwner(uid); allow write: if false; }
     }
+    // Counters only (count, sum, average) — world-readable so a session card
+    // can show its rating. Never any comment or uid: those live one level down,
+    // under rules that don't cascade here.
+    match /feedback/{sid} {
+      allow read: if true;
+      allow write: if false;
+    }
     match /feedback/{sid}/responses/{uid} {
       allow read: if isOwner(uid) || isAdmin();
-      allow create, update: if isOwner(uid) && validFeedback();
+      // Written only by /api/feedback, which updates the response and the
+      // public counters in one transaction. Letting a client write its own
+      // response directly (as it could before) would leave the counters behind
+      // the responses, and a determined one could rate a talk, revise it a
+      // hundred times and never move the average it advertises.
+      allow write: if false;
       allow delete: if false;
     }
 

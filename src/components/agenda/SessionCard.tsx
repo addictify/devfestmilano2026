@@ -9,6 +9,7 @@ import type { Session, Speaker, Track } from "@/types/models";
 import { AddToCalendar } from "@/components/common/AddToCalendar";
 import { FavoriteButton } from "@/components/agenda/FavoriteButton";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
+import { SessionRating } from "@/components/feedback/SessionRating";
 import { siteConfig } from "@/lib/site";
 
 const LEVEL_DOT: Record<string, string> = {
@@ -68,6 +69,7 @@ export function SessionCard({
               {localized(track.name, locale)}
             </span>
           )}
+          {!service && <SessionRating sessionId={session.id} />}
         </div>
 
         <h3
