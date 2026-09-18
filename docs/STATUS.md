@@ -10,7 +10,8 @@ and **GDG Milano** (Android · Web · AI). Venue: **Randstad Box**, Via San Vigi
 ## Stack
 Next.js 16 (App Router, Turbopack) · Tailwind v4 · Firebase (Firestore/Auth/Admin) ·
 next-intl (IT/EN, `proxy.ts`) · Motion · Sessionize (talks/CFP) · Bevy (tickets) ·
-deploy Firebase App Hosting (see `docs/DEPLOY.md`).
+deploy **GitHub Pages** (static export) + **Cloud Functions 2nd gen** for the
+API (see `docs/DEPLOY.md`). App Hosting was evaluated and dropped.
 
 ## Feature flags — `src/lib/site.ts`
 Submissions closed 31 Jul 2026; talks are being selected, so there's no lineup
@@ -45,8 +46,9 @@ rules; `vercel.json` cron; `.env.example`; README. Auth provider scaffolded
 (`useAuth`) — Google Sign-In wired, no login UI yet. Official DevFest "< >"
 brackets logo (SVG, year-free) + favicon from the 2025 site.
 
-Real content in place: team (Alessandro Persiano, Daniele Bonaldo · GDE,
-Davide Tresoldi, Matteo Rocco), sponsors (Google, Datwave, Randstad Box),
+Real content in place: team (Davide Tresoldi, Daniele Bonaldo · GDE, Manuel
+Caldarese, Lorenzo De Francesco, Matteo Rocco — with photos mirrored into
+Storage), sponsors (Google, Datwave, Randstad Box, Bizzynow),
 venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 
 ### ✅ Batch 1 (2026-06-27)
@@ -118,43 +120,42 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
   admin: `/admin/admins` can add and remove other admins, but never that
   account, so there's always a way back in.
 
-  The project is on **Blaze**, so App Hosting and Storage are both available.
-  The five Secret Manager entries exist and match `.env` byte for byte.
+  The project is on **Blaze**, so Storage and Cloud Functions are available.
+  The Secret Manager entries exist and match `.env` byte for byte.
 
-  Still to do:
-  - **Create the App Hosting backend** (`firebase apphosting:backends:create`)
-    and connect it to the GitHub repo. It builds from a branch or commit on the
-    *remote*, so the local commits have to be pushed first — otherwise the first
-    rollout ships the pre-fix tree.
-  - Run `firebase apphosting:secrets:grantaccess <secret> --backend <id>` for
-    each of the five once the backend exists.
-  - Run `firebase apphosting:secrets:grantaccess` for the five secrets once the
-    backend exists.
-  - Schedule the hourly Sessionize sync (`gcloud scheduler`, see DEPLOY.md) —
-    this replaced the old `vercel.json` cron.
-  - **Point `2026.devfestmilano.it` at the App Hosting backend** (custom domain
-    + DNS records). It's authorized for sign-in and set as
-    `NEXT_PUBLIC_SITE_URL`, but nothing serves it yet — the only live host is
-    the unused default `devfestmilano26.web.app`.
-- **After talk selection:** set `speakersPublished` / `schedulePublished` to
-  `true` and run the Sessionize sync (`cfpOpen` is already `false` — the site
-  shows the "selection in progress" state).
-  - ⚠️ **`SESSIONIZE_EVENT_ID=24146` does not work**: `sessionize.com/api/v2/24146/view/All`
-    returns 404 (checked 2026-08-22), as does the `devfest-milano-2026` slug,
-    while the public CFP page itself is live. The v2 API needs the id of an
-    *API endpoint* created in Sessionize (Event → Embed & API), which is a short
-    alphanumeric code, not the numeric event id. Until that's created and put in
-    `SESSIONIZE_EVENT_ID`, `/api/sync` will keep failing with 502.
+  **Deployment is live** (2026-09): the static site is served from GitHub Pages
+  at `2026.devfestmilano.it`, the API runs as one Cloud Functions 2nd-gen
+  function deployed by `.github/workflows/functions.yml` over Workload Identity
+  Federation, and Cloud Scheduler runs the hourly Sessionize sync
+  (`sessionize-sync`, `0 * * * *`, europe-west1). App Hosting was never created
+  — this replaced it.
+
+  Because the frontend is a static export, a Firestore edit is invisible until
+  the site is rebuilt: `/admin` batches edits and the Publish button dispatches
+  the Pages workflow (`config/publish` tracks what's pending).
+- **Sessionize is wired and syncing.** `SESSIONIZE_EVENT_ID` holds the *API
+  endpoint* code from Event → Embed & API — a short alphanumeric string, not
+  the numeric event id (`24146` returns 404; that was the original mistake).
+  As of 2026-09-18 the sync pulls 24 speakers, 40 sessions (22 accepted +
+  confirmed talks, 18 service sessions) and 3 rooms/tracks, all scheduled on
+  10 Oct.
+- **`schedulePublished` is the only thing gating `/agenda`.** `speakersPublished`
+  is already `true`. Every non-service session now has a start time, so
+  `isSchedulePublished()` will return true the moment the flag flips in
+  `/admin/config` — then Publish to rebuild.
 - **Content to replace:** official sponsor logos (current are placeholder SVG
   wordmarks in `public/images/sponsors/`), team photos, real past-event
   numbers.
-- **Dependencies:** clear as of 2026-09-05, but this needs re-checking rather
-  than trusting: five Dependabot alerts had reappeared (browserslist ×2 high in
-  eslint's Babel chain, and qs ×2 + uuid in `functions/`, which do run in
-  production). Fixed with overrides in both `package.json` files; `pnpm audit`
-  and `npm audit --prefix functions` both report zero. New transitive alerts
-  will keep appearing — check `gh api repos/.../dependabot/alerts`, not just
-  the local audit, since the two disagreed.
+- **Dependencies:** cleared again 2026-09-18. Ten open Dependabot alerts,
+  including **two critical Next.js RCEs** (AVIF image optimization, and
+  Windows-hosted servers) fixed in 16.3.3 — bumped Next and
+  `eslint-config-next` to 16.3.3, `sharp` to ^0.35.4, `vitest` 3 → 4.1.11
+  (path traversal in `@vitest/mocker`), and the `js-yaml` /
+  `baseline-browser-mapping` overrides. Only the Next ones were reachable in
+  production; the rest are dev-chain. Re-check with
+  `gh api repos/.../dependabot/alerts` rather than the local audit — the two
+  have disagreed before (`pnpm audit --prod` reported zero while ten alerts
+  were open).
 - **Admin still open:** news CRUD (intentionally skipped). Image upload is
   **done** — Storage is provisioned (`devfestmilano26.firebasestorage.app`,
   europe-west3), `firebase/storage.rules` is deployed (public read on
