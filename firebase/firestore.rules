@@ -58,12 +58,18 @@ service cloud.firestore {
       allow write: if false;
       match /scans/{cid} { allow read: if isOwner(uid); allow write: if false; }
     }
-    // Counters only (count, sum, average) — world-readable so a session card
-    // can show its rating. Never any comment or uid: those live one level down,
-    // under rules that don't cascade here.
+    // The published rating: a count, and an average only once enough people
+    // have voted. World-readable so a session card can show it. Rules grant a
+    // document, never a field, so the running sum must not live here — with a
+    // count of 1 the sum is that person's rating.
     match /feedback/{sid} {
       allow read: if true;
       allow write: if false;
+    }
+    // The running totals behind it, sum included. Server-side only; rules do
+    // not cascade, so the public rule above does not reach this.
+    match /feedback/{sid}/totals/{id} {
+      allow read, write: if false;
     }
     match /feedback/{sid}/responses/{uid} {
       allow read: if isOwner(uid) || isAdmin();

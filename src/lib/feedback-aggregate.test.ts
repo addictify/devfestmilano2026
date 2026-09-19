@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   formatAverage,
+  MIN_PUBLIC_RATINGS,
   nextAggregate,
+  publicRating,
   type RatingAggregate,
 } from "@/lib/feedback-aggregate";
 
@@ -56,5 +58,39 @@ describe("formatAverage", () => {
     expect(formatAverage(4)).toBe("4.0");
     expect(formatAverage(13 / 3)).toBe("4.3");
     expect(formatAverage(4.25)).toBe("4.3");
+  });
+});
+
+describe("publicRating", () => {
+  it("never publishes the sum", () => {
+    // The first version of this leaked {sum: 5, count: 1} to anyone with the
+    // URL — one division away from that single person's rating.
+    const published = publicRating({ count: 9, sum: 40, average: 40 / 9 });
+    expect(published).not.toHaveProperty("sum");
+    expect(Object.keys(published).sort()).toEqual(["average", "count"]);
+  });
+
+  it("withholds the average below the threshold", () => {
+    for (let count = 0; count < MIN_PUBLIC_RATINGS; count++) {
+      const published = publicRating({ count, sum: count * 5, average: 5 });
+      expect(published.average, `count=${count}`).toBeUndefined();
+      // The count alone says nothing about what anyone thought.
+      expect(published.count).toBe(count);
+    }
+  });
+
+  it("publishes the average from the threshold up", () => {
+    const published = publicRating({
+      count: MIN_PUBLIC_RATINGS,
+      sum: 12,
+      average: 4,
+    });
+    expect(published).toEqual({ count: MIN_PUBLIC_RATINGS, average: 4 });
+  });
+
+  it("stops publishing if the count ever falls back below it", () => {
+    // set() without merge is what makes this true in Firestore; here we only
+    // assert the projection agrees.
+    expect(publicRating({ count: 2, sum: 9, average: 4.5 }).average).toBeUndefined();
   });
 });
