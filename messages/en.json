@@ -247,7 +247,8 @@
     "room": "Room",
     "onlyFavorites": "Favorites",
     "noFavoritesYet": "You haven't saved any sessions yet.",
-    "favoritesHint": "Tap the star on a session to add it to your schedule."
+    "favoritesHint": "Tap the star on a session to add it to your schedule.",
+    "compactView": "Compact view"
   },
   "teamPage": {
     "title": "The team",

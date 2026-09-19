@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Star, X } from "lucide-react";
+import { Rows3, Star, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { colorClasses } from "@/lib/design/tokens";
@@ -10,6 +10,7 @@ import { localized } from "@/lib/localize";
 import { formatTime } from "@/lib/time";
 import { collapseServiceSessions, matchesFilters } from "@/lib/agenda";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useAgendaDensity } from "@/hooks/useAgendaDensity";
 import type { Session, Speaker, Track } from "@/types/models";
 import { SessionCard } from "./SessionCard";
 
@@ -31,6 +32,7 @@ export function AgendaView({
   const [track, setTrack] = useState<string>("all");
   const [lang, setLang] = useState<Lang>("all");
   const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const { compact, toggle: toggleCompact } = useAgendaDensity();
 
   const speakerById = useMemo(
     () => new Map(speakers.map((s) => [s.id, s])),
@@ -158,12 +160,31 @@ export function AgendaView({
             </button>
           )}
 
-          <Link
-            href="/my-schedule"
-            className="ml-auto text-sm font-medium text-gdg-blue hover:underline"
-          >
-            {tMine("title")}
-          </Link>
+          <div className="flex w-full items-center gap-3 sm:ml-auto sm:w-auto">
+            {/* A toggle, so the label names the control and aria-pressed
+                carries the state. Flipping the text would leave it unclear
+                whether it describes the current view or the next one. */}
+            <button
+              onClick={toggleCompact}
+              aria-pressed={compact}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+                compact
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-border hover:bg-muted",
+              )}
+            >
+              <Rows3 className="size-3.5" />
+              {t("compactView")}
+            </button>
+
+            <Link
+              href="/my-schedule"
+              className="text-sm font-medium text-gdg-blue hover:underline"
+            >
+              {tMine("title")}
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -203,6 +224,7 @@ export function AgendaView({
                       <SessionCard
                         session={session}
                         showTime={false}
+                        compact={compact}
                         track={
                           session.trackId
                             ? trackById.get(session.trackId)

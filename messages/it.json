@@ -247,7 +247,8 @@
     "room": "Sala",
     "onlyFavorites": "Preferiti",
     "noFavoritesYet": "Non hai ancora salvato nessuna sessione.",
-    "favoritesHint": "Tocca la stella su una sessione per aggiungerla alla tua agenda."
+    "favoritesHint": "Tocca la stella su una sessione per aggiungerla alla tua agenda.",
+    "compactView": "Vista compatta"
   },
   "teamPage": {
     "title": "Il team",
