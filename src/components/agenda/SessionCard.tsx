@@ -118,7 +118,7 @@ export function SessionCard({
             {speakers.map((sp) => (
               <Link
                 key={sp.id}
-                href={`/speakers/${sp.id}`}
+                href={`/speakers/${sp.slug}`}
                 className="text-sm font-medium transition-colors hover:text-gdg-blue"
               >
                 {sp.fullName}

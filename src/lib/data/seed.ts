@@ -1,6 +1,6 @@
 import type {
   Session,
-  Speaker,
+  StoredSpeaker,
   Sponsor,
   TeamMember,
   Track,
@@ -39,7 +39,7 @@ export const seedTracks: Track[] = [
   },
 ];
 
-export const seedSpeakers: Speaker[] = [
+export const seedSpeakers: StoredSpeaker[] = [
   {
     id: "sp-1",
     fullName: "Giulia Ferrari",

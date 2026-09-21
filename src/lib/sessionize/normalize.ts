@@ -2,9 +2,10 @@ import { GDG_ORDER } from "@/lib/design/tokens";
 import type {
   LocalizedString,
   Session,
-  Speaker,
+  StoredSpeaker,
   Track,
 } from "@/types/models";
+import { toEventInstant } from "@/lib/time";
 import type { SzAll } from "./types";
 
 function mirror(text: string | null | undefined): LocalizedString {
@@ -35,7 +36,7 @@ export function isPubliclyVisible(session: {
 
 /** Map a raw Sessionize `/view/All` payload into our content model. */
 export function normalizeSessionize(data: SzAll): {
-  speakers: Speaker[];
+  speakers: StoredSpeaker[];
   sessions: Session[];
   tracks: Track[];
 } {
@@ -79,7 +80,7 @@ export function normalizeSessionize(data: SzAll): {
     visibleSessions.flatMap((s) => (s.speakers ?? []).map(String)),
   );
 
-  const speakers: Speaker[] = (data.speakers ?? [])
+  const speakers: StoredSpeaker[] = (data.speakers ?? [])
     .filter((s) => visibleSpeakerIds.has(String(s.id)))
     .map((s, i) => ({
     id: s.id,
@@ -125,8 +126,11 @@ export function normalizeSessionize(data: SzAll): {
       id: s.id,
       title: s.title,
       description: mirror(s.description),
-      startsAt: s.startsAt ?? null,
-      endsAt: s.endsAt ?? null,
+      // Stored as an absolute instant, not the naked wall clock Sessionize
+      // sends: everything downstream (prerender, .ics, the client) then agrees
+      // regardless of the zone it runs in.
+      startsAt: toEventInstant(s.startsAt),
+      endsAt: toEventInstant(s.endsAt),
       trackId: s.roomId != null ? String(s.roomId) : undefined,
       roomName:
         s.room ??

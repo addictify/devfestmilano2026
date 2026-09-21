@@ -26,8 +26,17 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const speakers = await getSpeakers();
+  // Both spellings are exported: the slug is the real page, and the Sessionize
+  // id is an alias for the links this site published before slugs existed. A
+  // static host has no redirects, so the alias has to be a real page — it
+  // carries a canonical pointing at the slug and asks not to be indexed, so
+  // the two don't compete as duplicates.
   return routing.locales.flatMap((locale) =>
-    speakers.map((s) => ({ locale, id: s.id })),
+    speakers.flatMap((s) =>
+      s.slug === s.id
+        ? [{ locale, id: s.slug }]
+        : [{ locale, id: s.slug }, { locale, id: s.id }],
+    ),
   );
 }
 
@@ -39,19 +48,25 @@ export async function generateMetadata({
   const { locale, id } = await params;
   const speaker = await getSpeaker(id);
   if (!speaker) return {};
+  const byId = id !== speaker.slug;
   // Self-contained (event name, date, venue) so the description still makes
   // sense if an LLM or search result surfaces it without the surrounding page.
   const description =
     locale === "it"
       ? `${speaker.tagLine} — parla al ${siteConfig.name}, il 10 ottobre a ${siteConfig.venue.name}, Milano.`
       : `${speaker.tagLine} — speaking at ${siteConfig.name}, October 10 at ${siteConfig.venue.name}, Milano.`;
-  return pageMetadata({
+  const metadata = pageMetadata({
     locale,
-    path: `/speakers/${id}`,
+    // Always the slug: the canonical URL of this page is the readable one,
+    // whichever spelling the visitor arrived through.
+    path: `/speakers/${speaker.slug}`,
     title: speaker.fullName,
     description,
-    image: `/speakers/${id}/opengraph-image`,
+    // The id, not the param: one OG image per speaker, generated once, and
+    // reachable from both the slug page and the alias.
+    image: `/speakers/${speaker.id}/opengraph-image`,
   });
+  return byId ? { ...metadata, robots: { index: false, follow: true } } : metadata;
 }
 
 export default async function SpeakerDetail({
@@ -69,7 +84,9 @@ export default async function SpeakerDetail({
   const t = await getTranslations("speakersPage");
   const [sessions, tracks] = await Promise.all([getSessions(), getTracks()]);
   const trackById = new Map(tracks.map((tr) => [tr.id, tr]));
-  const mySessions = sessions.filter((s) => s.speakerIds.includes(id));
+  // speaker.id, not the route param: the param is now the slug, and sessions
+  // reference speakers by their Sessionize id.
+  const mySessions = sessions.filter((s) => s.speakerIds.includes(speaker.id));
   const bioText = localized(speaker.bio, requestLocale);
   const knowsAbout = [...new Set(mySessions.flatMap((s) => s.tags))];
 

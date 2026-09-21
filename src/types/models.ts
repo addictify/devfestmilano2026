@@ -20,7 +20,14 @@ export interface SpeakerLink {
   url: string;
 }
 
-export interface Speaker {
+/**
+ * A speaker as stored — in Firestore, in the seed, as Sessionize sends them.
+ *
+ * `Speaker` adds the URL slug, which is computed from the whole roster when
+ * the data is read (lib/slug.ts) rather than written down, so a rename can't
+ * strand a stale slug in the database.
+ */
+export interface StoredSpeaker {
   id: string;
   fullName: string;
   tagLine: string;
@@ -81,6 +88,11 @@ export interface TeamMember {
   links: SpeakerLink[];
   order: number;
 }
+
+export type Speaker = StoredSpeaker & {
+  /** URL segment, derived from the name. See lib/slug.ts. */
+  slug: string;
+};
 
 export interface NewsItem {
   id: string;

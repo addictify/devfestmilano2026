@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     }
     for (const s of speakers) {
-      const path = `/speakers/${s.id}`;
+      const path = `/speakers/${s.slug}`;
       entries.push({
         url: `${base}/${locale}${path}`,
         lastModified,

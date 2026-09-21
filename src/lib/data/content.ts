@@ -2,9 +2,11 @@ import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { readPublicCollection } from "./firestore-rest";
 import { toPlainObject } from "./plain";
+import { speakerSlugs } from "@/lib/slug";
 import type {
   Session,
   Speaker,
+  StoredSpeaker,
   Sponsor,
   TeamMember,
   Track,
@@ -55,10 +57,14 @@ const byOrder = <T extends { order?: number }>(a: T, b: T) =>
   (a.order ?? 999) - (b.order ?? 999);
 
 export async function getSpeakers(): Promise<Speaker[]> {
-  const list = await read<Speaker>("speakers", seedSpeakers);
-  return [...list].sort(
+  const list = await read<StoredSpeaker>("speakers", seedSpeakers);
+  const sorted = [...list].sort(
     (a, b) => byOrder(a, b) || a.fullName.localeCompare(b.fullName),
   );
+  // Derived here rather than stored, so a rename can't leave a stale slug in
+  // Firestore, and so uniqueness is decided against the whole current roster.
+  const slugs = speakerSlugs(sorted);
+  return sorted.map((s) => ({ ...s, slug: slugs.get(s.id) ?? s.id }));
 }
 
 export async function getFeaturedSpeakers(limit = 6): Promise<Speaker[]> {
@@ -67,9 +73,16 @@ export async function getFeaturedSpeakers(limit = 6): Promise<Speaker[]> {
   return (featured.length ? featured : all).slice(0, limit);
 }
 
-export async function getSpeaker(id: string): Promise<Speaker | null> {
+/**
+ * Look up by slug, falling back to the Sessionize id.
+ *
+ * The id form is what the site published before slugs existed; links to it are
+ * already out in the world, so it keeps resolving — see the canonical tag on
+ * the page, which points at the slug.
+ */
+export async function getSpeaker(param: string): Promise<Speaker | null> {
   const all = await getSpeakers();
-  return all.find((s) => s.id === id) ?? null;
+  return all.find((s) => s.slug === param) ?? all.find((s) => s.id === param) ?? null;
 }
 
 export async function getTracks(): Promise<Track[]> {

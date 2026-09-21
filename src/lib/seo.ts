@@ -154,6 +154,7 @@ export function personJsonLd(
   locale: string,
   speaker: {
     id: string;
+    slug: string;
     fullName: string;
     tagLine: string;
     bio?: string;
@@ -179,7 +180,7 @@ export function personJsonLd(
       ? { "@type": "Place", name: speaker.country }
       : undefined,
     image: speaker.profilePicture ?? undefined,
-    url: `${siteConfig.url}/${locale}/speakers/${speaker.id}`,
+    url: `${siteConfig.url}/${locale}/speakers/${speaker.slug}`,
     sameAs: speaker.links.map((l) => l.url),
     knowsAbout: knowsAbout?.length ? knowsAbout : undefined,
     subjectOf: {

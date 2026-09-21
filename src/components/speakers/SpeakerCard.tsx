@@ -11,7 +11,7 @@ export function SpeakerCard({ speaker }: { speaker: Speaker }) {
 
   return (
     <Link
-      href={`/speakers/${speaker.id}`}
+      href={`/speakers/${speaker.slug}`}
       className="group relative flex h-full flex-col overflow-hidden rounded-card border border-border bg-card transition-all duration-300 ease-[var(--ease-out-expo)] hover:-translate-y-1 hover:shadow-[0_20px_40px_-24px_rgba(0,0,0,0.35)]"
     >
       <span className={cn("h-1.5 w-full", c.bg)} />
