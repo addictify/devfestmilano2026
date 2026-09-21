@@ -82,6 +82,18 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // Push subscriptions carry an endpoint that is a capability: anyone who
+    // can read one can send that device a notification. Written only by
+    // /api/push/subscribe, read only by the Admin SDK.
+    match /pushSubscriptions/{id} {
+      allow read, write: if false;
+    }
+    // What was announced to the room, and by whom.
+    match /announcements/{id} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // Deny everything else.
     match /{document=**} { allow read, write: if false; }
   }

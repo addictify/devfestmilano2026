@@ -90,3 +90,56 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+// ---------------------------------------------------------------------------
+// Web Push: reminders for the talks you saved, and announcements from the
+// organizers during the day.
+
+self.addEventListener("push", (event) => {
+  // A push with no readable payload still has to show something: the
+  // permission was granted on the promise that every push is user-visible, and
+  // Chrome posts its own "site updated in the background" notice otherwise.
+  let payload = {};
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    payload = {};
+  }
+
+  const title = payload.title || "DevFest Milano";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: payload.body || "",
+      // `tag` collapses: a newer announcement replaces an unread one instead of
+      // stacking, and a session can never buzz twice.
+      tag: payload.tag || "devfest",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      data: { url: payload.url || "/" },
+    })
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || "/";
+
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      // Reuse a tab that is already open rather than piling up windows on a
+      // phone someone is holding in a corridor.
+      for (const client of clientList) {
+        if (new URL(client.url).origin === self.location.origin) {
+          await client.focus();
+          if ("navigate" in client) await client.navigate(target);
+          return;
+        }
+      }
+      await self.clients.openWindow(target);
+    })()
+  );
+});

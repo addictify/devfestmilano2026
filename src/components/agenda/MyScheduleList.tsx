@@ -5,6 +5,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
 import { SessionCard } from "@/components/agenda/SessionCard";
+import { PushToggle } from "@/components/common/PushToggle";
 import type { Session, Speaker, Track } from "@/types/models";
 
 export function MyScheduleList({
@@ -34,6 +35,8 @@ export function MyScheduleList({
           {t("signInNudge")}
         </p>
       )}
+
+      <PushToggle className="mt-6" />
 
       <div className="mt-8 flex flex-col gap-4">
         {mine.length === 0 ? (

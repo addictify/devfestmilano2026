@@ -13,6 +13,7 @@ const SECTIONS = [
   { href: "/admin/sponsors", label: "Sponsor" },
   { href: "/admin/team", label: "Team" },
   { href: "/admin/subscribers", label: "Iscritti" },
+  { href: "/admin/push", label: "Notifiche" },
   { href: "/admin/config", label: "Configurazione" },
   { href: "/admin/admins", label: "Amministratori" },
 ];

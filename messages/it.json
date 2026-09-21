@@ -309,6 +309,18 @@
     "signedInAs": "Accesso come",
     "admin": "Amministrazione"
   },
+  "push": {
+    "enable": "Attiva le notifiche",
+    "on": "Notifiche attive",
+    "blocked": "Notifiche bloccate dal browser. Puoi riattivarle dalle impostazioni del sito.",
+    "what": "Promemoria per i talk che hai salvato e comunicazioni degli organizzatori durante l'evento.",
+    "signInForReminders": "Riceverai le comunicazioni degli organizzatori. Accedi per avere anche i promemoria dei talk che hai salvato.",
+    "adminTitle": "Comunicazione push",
+    "adminLead": "Invia una notifica a tutti i dispositivi iscritti. Non è possibile annullarla.",
+    "adminDevices": "{count, plural, =0 {Nessun dispositivo iscritto} one {# dispositivo iscritto} other {# dispositivi iscritti}}",
+    "adminConfirm": "Invio a {count} dispositivi. Confermi?",
+    "adminSent": "Inviata: {sent} riuscite, {failed} fallite, {gone} iscrizioni scadute rimosse."
+  },
   "myschedule": { "title": "La mia agenda", "empty": "Nessuna sessione salvata.", "browse": "Sfoglia l'agenda", "add": "Salva nella mia agenda", "remove": "Rimuovi dalla mia agenda", "signInNudge": "Accedi per sincronizzare l'agenda su tutti i dispositivi.", "count": "{count} salvate" },
   "play": {
     "title": "DevFest Quest", "points": "{points} punti", "scan": "Scansiona un checkpoint",

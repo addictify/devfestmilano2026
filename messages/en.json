@@ -309,6 +309,18 @@
     "signedInAs": "Signed in as",
     "admin": "Admin"
   },
+  "push": {
+    "enable": "Turn on notifications",
+    "on": "Notifications on",
+    "blocked": "Notifications are blocked by your browser. You can re-enable them in the site settings.",
+    "what": "Reminders for the talks you saved, and announcements from the organizers during the event.",
+    "signInForReminders": "You'll get announcements from the organizers. Sign in to also get reminders for the talks you saved.",
+    "adminTitle": "Push announcement",
+    "adminLead": "Send a notification to every subscribed device. This cannot be undone.",
+    "adminDevices": "{count, plural, =0 {No subscribed devices} one {# subscribed device} other {# subscribed devices}}",
+    "adminConfirm": "Sending to {count} devices. Confirm?",
+    "adminSent": "Sent: {sent} delivered, {failed} failed, {gone} expired subscriptions removed."
+  },
   "myschedule": { "title": "My schedule", "empty": "No saved sessions yet.", "browse": "Browse the agenda", "add": "Save to my schedule", "remove": "Remove from my schedule", "signInNudge": "Sign in to sync your schedule across devices.", "count": "{count} saved" },
   "play": {
     "title": "DevFest Quest", "points": "{points} points", "scan": "Scan a checkpoint",

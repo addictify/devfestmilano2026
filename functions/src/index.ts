@@ -7,6 +7,9 @@ import { markPendingPublish } from "@/lib/publish";
 // The Next route handlers, reused as-is. Each exports plain
 // (Request) => Response functions, so nothing here reimplements their rules.
 import * as subscribe from "@/app/api/subscribe/route";
+import * as pushSubscribe from "@/app/api/push/subscribe/route";
+import * as pushReminders from "@/app/api/push/reminders/route";
+import * as adminPush from "@/app/api/admin/push/route";
 import * as feedback from "@/app/api/feedback/route";
 import * as scan from "@/app/api/scan/route";
 import * as playProfile from "@/app/api/play/profile/route";
@@ -29,6 +32,8 @@ type RouteModule = Partial<Record<"GET" | "POST" | "PUT" | "DELETE" | "PATCH", H
 // Paths mirror the Next routes exactly, so the client only changes origin.
 const ROUTES: Record<string, RouteModule> = {
   "/api/subscribe": subscribe,
+  "/api/push/subscribe": pushSubscribe,
+  "/api/push/reminders": pushReminders,
   "/api/feedback": feedback,
   "/api/scan": scan,
   "/api/play/profile": playProfile,
@@ -44,6 +49,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/admin/team": adminTeam,
   "/api/admin/upload": adminUpload,
   "/api/admin/publish": adminPublish,
+  "/api/admin/push": adminPush,
 };
 
 /**
@@ -113,11 +119,24 @@ const GITHUB_TOKEN = defineSecret("GITHUB_REBUILD_TOKEN");
 const SESSIONIZE_EVENT_ID = defineSecret("SESSIONIZE_EVENT_ID");
 const CRON_SECRET = defineSecret("CRON_SECRET");
 const REVALIDATE_SECRET = defineSecret("REVALIDATE_SECRET");
+const VAPID_PRIVATE_KEY = defineSecret("VAPID_PRIVATE_KEY");
+const VAPID_PUBLIC_KEY = defineSecret("NEXT_PUBLIC_VAPID_PUBLIC_KEY");
+const VAPID_SUBJECT = defineSecret("VAPID_SUBJECT");
 
 export const api = onRequest(
   {
     region: "europe-west1",
-    secrets: [GITHUB_TOKEN, SESSIONIZE_EVENT_ID, CRON_SECRET, REVALIDATE_SECRET],
+    secrets: [
+      GITHUB_TOKEN,
+      SESSIONIZE_EVENT_ID,
+      CRON_SECRET,
+      REVALIDATE_SECRET,
+      // The public key is a secret only in the mechanical sense: the function
+      // needs it to sign, and Secret Manager is how values reach it.
+      VAPID_PUBLIC_KEY,
+      VAPID_PRIVATE_KEY,
+      VAPID_SUBJECT,
+    ],
     cors: false,
     maxInstances: 10,
   },
