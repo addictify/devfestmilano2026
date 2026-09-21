@@ -10,6 +10,7 @@ import { AddToCalendar } from "@/components/common/AddToCalendar";
 import { FavoriteButton } from "@/components/agenda/FavoriteButton";
 import { FeedbackForm } from "@/components/feedback/FeedbackForm";
 import { SessionRating } from "@/components/feedback/SessionRating";
+import { Flag } from "@/components/common/Flag";
 import { siteConfig } from "@/lib/site";
 
 const LEVEL_DOT: Record<string, string> = {
@@ -156,7 +157,8 @@ export function SessionCard({
               </span>
             )}
             {session.language && (
-              <span className="rounded-full border border-border px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-muted-foreground">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-wider text-muted-foreground">
+                <Flag locale={session.language} className="h-2.5 w-[15px]" />
                 {session.language === "it" ? t("italian") : t("english")}
               </span>
             )}

@@ -3,11 +3,12 @@
 import { useLocale } from "next-intl";
 import { useParams } from "next/navigation";
 import { useTransition } from "react";
-import { Check, Globe } from "lucide-react";
+import { Check } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { Flag } from "@/components/common/Flag";
 
 const LABELS: Record<string, string> = { it: "Italiano", en: "English" };
 
@@ -39,7 +40,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         )}
         disabled={isPending}
       >
-        <Globe className="size-4" />
+        <Flag locale={locale} />
         {locale}
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
@@ -54,7 +55,10 @@ export function LanguageSwitcher({ className }: { className?: string }) {
               onSelect={() => switchTo(l)}
               className="flex cursor-pointer items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm outline-none transition-colors data-[highlighted]:bg-muted"
             >
-              <span>{LABELS[l] ?? l}</span>
+              <span className="inline-flex items-center gap-2.5">
+                <Flag locale={l} />
+                {LABELS[l] ?? l}
+              </span>
               {l === locale && <Check className="size-4 text-gdg-green" />}
             </DropdownMenu.Item>
           ))}
