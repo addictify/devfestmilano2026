@@ -9,7 +9,7 @@
 - Organizers: [GDG Cloud Milano](https://gdg.community.dev/gdg-cloud-milano/)
   and [GDG Milano](https://gdg.community.dev/gdg-milano/)
 - Languages: talks in Italian and English
-- Tickets: community event, symbolic price — see the [venue page](https://2026.devfestmilano.it/it/venue)
+- Tickets: free community event (registration required, limited seats) — see the [venue page](https://2026.devfestmilano.it/it/venue)
   and register via [GDG Community](https://gdg.community.dev)
 - Call for Speakers: submit via [Sessionize](https://sessionize.com/devfest-milano-2026)
 - [Code of Conduct](https://2026.devfestmilano.it/it/code-of-conduct)

@@ -40,7 +40,7 @@
   },
   "notify": {
     "title": "Sii il primo a saperlo",
-    "body": "I biglietti non sono ancora in vendita. Li annunciamo tramite le nostre due community organizzatrici: segui entrambe sulla piattaforma GDG e non ti perderai l'apertura.",
+    "body": "I biglietti non sono ancora disponibili. Li annunciamo tramite le nostre due community organizzatrici: segui entrambe sulla piattaforma GDG e non ti perderai l'apertura.",
     "emailLabel": "Email",
     "emailPlaceholder": "tu@esempio.com",
     "submit": "Avvisami",
@@ -182,7 +182,7 @@
     "items": [
       {
         "q": "Quanto costa il biglietto?",
-        "a": "DevFest Milano 2026 (10 ottobre, Randstad Box) è un evento della community a prezzo simbolico. Trovi il prezzo aggiornato e tutti i dettagli sulla pagina di registrazione."
+        "a": "DevFest Milano 2026 (10 ottobre, Randstad Box) è un evento della community completamente gratuito. Serve solo registrarsi: i posti sono limitati. Trovi tutti i dettagli sulla pagina di registrazione."
       },
       {
         "q": "L'evento è in italiano o in inglese?",

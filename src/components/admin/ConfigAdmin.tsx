@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import type { SiteSettings } from "@/lib/data/settings";
 
 const LABELS: Record<keyof SiteSettings, string> = {
-  ticketsAvailable: "Biglietti in vendita",
+  ticketsAvailable: "Biglietti disponibili",
   speakersPublished: "Speaker pubblicati",
   schedulePublished: "Agenda pubblicata",
   cfpOpen: "Call for Speakers aperta",
@@ -53,7 +53,7 @@ export function ConfigAdmin() {
   return (
     <div className="max-w-lg">
       <AdminSectionHeader title="Configurazione">
-        Gli interruttori che decidono cosa mostra il sito pubblico: biglietti in vendita, speaker e agenda pubblicati, call for speakers aperta. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
+        Gli interruttori che decidono cosa mostra il sito pubblico: biglietti disponibili, speaker e agenda pubblicati, call for speakers aperta. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
       </AdminSectionHeader>
       <div className="flex flex-col gap-3">
         {(Object.keys(LABELS) as (keyof SiteSettings)[]).map((k) => (

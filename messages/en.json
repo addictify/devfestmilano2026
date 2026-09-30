@@ -40,7 +40,7 @@
   },
   "notify": {
     "title": "Be first to know",
-    "body": "Tickets aren't on sale yet. We announce them through our two organizing communities, so follow both on the GDG platform and you won't miss the drop.",
+    "body": "Tickets aren't available yet. We announce them through our two organizing communities, so follow both on the GDG platform and you won't miss the drop.",
     "emailLabel": "Email",
     "emailPlaceholder": "you@example.com",
     "submit": "Notify me",
@@ -182,7 +182,7 @@
     "items": [
       {
         "q": "How much is a ticket?",
-        "a": "DevFest Milano 2026 (October 10, Randstad Box) is a community event with a symbolic price. You'll find the current price and all the details on the registration page."
+        "a": "DevFest Milano 2026 (October 10, Randstad Box) is a completely free community event. You just need to register, as seats are limited. You'll find all the details on the registration page."
       },
       {
         "q": "Is the event in Italian or English?",

@@ -93,6 +93,7 @@ export function eventJsonLd(locale: string, ticketsAvailable: boolean) {
     endDate: siteConfig.eventEnd,
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     eventStatus: "https://schema.org/EventScheduled",
+    isAccessibleForFree: true,
     location: {
       "@type": "Place",
       name: siteConfig.venue.name,
@@ -120,6 +121,8 @@ export function eventJsonLd(locale: string, ticketsAvailable: boolean) {
           offers: {
             "@type": "Offer",
             url: siteConfig.ticketsUrl,
+            price: 0,
+            priceCurrency: "EUR",
             availability: "https://schema.org/InStock",
           },
         }
