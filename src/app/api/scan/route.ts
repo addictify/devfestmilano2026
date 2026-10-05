@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyUser } from "@/lib/auth/user-guard";
+import { getSiteSettings } from "@/lib/data/settings";
 import { awardForScan, quizOutcome, validateScan, type GameProfile, type MilestoneBadge } from "@/lib/gamification";
 import type { LocalizedString } from "@/types/models";
 
@@ -17,6 +18,11 @@ export async function POST(req: Request) {
   if (!uid) return NextResponse.json({ ok: false }, { status: 401 });
   const db = getAdminDb();
   if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
+  // The /play pages 404 when the quest is off, but a tab left open (or a
+  // scripted POST) could still score: the flag is enforced here too.
+  if (!(await getSiteSettings()).questEnabled) {
+    return NextResponse.json({ ok: false, reason: "disabled" }, { status: 403 });
+  }
 
   const body = await req.json().catch(() => null);
   const checkpointId = body?.checkpointId;

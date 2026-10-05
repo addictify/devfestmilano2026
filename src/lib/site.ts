@@ -45,6 +45,10 @@ export const siteConfig = {
   speakersPublished: false,
   schedulePublished: false,
 
+  /** DevFest Quest (QR scavenger hunt at /play). Set to false to hide the
+   *  header link, 404 the /play pages and refuse checkpoint scans. */
+  questEnabled: true,
+
   /** Last edition (2025) in numbers — social proof while the CFP is open. */
   lastEdition: {
     year: 2025,

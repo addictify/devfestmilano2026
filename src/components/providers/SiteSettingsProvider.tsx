@@ -9,6 +9,7 @@ const fallback: SiteSettings = {
   speakersPublished: siteConfig.speakersPublished,
   schedulePublished: siteConfig.schedulePublished,
   cfpOpen: siteConfig.cfpOpen,
+  questEnabled: siteConfig.questEnabled,
 };
 
 const SiteSettingsContext = createContext<SiteSettings>(fallback);

@@ -9,6 +9,7 @@ describe("mergeSettings", () => {
       speakersPublished: siteConfig.speakersPublished,
       schedulePublished: siteConfig.schedulePublished,
       cfpOpen: siteConfig.cfpOpen,
+      questEnabled: siteConfig.questEnabled,
     });
   });
   it("overrides per-flag only when the doc has a boolean", () => {

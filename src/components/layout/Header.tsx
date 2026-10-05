@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import { TicketButton } from "@/components/common/TicketButton";
 import { DevFestMark } from "@/components/common/DevFestMark";
 import { GdgColorBar } from "@/components/common/GdgColorBar";
@@ -45,6 +46,7 @@ export function Header() {
   const tPlay = useTranslations("play");
   const pathname = usePathname();
   const { user } = useAuth();
+  const { questEnabled } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -92,7 +94,7 @@ export function Header() {
             </div>
             <ThemeToggle className="hidden sm:inline-flex" />
             <TicketButton size="sm" className="hidden md:inline-flex" />
-            {user && (
+            {user && questEnabled && (
               <Link href="/play" className="hidden rounded-full px-3 py-2 text-sm font-medium text-gdg-blue hover:bg-muted sm:inline-flex">
                 {tPlay("title")}
               </Link>
@@ -137,7 +139,7 @@ export function Header() {
                     <div className="flex items-center gap-2">
                       <LanguageSwitcher />
                       <ThemeToggle />
-                      {user && (
+                      {user && questEnabled && (
                         <Link href="/play" onClick={() => setOpen(false)} className="rounded-full px-3 py-2 text-sm font-medium text-gdg-blue hover:bg-muted">
                           {tPlay("title")}
                         </Link>

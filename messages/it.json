@@ -326,7 +326,7 @@
     "title": "DevFest Quest", "points": "{points} punti", "scan": "Scansiona un checkpoint",
     "scanning": "Inquadra un codice QR DevFest…", "noCamera": "Nessuna fotocamera disponibile.",
     "denied": "Permesso fotocamera negato. Abilitalo nelle impostazioni del browser.",
-    "invalidQr": "Questo non è un codice DevFest Quest.", "already": "Già scansionato ✓",
+    "invalidQr": "Questo non è un codice DevFest Quest.", "closed": "DevFest Quest non è attiva in questo momento.", "already": "Già scansionato ✓",
     "awarded": "+{points} punti!", "newBadge": "Nuovo badge sbloccato!", "signIn": "Accedi per giocare",
     "badges": "Badge", "leaderboard": "Classifica", "rank": "Pos.", "you": "Tu",
     "optIn": "Mostrami in classifica", "displayName": "Nome visualizzato", "save": "Salva", "saved": "Salvato ✓",

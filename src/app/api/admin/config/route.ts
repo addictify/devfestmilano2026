@@ -11,6 +11,7 @@ const FLAGS = [
   "speakersPublished",
   "schedulePublished",
   "cfpOpen",
+  "questEnabled",
 ] as const;
 
 export async function GET(req: Request) {
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
     revalidatePath(`/${l}/speakers`);
     revalidatePath(`/${l}/agenda`);
     revalidatePath(`/${l}/cfp`);
+    revalidatePath(`/${l}/play`, "layout");
   }
   return NextResponse.json({ ok: true });
 }

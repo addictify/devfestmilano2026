@@ -13,6 +13,7 @@ const LABELS: Record<keyof SiteSettings, string> = {
   speakersPublished: "Speaker pubblicati",
   schedulePublished: "Agenda pubblicata",
   cfpOpen: "Call for Speakers aperta",
+  questEnabled: "DevFest Quest attiva",
 };
 
 export function ConfigAdmin() {
@@ -53,7 +54,7 @@ export function ConfigAdmin() {
   return (
     <div className="max-w-lg">
       <AdminSectionHeader title="Configurazione">
-        Gli interruttori che decidono cosa mostra il sito pubblico: biglietti disponibili, speaker e agenda pubblicati, call for speakers aperta. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
+        Gli interruttori che decidono cosa mostra il sito pubblico: biglietti disponibili, speaker e agenda pubblicati, call for speakers aperta, DevFest Quest attiva. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
       </AdminSectionHeader>
       <div className="flex flex-col gap-3">
         {(Object.keys(LABELS) as (keyof SiteSettings)[]).map((k) => (

@@ -58,7 +58,7 @@ export function Scanner() {
         const a = (data as { awarded: { pointsDelta: number; correct: boolean | null; newBadgeIds?: string[] } }).awarded;
         setResult({ kind: "awarded", pointsDelta: a.pointsDelta, correct: a.correct, newBadge: (a.newBadgeIds?.length ?? 0) > 0 });
       } else {
-        setResult({ kind: "error", msg: t("invalidQr") });
+        setResult({ kind: "error", msg: (data as { reason?: string }).reason === "disabled" ? t("closed") : t("invalidQr") });
       }
     }
 
