@@ -3,7 +3,7 @@
 // Offline shell, plus pages you've actually visited — the venue has patchy
 // signal on the day, and an attendee who opened the agenda over wifi should
 // still be able to read it in a basement track room.
-const CACHE_VERSION = "devfest-v2";
+const CACHE_VERSION = "devfest-v3";
 const OFFLINE_URL = "/offline";
 const OFFLINE_URL_SLASH = "/offline/";
 
@@ -26,7 +26,7 @@ self.addEventListener("install", (event) => {
       // Resilient precache: one failed URL must not abort install. Both
       // /offline and /offline/ are attempted (static export uses trailingSlash).
       await Promise.allSettled(
-        [OFFLINE_URL, OFFLINE_URL_SLASH, "/icons/icon-192.png"].map((u) =>
+        [OFFLINE_URL, OFFLINE_URL_SLASH, "/icons/icon-192.png", "/icons/badge-96.png"].map((u) =>
           cache.add(u)
         )
       );
@@ -114,7 +114,9 @@ self.addEventListener("push", (event) => {
       // stacking, and a session can never buzz twice.
       tag: payload.tag || "devfest",
       icon: "/icons/icon-192.png",
-      badge: "/icons/icon-192.png",
+      // A badge is drawn as an alpha silhouette in the status bar, so it
+      // stays the transparent brackets — the full-colour icon is a square.
+      badge: "/icons/badge-96.png",
       data: { url: payload.url || "/" },
     })
   );
