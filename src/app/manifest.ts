@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { siteConfig } from "@/lib/site";
+import { iconUrl } from "@/lib/icons";
 
 // Fully static — required for `output: export` (GitHub Pages), harmless otherwise.
 export const dynamic = "force-static";
@@ -18,10 +19,10 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#4285F4",
     categories: ["events", "technology"],
     icons: [
-      { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
-      { src: "/icons/icon-256.png", sizes: "256x256", type: "image/png" },
-      { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
-      { src: "/icons/icon-512-maskable.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: iconUrl("icon-192.png"), sizes: "192x192", type: "image/png" },
+      { src: iconUrl("icon-256.png"), sizes: "256x256", type: "image/png" },
+      { src: iconUrl("icon-512.png"), sizes: "512x512", type: "image/png" },
+      { src: iconUrl("icon-512-maskable.png"), sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

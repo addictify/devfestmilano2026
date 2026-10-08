@@ -8,6 +8,7 @@ import { siteConfig } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/data/settings";
 import { pushStateScript } from "@/lib/push/prepaint";
+import { iconUrl } from "@/lib/icons";
 import { Providers } from "@/components/providers";
 import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 import { Header } from "@/components/layout/Header";
@@ -47,7 +48,10 @@ export async function generateMetadata({
     applicationName: siteConfig.name,
     manifest: "/manifest.webmanifest",
     appleWebApp: { capable: true, title: siteConfig.shortName, statusBarStyle: "default" },
-    icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+    icons: {
+      icon: iconUrl("icon-192.png"),
+      apple: iconUrl("apple-touch-icon.png"),
+    },
   };
 }
 
