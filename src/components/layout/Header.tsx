@@ -14,6 +14,7 @@ import { GdgColorBar } from "@/components/common/GdgColorBar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeToggle } from "./ThemeToggle";
 import { AuthButton } from "@/components/auth/AuthButton";
+import { NotificationsBell } from "@/components/notifications/NotificationsBell";
 
 const NAV = [
   { href: "/speakers", key: "speakers" },
@@ -33,8 +34,10 @@ function Wordmark({ onClick }: { onClick?: () => void }) {
       className="group flex items-center gap-2.5"
     >
       <DevFestMark className="h-5 transition-transform duration-300 group-hover:scale-105" />
-      <span className="font-display text-lg font-extrabold tracking-tight">
-        DevFest<span className="text-muted-foreground"> Milano</span>
+      <span className="whitespace-nowrap font-display text-lg font-extrabold tracking-tight">
+        {/* Below 400px the bell, sign-in and menu need the room: the mark
+            and "DevFest" carry the brand, "Milano" stays for screen readers. */}
+        DevFest<span className="text-muted-foreground max-[400px]:sr-only"> Milano</span>
         <span className="sr-only"> 2026 — home</span>
       </span>
     </Link>
@@ -100,6 +103,7 @@ export function Header() {
                 {tPlay("title")}
               </Link>
             )}
+            <NotificationsBell />
             <AuthButton />
 
             {/* Mobile menu */}

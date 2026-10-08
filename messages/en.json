@@ -321,7 +321,9 @@
     "error": "Couldn't load the notifications. Check your connection and try again.",
     "retry": "Try again",
     "empty": "No notifications yet. Announcements on the day will show up here.",
-    "justNow": "Just now"
+    "justNow": "Just now",
+    "seeAll": "All notifications",
+    "bellUnread": "Notifications, new ones waiting"
   },
   "push": {
     "enable": "Turn on notifications",

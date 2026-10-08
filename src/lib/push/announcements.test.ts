@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { localizeAnnouncement, toPublicAnnouncement } from "@/lib/push/announcements";
+import { hasUnread, localizeAnnouncement, toPublicAnnouncement } from "@/lib/push/announcements";
 
 const stored = {
   titleIt: "Cambio sala",
@@ -48,5 +48,27 @@ describe("localizeAnnouncement", () => {
   it("falls back to Italian, as the push itself did", () => {
     const itOnly = toPublicAnnouncement("a1", { ...stored, bodyEn: null })!;
     expect(localizeAnnouncement(itOnly, "en")).toEqual({ title: "Cambio sala", body: "Il talk delle 11 è in Nexus." });
+  });
+});
+
+describe("hasUnread", () => {
+  const at = (iso: string | null) => ({ ...toPublicAnnouncement("x", stored)!, sentAt: iso });
+
+  it("is false with nothing announced", () => {
+    expect(hasUnread([], null)).toBe(false);
+  });
+
+  it("is true for a first visit once anything was announced", () => {
+    expect(hasUnread([at("2026-10-10T09:00:00.000Z")], null)).toBe(true);
+  });
+
+  it("compares the newest announcement with the last one seen", () => {
+    const items = [at("2026-10-10T10:00:00.000Z"), at("2026-10-10T09:00:00.000Z")];
+    expect(hasUnread(items, "2026-10-10T09:00:00.000Z")).toBe(true);
+    expect(hasUnread(items, "2026-10-10T10:00:00.000Z")).toBe(false);
+  });
+
+  it("ignores a row still being written", () => {
+    expect(hasUnread([at(null)], null)).toBe(false);
   });
 });

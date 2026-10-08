@@ -321,7 +321,9 @@
     "error": "Non riesco a caricare le notifiche. Controlla la connessione e riprova.",
     "retry": "Riprova",
     "empty": "Ancora nessuna notifica. Gli avvisi della giornata compariranno qui.",
-    "justNow": "Adesso"
+    "justNow": "Adesso",
+    "seeAll": "Tutte le notifiche",
+    "bellUnread": "Notifiche, ci sono novità"
   },
   "push": {
     "enable": "Attiva le notifiche",

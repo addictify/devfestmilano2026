@@ -49,3 +49,15 @@ export function localizeAnnouncement(
     ? { title: a.title.en, body: a.body.en }
     : { title: a.title.it, body: a.body.it };
 }
+
+/** Newest announcement time in a newest-first list (rows mid-write skipped). */
+export function latestSentAt(items: PublicAnnouncement[]): string | null {
+  return items.find((a) => a.sentAt)?.sentAt ?? null;
+}
+
+/** Whether the bell should show a dot: something newer than what this
+ *  browser last looked at. ISO strings in UTC compare correctly as text. */
+export function hasUnread(items: PublicAnnouncement[], seen: string | null): boolean {
+  const latest = latestSentAt(items);
+  return latest !== null && (seen === null || latest > seen);
+}

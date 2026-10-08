@@ -3,7 +3,7 @@
 // Offline shell, plus pages you've actually visited — the venue has patchy
 // signal on the day, and an attendee who opened the agenda over wifi should
 // still be able to read it in a basement track room.
-const CACHE_VERSION = "devfest-v3";
+const CACHE_VERSION = "devfest-v4";
 const OFFLINE_URL = "/offline";
 const OFFLINE_URL_SLASH = "/offline/";
 
@@ -108,17 +108,23 @@ self.addEventListener("push", (event) => {
 
   const title = payload.title || "DevFest Milano";
   event.waitUntil(
-    self.registration.showNotification(title, {
-      body: payload.body || "",
-      // `tag` collapses: a newer announcement replaces an unread one instead of
-      // stacking, and a session can never buzz twice.
-      tag: payload.tag || "devfest",
-      icon: "/icons/icon-192.png",
-      // A badge is drawn as an alpha silhouette in the status bar, so it
-      // stays the transparent brackets — the full-colour icon is a square.
-      badge: "/icons/badge-96.png",
-      data: { url: payload.url || "/" },
-    })
+    Promise.all([
+      // Open tabs refresh the bell and the notifications page right away.
+      self.clients
+        .matchAll({ type: "window", includeUncontrolled: true })
+        .then((clients) => clients.forEach((c) => c.postMessage({ type: "push" }))),
+      self.registration.showNotification(title, {
+        body: payload.body || "",
+        // `tag` collapses: a newer announcement replaces an unread one instead of
+        // stacking, and a session can never buzz twice.
+        tag: payload.tag || "devfest",
+        icon: "/icons/icon-192.png",
+        // A badge is drawn as an alpha silhouette in the status bar, so it
+        // stays the transparent brackets — the full-colour icon is a square.
+        badge: "/icons/badge-96.png",
+        data: { url: payload.url || "/" },
+      }),
+    ])
   );
 });
 
