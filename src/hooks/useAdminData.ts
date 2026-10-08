@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { adminFetch } from "@/lib/admin-client";
 
 /**
@@ -21,6 +21,15 @@ export function useAdminData<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Callers pass `pick` inline, so it is a new function every render. As a
+  // dependency it made a new fetch → setData → render → new pick → fetch…
+  // ~20 requests a second for as long as an admin page stayed open. Read it
+  // through a ref instead: the fetch depends on the path alone.
+  const pickRef = useRef(pick);
+  useEffect(() => {
+    pickRef.current = pick;
+  });
+
   const fetchOnce = useCallback(async () => {
     const res = await adminFetch(path);
     const json = await res.json().catch(() => null);
@@ -31,8 +40,8 @@ export function useAdminData<T>(
           : `Caricamento non riuscito (${res.status}).`,
       );
     }
-    return pick(json);
-  }, [path, pick]);
+    return pickRef.current(json);
+  }, [path]);
 
   // setState only from callbacks, never straight from the effect body.
   const reload = useCallback(
