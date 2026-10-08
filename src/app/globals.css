@@ -273,6 +273,18 @@
   animation: rise-panel 0.9s var(--ease-out-expo) 0.2s both;
 }
 
+/* Notifications prompt, decided before first paint by the inline script in
+   the locale layout (sets html[data-push]): hidden for people already
+   subscribed or who can't subscribe, so it never pops in or out after
+   hydration and shoves the page around. iOS Safari gets the Home Screen hint
+   instead of the toggle. */
+html[data-push="on"] .push-prompt,
+html[data-push="none"] .push-prompt,
+html[data-push="ios"] .push-prompt-toggle,
+html:not([data-push="ios"]) .push-prompt-ios {
+  display: none;
+}
+
 @keyframes float-slow {
   0%,
   100% {

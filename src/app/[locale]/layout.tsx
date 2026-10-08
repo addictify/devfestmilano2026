@@ -7,6 +7,7 @@ import { fontVariables } from "@/lib/fonts";
 import { siteConfig } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 import { getSiteSettings } from "@/lib/data/settings";
+import { pushStateScript } from "@/lib/push/prepaint";
 import { Providers } from "@/components/providers";
 import { SiteSettingsProvider } from "@/components/providers/SiteSettingsProvider";
 import { Header } from "@/components/layout/Header";
@@ -71,6 +72,10 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning className={fontVariables}>
+      <head>
+        {/* Before first paint: whether to show the notifications prompt. */}
+        <script dangerouslySetInnerHTML={{ __html: pushStateScript }} />
+      </head>
       <body className="min-h-dvh antialiased">
         <NextIntlClientProvider>
           <Providers>

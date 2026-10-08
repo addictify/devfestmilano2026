@@ -8,24 +8,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { PushToggleControl } from "@/components/common/PushToggle";
 import { cn } from "@/lib/utils";
 
-/** iPhone/iPad Safari only exposes Web Push to a site added to the Home
- *  Screen. iPadOS reports itself as a Mac, hence the touch-points check. */
-function isIosBrowserTab(): boolean {
-  const ios =
-    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  const standalone =
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (navigator as { standalone?: boolean }).standalone === true;
-  return ios && !standalone;
-}
-
 /**
- * The notifications invitation, where people actually are (home, agenda)
- * rather than only on My Schedule. It asks once and then gets out of the way:
- * hidden while loading, once already subscribed, and when the browser has
- * refused (only its own settings can undo that). On iOS Safari, where the
- * toggle can't work, it explains the Home Screen step instead.
+ * The notifications invitation, where people actually are (home, agenda,
+ * notifications) rather than only on My Schedule.
+ *
+ * It is in the server HTML for everyone, and the pre-paint script
+ * (lib/push/prepaint) hides it — or swaps the toggle for the iOS Home Screen
+ * hint — through CSS before anything is drawn. Waiting for the async
+ * subscription check instead made it appear late and shove the page down.
+ * After hydration it only steps aside once the check proves it's moot
+ * (already subscribed, or refused), and stays up after the click that turned
+ * notifications on so "on" reads as a confirmation.
  */
 export function PushCallout({
   className,
@@ -38,34 +31,29 @@ export function PushCallout({
   const push = usePushNotifications();
   const t = useTranslations("push");
   const { user } = useAuth();
-  // Keep the card up after the click that turned notifications on, so the
-  // "on" state is seen as a confirmation instead of the card vanishing.
   const [touched, setTouched] = useState(false);
 
-  const iosHint = push.state === "unsupported" && isIosBrowserTab();
-  const show = push.state === "off" || (push.state === "on" && touched) || iosHint;
-  if (!show) return null;
+  if ((push.state === "on" && !touched) || push.state === "denied") return null;
+
+  const shareIcon = () => (
+    <Share className="inline size-4 -translate-y-px" aria-label={t("iosShare")} />
+  );
 
   if (mini) {
     return (
-      <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground", className)}>
-        {iosHint ? (
-          <p className="inline-flex max-w-xl items-start gap-2 text-pretty">
-            <BellRing className="mt-0.5 size-4 shrink-0 text-gdg-blue" />
-            <span>
-              {t.rich("iosHintShort", {
-                share: () => <Share className="inline size-4 -translate-y-px" aria-label={t("iosShare")} />,
-              })}
-            </span>
-          </p>
-        ) : (
-          <>
-            <span onClickCapture={() => setTouched(true)}>
-              <PushToggleControl push={push} bare />
-            </span>
-            <span>{t("miniWhat")}</span>
-          </>
-        )}
+      <div className={cn("push-prompt text-sm", className)}>
+        {/* Filled and tinted so it reads as an action against the hero's
+            pale background, where an outline pill disappeared. */}
+        <div className="push-prompt-toggle inline-flex flex-wrap items-center gap-x-3 gap-y-2 rounded-3xl bg-gdg-blue/10 p-1.5 pr-4 ring-1 ring-gdg-blue/25">
+          <span onClickCapture={() => setTouched(true)}>
+            <PushToggleControl push={push} bare tone="accent" />
+          </span>
+          <span className="text-foreground/80">{t("miniWhat")}</span>
+        </div>
+        <p className="push-prompt-ios max-w-xl text-pretty text-muted-foreground">
+          <BellRing className="mr-1.5 inline size-4 -translate-y-px text-gdg-blue" />
+          {t.rich("iosHintShort", { share: shareIcon })}
+        </p>
       </div>
     );
   }
@@ -73,7 +61,7 @@ export function PushCallout({
   return (
     <aside
       className={cn(
-        "flex flex-col gap-4 rounded-2xl border border-border bg-card px-5 py-5 sm:flex-row sm:items-center sm:gap-6 sm:px-6",
+        "push-prompt flex flex-col gap-4 rounded-2xl border border-border bg-card px-5 py-5 sm:flex-row sm:items-center sm:gap-6 sm:px-6",
         className,
       )}
     >
@@ -82,21 +70,16 @@ export function PushCallout({
       </span>
       <div className="flex-1">
         <h2 className="font-display text-lg font-semibold tracking-tight">{t("calloutTitle")}</h2>
-        <p className="mt-1 max-w-prose text-pretty text-sm text-muted-foreground">
-          {iosHint
-            ? t.rich("iosHint", {
-                share: () => <Share className="inline size-4 -translate-y-px" aria-label={t("iosShare")} />,
-              })
-            : push.state === "on" && !user
-              ? t("signInForReminders")
-              : t("what")}
+        <p className="push-prompt-toggle mt-1 max-w-prose text-pretty text-sm text-muted-foreground">
+          {push.state === "on" && !user ? t("signInForReminders") : t("what")}
+        </p>
+        <p className="push-prompt-ios mt-1 max-w-prose text-pretty text-sm text-muted-foreground">
+          {t.rich("iosHint", { share: shareIcon })}
         </p>
       </div>
-      {!iosHint && (
-        <div onClickCapture={() => setTouched(true)} className="shrink-0">
-          <PushToggleControl push={push} bare />
-        </div>
-      )}
+      <div onClickCapture={() => setTouched(true)} className="push-prompt-toggle shrink-0">
+        <PushToggleControl push={push} bare />
+      </div>
     </aside>
   );
 }

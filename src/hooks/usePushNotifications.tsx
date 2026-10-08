@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { apiUrl } from "@/lib/api-base";
+import { PUSH_STORAGE_KEY } from "@/lib/push/prepaint";
 
 /**
  * Subscribe this browser to event notifications.
@@ -68,6 +69,18 @@ export function usePushNotifications() {
       active = false;
     };
   }, []);
+
+  // Remembered for the pre-paint script (lib/push/prepaint), which can't wait
+  // for the async check above to decide whether to show the prompt.
+  useEffect(() => {
+    if (state === "loading") return;
+    try {
+      if (state === "on") localStorage.setItem(PUSH_STORAGE_KEY, "on");
+      else localStorage.removeItem(PUSH_STORAGE_KEY);
+    } catch {
+      // Storage blocked: the prompt just shows until the check hides it.
+    }
+  }, [state]);
 
   // Re-register after sign-in so the stored row gains the uid, which is what
   // session reminders match on. Without this, someone who subscribed while

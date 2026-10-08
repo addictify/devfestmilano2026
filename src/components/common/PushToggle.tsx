@@ -25,16 +25,22 @@ export function PushToggleControl({
   push: { state, busy, enable, disable },
   className,
   bare = false,
+  tone = "default",
 }: {
   push: ReturnType<typeof usePushNotifications>;
   className?: string;
   /** Just the button: the parent writes the explanation itself. */
   bare?: boolean;
+  /** "accent": filled blue while off, for a prompt that has to stand out. */
+  tone?: "default" | "accent";
 }) {
   const { user } = useAuth();
   const t = useTranslations("push");
 
-  if (state === "unsupported" || state === "loading") return null;
+  // While the check runs, render the "off" button rather than nothing, so the
+  // control is already in place in the server HTML and nothing jumps when the
+  // answer arrives. Clicking it early is harmless: enable() re-checks.
+  if (state === "unsupported") return null;
 
   if (state === "denied") {
     return (
@@ -62,7 +68,9 @@ export function PushToggleControl({
           "inline-flex w-fit items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-60",
           on
             ? "border-transparent bg-gdg-green-solid text-white"
-            : "border-border hover:bg-muted",
+            : tone === "accent"
+              ? "border-transparent bg-gdg-blue-solid text-white hover:brightness-110"
+              : "border-border hover:bg-muted",
         )}
       >
         {on ? <BellRing className="size-4" /> : <Bell className="size-4" />}
