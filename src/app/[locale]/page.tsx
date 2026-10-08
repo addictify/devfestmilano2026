@@ -36,7 +36,7 @@ export default async function Home({
 
   return (
     <>
-      <JsonLd data={eventJsonLd(locale, settings.ticketsAvailable)} />
+      <JsonLd data={eventJsonLd(locale, settings.ticketsAvailable, settings.ticketsSoldOut)} />
       <Hero />
       <ThemeSection />
       <WhatToExpect />

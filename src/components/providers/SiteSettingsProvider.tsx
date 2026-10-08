@@ -6,6 +6,7 @@ import type { SiteSettings } from "@/lib/data/settings";
 
 const fallback: SiteSettings = {
   ticketsAvailable: siteConfig.ticketsAvailable,
+  ticketsSoldOut: siteConfig.ticketsSoldOut,
   speakersPublished: siteConfig.speakersPublished,
   schedulePublished: siteConfig.schedulePublished,
   cfpOpen: siteConfig.cfpOpen,

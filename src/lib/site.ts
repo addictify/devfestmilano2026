@@ -39,6 +39,10 @@ export const siteConfig = {
   /** Registration is open on Bevy. Set to false to render the ticket CTAs
    *  disabled ("Tickets — soon") and bring back the notify-me dialog. */
   ticketsAvailable: true,
+  /** Every seat is taken. Replaces each ticket CTA with a "Sold out" badge
+   *  and hides the per-chapter registration links; wins over
+   *  `ticketsAvailable`. */
+  ticketsSoldOut: true,
 
   /** CFP still open → no confirmed speakers / schedule yet. Flip to true to
    *  surface the real speaker directory and agenda grid. */

@@ -19,7 +19,7 @@ export function Hero() {
   const t = useTranslations("hero");
   const tCal = useTranslations("calendar");
   const reduce = useReducedMotion();
-  const { ticketsAvailable, cfpOpen } = useSiteSettings();
+  const { ticketsAvailable, ticketsSoldOut, cfpOpen } = useSiteSettings();
 
   const container = {
     hidden: {},
@@ -127,9 +127,10 @@ export function Hero() {
             variants={item}
             className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
           >
-            {ticketsAvailable ? (
+            {ticketsAvailable || ticketsSoldOut ? (
               <>
-                {/* Tickets on sale: tickets lead, CFP secondary while it's open. */}
+                {/* Tickets open (or sold out — TicketButton becomes the badge):
+                    tickets lead, CFP secondary while it's open. */}
                 <TicketButton size="lg" label={t("ctaTickets")} />
                 {cfpOpen && (
                   <Button asChild variant="outline" size="lg">

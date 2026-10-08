@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 const FLAGS = [
   "ticketsAvailable",
+  "ticketsSoldOut",
   "speakersPublished",
   "schedulePublished",
   "cfpOpen",
@@ -38,6 +39,7 @@ export async function POST(req: Request) {
     revalidatePath(`/${l}/speakers`);
     revalidatePath(`/${l}/agenda`);
     revalidatePath(`/${l}/cfp`);
+    revalidatePath(`/${l}/communities`);
     revalidatePath(`/${l}/play`, "layout");
   }
   return NextResponse.json({ ok: true });

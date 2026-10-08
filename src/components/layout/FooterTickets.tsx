@@ -14,7 +14,8 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
  */
 export function FooterTickets() {
   const t = useTranslations("footer");
-  const { ticketsAvailable } = useSiteSettings();
+  const { ticketsAvailable: open, ticketsSoldOut } = useSiteSettings();
+  const ticketsAvailable = open || ticketsSoldOut;
 
   return (
     <div className="flex flex-col gap-4">
@@ -22,7 +23,7 @@ export function FooterTickets() {
         {ticketsAvailable ? t("tickets") : t("newsletter")}
       </h3>
       <p className="text-sm text-muted-foreground">
-        {ticketsAvailable ? t("ticketsBody") : t("newsletterBody")}
+        {ticketsSoldOut ? t("soldOutBody") : ticketsAvailable ? t("ticketsBody") : t("newsletterBody")}
       </p>
       {ticketsAvailable ? (
         <TicketButton size="sm" className="w-fit" />

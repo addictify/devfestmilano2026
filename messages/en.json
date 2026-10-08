@@ -15,6 +15,8 @@
     "cfp": "Call for Speakers",
     "tickets": "Tickets",
     "ticketsSoon": "Tickets — soon",
+    "soldOut": "Sold out",
+    "soldOutTitle": "Tickets sold out",
     "menu": "Menu",
     "close": "Close",
     "home": "Home"
@@ -214,6 +216,7 @@
     "join": "Follow the communities",
     "tickets": "Registration",
     "ticketsBody": "Registration is open on the GDG platform. Seats are limited — grab your ticket.",
+    "soldOutBody": "Tickets are sold out — thank you all! Follow the communities for upcoming events.",
     "madeWith": "Made with",
     "by": "by the GDG Cloud Milano & GDG Milano volunteers",
     "disclaimer": "DevFest Milano is an independent, community-organized event — not run by Google. Google contributes as a sponsor to support the GDG volunteers, but isn't affiliated with organizing the event.",

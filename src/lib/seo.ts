@@ -84,7 +84,7 @@ export function breadcrumbJsonLd(
 }
 
 /** `Event` — the whole reason this site exists. Rendered once, on the home page. */
-export function eventJsonLd(locale: string, ticketsAvailable: boolean) {
+export function eventJsonLd(locale: string, ticketsAvailable: boolean, ticketsSoldOut = false) {
   return {
     "@context": "https://schema.org",
     "@type": "Event",
@@ -116,14 +116,14 @@ export function eventJsonLd(locale: string, ticketsAvailable: boolean) {
       name: c.name,
       url: c.url,
     })),
-    ...(ticketsAvailable
+    ...(ticketsAvailable || ticketsSoldOut
       ? {
           offers: {
             "@type": "Offer",
             url: siteConfig.ticketsUrl,
             price: 0,
             priceCurrency: "EUR",
-            availability: "https://schema.org/InStock",
+            availability: ticketsSoldOut ? "https://schema.org/SoldOut" : "https://schema.org/InStock",
           },
         }
       : {}),

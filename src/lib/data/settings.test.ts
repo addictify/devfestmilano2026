@@ -6,6 +6,7 @@ describe("mergeSettings", () => {
   it("falls back to siteConfig constants when doc is null", () => {
     expect(mergeSettings(null)).toEqual({
       ticketsAvailable: siteConfig.ticketsAvailable,
+      ticketsSoldOut: siteConfig.ticketsSoldOut,
       speakersPublished: siteConfig.speakersPublished,
       schedulePublished: siteConfig.schedulePublished,
       cfpOpen: siteConfig.cfpOpen,

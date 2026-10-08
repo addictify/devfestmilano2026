@@ -5,6 +5,7 @@ import { readPublicDoc } from "./firestore-rest";
 
 export type SiteSettings = {
   ticketsAvailable: boolean;
+  ticketsSoldOut: boolean;
   speakersPublished: boolean;
   schedulePublished: boolean;
   cfpOpen: boolean;
@@ -13,6 +14,7 @@ export type SiteSettings = {
 
 const FLAGS = [
   "ticketsAvailable",
+  "ticketsSoldOut",
   "speakersPublished",
   "schedulePublished",
   "cfpOpen",

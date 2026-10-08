@@ -7,7 +7,7 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 /**
  * Per-chapter registration link. The event is co-hosted, so each community has
  * its own Bevy page; the site-wide CTA points at one of them, this surfaces the
- * other. Renders nothing until `ticketsAvailable` flips (client-side because
+ * other. Renders nothing until `ticketsAvailable` flips, and again once sold out (client-side because
  * the community cards are static server components).
  */
 export function CommunityRegisterLink({
@@ -18,9 +18,9 @@ export function CommunityRegisterLink({
   communityName: string;
 }) {
   const t = useTranslations("communities");
-  const { ticketsAvailable } = useSiteSettings();
+  const { ticketsAvailable, ticketsSoldOut } = useSiteSettings();
 
-  if (!ticketsAvailable) return null;
+  if (!ticketsAvailable || ticketsSoldOut) return null;
 
   return (
     <a
