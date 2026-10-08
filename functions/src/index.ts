@@ -2,7 +2,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import { logger } from "firebase-functions";
 import { defineSecret } from "firebase-functions/params";
 import { takeTouchedPaths } from "./shims/next-cache.js";
-import { markPendingPublish } from "@/lib/publish";
+import { markPendingPublish, publishSite } from "@/lib/publish";
 
 // The Next route handlers, reused as-is. Each exports plain
 // (Request) => Response functions, so nothing here reimplements their rules.
@@ -72,6 +72,16 @@ const ALLOWED_ORIGINS = [
   "http://localhost:3100",
   "http://localhost:3000",
 ];
+
+/**
+ * Writes that rebuild the static site on their own instead of waiting for
+ * someone to press Pubblica. Only the Sessionize sync: it changes the agenda
+ * with nobody at the admin, and on the day a room change that sits unpublished
+ * is a room change nobody hears about. It only writes (and so only gets here)
+ * when Sessionize actually changed, so this is at most one rebuild an hour.
+ * Admin edits still batch up behind Pubblica.
+ */
+const AUTO_PUBLISH = new Set(["/api/sync"]);
 
 // What the admin banner shows as "what changed".
 const LABELS: Record<string, string> = {
@@ -181,7 +191,16 @@ export const api = onRequest(
     // One entry per edit, not one per invalidated locale path.
     const touched = takeTouchedPaths();
     if (touched.length > 0 && response.ok) {
-      await markPendingPublish(LABELS[path] ?? path.replace("/api/admin/", ""));
+      const label = LABELS[path] ?? path.replace("/api/admin/", "");
+      const published = AUTO_PUBLISH.has(path)
+        ? await publishSite(`auto: ${label}`)
+        : null;
+      // Not auto-published, or the dispatch failed (e.g. no GitHub token):
+      // fall back to the banner so the change can't go unnoticed.
+      if (!published?.ok) {
+        if (published) logger.warn("[api] auto-publish failed", { path, published });
+        await markPendingPublish(label);
+      }
     }
 
     const body = Buffer.from(await response.arrayBuffer());

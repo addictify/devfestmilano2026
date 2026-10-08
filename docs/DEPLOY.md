@@ -123,9 +123,13 @@ gcloud scheduler jobs create http sessionize-sync \
   --http-method=POST --headers="Authorization=Bearer $CRON_SECRET"
 ```
 
-The sync only writes to Firestore; it marks the site as having unpublished
-changes rather than rebuilding, so new talks appear publicly when someone
-presses Pubblica.
+When Sessionize actually changed, the sync rebuilds the site on its own
+(the Cloud Function dispatches the Pages workflow, like Pubblica does), so an
+agenda change reaches the public site within the hour plus a ~1-minute build.
+An unchanged sync writes nothing and rebuilds nothing. If the dispatch fails
+(e.g. `GITHUB_REBUILD_TOKEN` missing), it falls back to flagging the change in
+the admin banner. Admin edits are not auto-published: they still wait for
+Pubblica.
 
 Note: a job run immediately after creation can be dropped silently — the first
 forced run left `status.code: -1` and never reached the function, while a
