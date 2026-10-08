@@ -15,6 +15,7 @@
     "cfp": "Call for Speakers",
     "tickets": "Tickets",
     "ticketsSoon": "Tickets — soon",
+    "notifications": "Notifications",
     "soldOut": "Sold out",
     "soldOutTitle": "Tickets sold out",
     "menu": "Menu",
@@ -311,6 +312,16 @@
     "myschedule": "My schedule",
     "signedInAs": "Signed in as",
     "admin": "Admin"
+  },
+  "notifications": {
+    "eyebrow": "Announcements",
+    "title": "Notifications",
+    "lead": "Every announcement from the organizers during the event, newest first.",
+    "loading": "Loading…",
+    "error": "Couldn't load the notifications. Check your connection and try again.",
+    "retry": "Try again",
+    "empty": "No notifications yet. Announcements on the day will show up here.",
+    "justNow": "Just now"
   },
   "push": {
     "enable": "Turn on notifications",

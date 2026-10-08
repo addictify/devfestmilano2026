@@ -48,24 +48,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
   }
 
-  const subscriptions = await allSubscriptions(db);
-  const result = await sendToSubscriptions(db, subscriptions, (subscription) =>
-    subscription.locale === "en" && titleEn && bodyEn
-      ? announcementPayload(titleEn, bodyEn, "en")
-      // No English copy written: send the Italian one rather than nothing.
-      // A notification in the wrong language beats a room that wasn't told.
-      : announcementPayload(titleIt, bodyIt, "it"),
-  );
-
-  await db.collection("announcements").add({
+  // Written before sending, not after: each push links to this row, and
+  // someone tapping one the moment it lands must find it already there.
+  const ref = db.collection("announcements").doc();
+  await ref.set({
     titleIt,
     bodyIt,
     titleEn: titleEn || null,
     bodyEn: bodyEn || null,
     sentBy: admin.email ?? admin.uid,
     sentAt: FieldValue.serverTimestamp(),
-    ...result,
   });
+
+  const subscriptions = await allSubscriptions(db);
+  const result = await sendToSubscriptions(db, subscriptions, (subscription) =>
+    subscription.locale === "en" && titleEn && bodyEn
+      ? announcementPayload(titleEn, bodyEn, "en", ref.id)
+      // No English copy written: send the Italian one rather than nothing.
+      // A notification in the wrong language beats a room that wasn't told.
+      : announcementPayload(titleIt, bodyIt, "it", ref.id),
+  );
+
+  await ref.update({ ...result });
 
   return NextResponse.json({ ok: true, ...result });
 }

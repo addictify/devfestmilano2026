@@ -10,6 +10,7 @@ import { FooterTickets } from "./FooterTickets";
 const EXPLORE = [
   { href: "/speakers", key: "speakers" },
   { href: "/agenda", key: "agenda" },
+  { href: "/notifications", key: "notifications" },
   { href: "/sponsors", key: "sponsors" },
   { href: "/team", key: "team" },
   { href: "/venue", key: "venue" },

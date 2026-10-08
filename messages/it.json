@@ -15,6 +15,7 @@
     "cfp": "Call for Speakers",
     "tickets": "Biglietti",
     "ticketsSoon": "Biglietti — presto",
+    "notifications": "Notifiche",
     "soldOut": "Sold out",
     "soldOutTitle": "Biglietti esauriti",
     "menu": "Menu",
@@ -311,6 +312,16 @@
     "myschedule": "La mia agenda",
     "signedInAs": "Accesso come",
     "admin": "Amministrazione"
+  },
+  "notifications": {
+    "eyebrow": "Comunicazioni",
+    "title": "Notifiche",
+    "lead": "Tutti gli avvisi degli organizzatori durante l'evento, dal più recente.",
+    "loading": "Caricamento…",
+    "error": "Non riesco a caricare le notifiche. Controlla la connessione e riprova.",
+    "retry": "Riprova",
+    "empty": "Ancora nessuna notifica. Gli avvisi della giornata compariranno qui.",
+    "justNow": "Adesso"
   },
   "push": {
     "enable": "Attiva le notifiche",

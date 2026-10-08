@@ -11,6 +11,7 @@ import * as pushSubscribe from "@/app/api/push/subscribe/route";
 import * as pushReminders from "@/app/api/push/reminders/route";
 import * as adminPush from "@/app/api/admin/push/route";
 import * as feedback from "@/app/api/feedback/route";
+import * as announcements from "@/app/api/announcements/route";
 import * as scan from "@/app/api/scan/route";
 import * as playProfile from "@/app/api/play/profile/route";
 import * as sync from "@/app/api/sync/route";
@@ -35,6 +36,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/push/subscribe": pushSubscribe,
   "/api/push/reminders": pushReminders,
   "/api/feedback": feedback,
+  "/api/announcements": announcements,
   "/api/scan": scan,
   "/api/play/profile": playProfile,
   "/api/sync": sync,

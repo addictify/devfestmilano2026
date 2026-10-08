@@ -76,11 +76,14 @@ export function announcementPayload(
   title: string,
   body: string,
   locale: "it" | "en",
+  /** `announcements` doc id: a tap opens the full text, which the lock screen
+   *  may have cut at MAX_BODY. */
+  id: string,
 ): PushPayload {
   return {
     title: clampText(title, MAX_TITLE),
     body: clampText(body, MAX_BODY),
-    url: `/${locale}/agenda`,
+    url: `/${locale}/notifications?id=${encodeURIComponent(id)}`,
     // One tag for all announcements: a later one replaces an unread earlier
     // one rather than stacking a column of them on the lock screen.
     tag: "devfest-announcement",

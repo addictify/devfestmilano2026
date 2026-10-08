@@ -70,14 +70,18 @@ describe("clampText", () => {
 });
 
 describe("announcementPayload", () => {
-  it("points at the agenda in the reader's language", () => {
-    expect(announcementPayload("Titolo", "Corpo", "it").url).toBe("/it/agenda");
-    expect(announcementPayload("Title", "Body", "en").url).toBe("/en/agenda");
+  it("opens that announcement, in the reader's language", () => {
+    expect(announcementPayload("Titolo", "Corpo", "it", "a1").url).toBe("/it/notifications?id=a1");
+    expect(announcementPayload("Title", "Body", "en", "a1").url).toBe("/en/notifications?id=a1");
+  });
+
+  it("escapes the id in the URL", () => {
+    expect(announcementPayload("T", "B", "it", "a b&c").url).toBe("/it/notifications?id=a%20b%26c");
   });
 
   it("shares one tag, so a new announcement replaces an unread one", () => {
-    expect(announcementPayload("A", "1", "it").tag).toBe(
-      announcementPayload("B", "2", "it").tag,
+    expect(announcementPayload("A", "1", "it", "a1").tag).toBe(
+      announcementPayload("B", "2", "it", "a2").tag,
     );
   });
 });
