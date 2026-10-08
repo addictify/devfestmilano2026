@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils";
 import { colorClasses, type GdgColor } from "@/lib/design/tokens";
 import { Container } from "./Container";
 import { GdgColorBar } from "./GdgColorBar";
-import { MotionReveal } from "./MotionReveal";
 
 export function PageHeader({
   eyebrow,
@@ -22,7 +21,7 @@ export function PageHeader({
     <section className="relative overflow-hidden border-b border-border">
       <div aria-hidden className="absolute inset-0 bg-dot-grid opacity-60" />
       <Container className="relative pt-14 pb-12 sm:pt-20 sm:pb-16">
-        <MotionReveal className="flex max-w-3xl flex-col gap-4">
+        <div className="rise flex max-w-3xl flex-col gap-4">
           {eyebrow && (
             <span className="eyebrow flex items-center gap-2 text-muted-foreground">
               <span className={cn("size-2 rounded-full", c.dot)} />
@@ -38,7 +37,7 @@ export function PageHeader({
             </p>
           )}
           {children}
-        </MotionReveal>
+        </div>
       </Container>
       <GdgColorBar className="absolute inset-x-0 bottom-0 opacity-90" />
     </section>

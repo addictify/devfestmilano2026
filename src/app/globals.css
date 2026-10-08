@@ -247,13 +247,30 @@
   }
 }
 
-@keyframes beam-shimmer {
+/* Entrance for above-the-fold content. Pure CSS so it runs from the first
+   paint of the server HTML; a JS-driven entrance keeps content at opacity 0
+   until hydration, which on a slow phone means seconds of blank page. */
+@keyframes rise {
   from {
-    background-position: 0% 0;
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
   }
-  to {
-    background-position: 200% 0;
+}
+
+@keyframes rise-panel {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0) scale(0.96);
   }
+}
+
+.rise {
+  animation: rise 0.7s var(--ease-out-expo) both;
+  animation-delay: calc(50ms + var(--rise-i, 0) * 80ms);
+}
+
+.rise-panel {
+  animation: rise-panel 0.9s var(--ease-out-expo) 0.2s both;
 }
 
 @keyframes float-slow {
@@ -287,5 +304,11 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+  /* The global rule shortens animations but keeps their delays, which would
+     hold staggered content invisible for nothing. */
+  .rise,
+  .rise-panel {
+    animation: none !important;
   }
 }

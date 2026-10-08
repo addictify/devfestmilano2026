@@ -76,7 +76,7 @@ export function AgendaView({
   return (
     <div>
       {/* Filters */}
-      <div className="sticky top-16 z-30 -mx-5 mb-10 border-y border-border bg-background/85 px-5 py-4 backdrop-blur-xl sm:mx-0 sm:rounded-2xl sm:border">
+      <div className="sticky top-16 z-30 -mx-5 mb-10 border-y border-border bg-background/85 px-5 py-4 backdrop-blur-md sm:mx-0 sm:rounded-2xl sm:border">
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setTrack("all")}

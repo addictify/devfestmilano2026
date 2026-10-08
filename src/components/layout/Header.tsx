@@ -61,9 +61,10 @@ export function Header() {
     <header className="sticky top-0 z-50">
       <div
         className={cn(
-          "transition-all duration-300",
+          // Colours only: transitioning backdrop-filter re-blurs every frame.
+          "transition-colors duration-300",
           scrolled
-            ? "border-b border-border bg-background/80 backdrop-blur-xl"
+            ? "border-b border-border bg-background/80 backdrop-blur-md"
             : "border-b border-transparent bg-transparent",
         )}
       >

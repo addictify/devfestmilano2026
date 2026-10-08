@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { GDG, GDG_ORDER } from "@/lib/design/tokens";
@@ -19,25 +18,25 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 export function Hero() {
   const t = useTranslations("hero");
   const tCal = useTranslations("calendar");
-  const reduce = useReducedMotion();
   const { ticketsAvailable, ticketsSoldOut, cfpOpen } = useSiteSettings();
 
-  const container = {
-    hidden: {},
-    show: {
-      transition: { staggerChildren: reduce ? 0 : 0.08, delayChildren: 0.05 },
-    },
+  // Entrance stagger in CSS (`.rise`), not JS: it starts on first paint of the
+  // server HTML instead of after hydration, which on a slow phone kept the
+  // whole hero invisible for seconds.
+  const rise = (i: number) => ({ "--rise-i": i }) as React.CSSProperties;
+  // Two copies of the four-colour sweep side by side; translating by half
+  // loops seamlessly because each copy starts and ends on blue.
+  const beam = {
+    backgroundImage: `linear-gradient(90deg, ${GDG.blue}, ${GDG.red}, ${GDG.yellow}, ${GDG.green}, ${GDG.blue})`,
+    backgroundSize: "50% 100%",
   };
-  const item = reduce
-    ? { hidden: {}, show: {} }
-    : {
-        hidden: { opacity: 0, y: 22 },
-        show: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const },
-        },
-      };
+  // Soft colour fields as radial gradients. These used to be solid circles
+  // under blur(90px) while drifting: the GPU re-blurred three ~500px layers
+  // every frame, forever — enough to stall mid-range Android phones.
+  const blob = (color: string) => ({
+    // Solid core, long falloff: matches the old blurred disc's spread.
+    background: `radial-gradient(closest-side, ${color} 45%, transparent)`,
+  });
 
   const year = "2026".split("");
 
@@ -48,31 +47,28 @@ export function Hero() {
       <div aria-hidden className="absolute inset-0 bg-line-grid" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-32 -top-24 size-[34rem] rounded-full opacity-30 blur-[90px] motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]"
-        style={{ background: GDG.blue }}
+        className="pointer-events-none absolute -left-32 -top-24 size-[34rem] rounded-full opacity-30 motion-safe:animate-[blob-drift_18s_ease-in-out_infinite]"
+        style={blob(GDG.blue)}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-24 top-20 size-[26rem] rounded-full opacity-25 blur-[90px] motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]"
-        style={{ background: GDG.red }}
+        className="pointer-events-none absolute -right-24 top-20 size-[26rem] rounded-full opacity-25 motion-safe:animate-[blob-drift_22s_ease-in-out_infinite_reverse]"
+        style={blob(GDG.red)}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute bottom-0 left-1/3 size-[24rem] rounded-full opacity-20 blur-[90px] motion-safe:animate-[blob-drift_26s_ease-in-out_infinite]"
-        style={{ background: GDG.green }}
+        className="pointer-events-none absolute bottom-0 left-1/3 size-[24rem] rounded-full opacity-20 motion-safe:animate-[blob-drift_26s_ease-in-out_infinite]"
+        style={blob(GDG.green)}
       />
 
       <Container className="relative grid gap-12 pt-16 pb-20 lg:grid-cols-12 lg:gap-10 lg:pt-24 lg:pb-28">
         {/* Headline column */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
+        <div
           className="flex flex-col lg:col-span-7"
         >
-          <motion.span
-            variants={item}
-            className="eyebrow flex items-center gap-2 text-muted-foreground"
+          <span
+            style={rise(0)}
+            className="rise eyebrow flex items-center gap-2 text-muted-foreground"
           >
             <span className="inline-flex gap-1">
               {GDG_ORDER.map((c) => (
@@ -84,12 +80,12 @@ export function Hero() {
               ))}
             </span>
             {t("eyebrow")}
-          </motion.span>
+          </span>
 
-          <motion.h1
-            variants={item}
+          <h1
+            style={rise(1)}
             aria-label={siteConfig.name}
-            className="mt-5 text-[clamp(3rem,11vw,8rem)] font-extrabold leading-[0.9] tracking-tight"
+            className="rise mt-5 text-[clamp(3rem,11vw,8rem)] font-extrabold leading-[0.9] tracking-tight"
           >
             DevFest
             <br />
@@ -101,11 +97,11 @@ export function Hero() {
                 </span>
               ))}
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.div
-            variants={item}
-            className="mt-7 flex flex-wrap items-center gap-3"
+          <div
+            style={rise(2)}
+            className="rise mt-7 flex flex-wrap items-center gap-3"
           >
             <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium">
               <CalendarDays className="size-4 text-gdg-blue" />
@@ -115,18 +111,18 @@ export function Hero() {
               <MapPin className="size-4 text-gdg-red" />
               {t("city")}
             </span>
-          </motion.div>
+          </div>
 
-          <motion.p
-            variants={item}
-            className="mt-6 max-w-xl text-pretty text-lg text-muted-foreground sm:text-xl"
+          <p
+            style={rise(3)}
+            className="rise mt-6 max-w-xl text-pretty text-lg text-muted-foreground sm:text-xl"
           >
             {t("lead")}
-          </motion.p>
+          </p>
 
-          <motion.div
-            variants={item}
-            className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+          <div
+            style={rise(4)}
+            className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
           >
             {ticketsAvailable || ticketsSoldOut ? (
               <>
@@ -167,40 +163,38 @@ export function Hero() {
               <NotifyTicketsDialog size="lg" variant="accent" />
             )}
             <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
-          </motion.div>
+          </div>
 
           {/* Above the fold on purpose: on the day, the home page is where
               people land, and a prompt below the hero went unseen. */}
-          <motion.div variants={item}>
+          <div style={rise(5)} className="rise">
             <PushCallout mini className="mt-5" />
-          </motion.div>
+          </div>
 
           {!cfpOpen && (
-            <motion.p
-              variants={item}
-              className="mt-4 max-w-xl font-mono text-sm text-muted-foreground"
+            <p
+              style={rise(6)}
+              className="rise mt-4 max-w-xl font-mono text-sm text-muted-foreground"
             >
               {t("cfpClosed")}
-            </motion.p>
+            </p>
           )}
 
-          <motion.div variants={item} className="mt-12">
+          <div style={rise(7)} className="rise mt-12">
             <Countdown target={siteConfig.eventDate} />
-          </motion.div>
+          </div>
 
           {/* Compact ticket stub — mobile/tablet only; the CTAs and countdown
               above lead, this is the brand flourish that follows, not the
               full desktop panel (which starts at lg, see below). */}
-          <motion.div variants={item} className="relative mt-8 lg:hidden">
+          <div style={rise(8)} className="rise relative mt-8 lg:hidden">
             <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]">
-              <div
-                aria-hidden
-                className="h-1.5 w-full motion-safe:animate-[beam-shimmer_6s_linear_infinite]"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, ${GDG.blue}, ${GDG.red}, ${GDG.yellow}, ${GDG.green}, ${GDG.blue})`,
-                  backgroundSize: "200% 100%",
-                }}
-              />
+              <div aria-hidden className="h-1.5 w-full overflow-hidden">
+                <div
+                  className="h-full w-[200%] motion-safe:animate-[marquee_6s_linear_infinite]"
+                  style={beam}
+                />
+              </div>
               <div className="flex items-center justify-between gap-4 p-5">
                 <div>
                   <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
@@ -225,27 +219,22 @@ export function Hero() {
                 className="absolute -right-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-background"
               />
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
         {/* Decorative ticket panel — desktop/tablet-wide (lg+); the compact
             stub above covers mobile. */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, scale: 0.96, y: 20 }}
-          animate={reduce ? {} : { opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="relative hidden lg:col-span-5 lg:block"
+        <div
+          className="rise-panel relative hidden lg:col-span-5 lg:block"
         >
           <div className="relative h-full min-h-[30rem] overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_30px_80px_-40px_rgba(0,0,0,0.4)]">
             {/* animated 4-color beam */}
-            <div
-              aria-hidden
-              className="h-2 w-full motion-safe:animate-[beam-shimmer_6s_linear_infinite]"
-              style={{
-                backgroundImage: `linear-gradient(90deg, ${GDG.blue}, ${GDG.red}, ${GDG.yellow}, ${GDG.green}, ${GDG.blue})`,
-                backgroundSize: "200% 100%",
-              }}
-            />
+            <div aria-hidden className="h-2 w-full overflow-hidden">
+              <div
+                className="h-full w-[200%] motion-safe:animate-[marquee_6s_linear_infinite]"
+                style={beam}
+              />
+            </div>
 
             {/* vertical color stripes */}
             <div aria-hidden className="absolute inset-0 flex opacity-[0.06]">
@@ -286,7 +275,7 @@ export function Hero() {
               className="absolute -right-3 top-1/2 size-6 -translate-y-1/2 rounded-full bg-background"
             />
           </div>
-        </motion.div>
+        </div>
       </Container>
     </section>
   );
