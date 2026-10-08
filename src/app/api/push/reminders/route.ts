@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { isCronRequest } from "@/lib/auth/cron-guard";
 import { getSessions } from "@/lib/data/content";
 import { reminderPayload, sessionsDueForReminder } from "@/lib/push/subscription";
 import { allSubscriptions, isPushConfigured, sendToSubscriptions } from "@/lib/push/send";
@@ -11,13 +12,6 @@ export const maxDuration = 60;
 const LEAD_MINUTES = 15;
 /** Must match the scheduler interval, or windows overlap or leave a gap. */
 const INTERVAL_MINUTES = 5;
-
-function authorized(request: Request): boolean {
-  const auth = request.headers.get("authorization");
-  if (process.env.CRON_SECRET && auth === `Bearer ${process.env.CRON_SECRET}`) return true;
-  const secret = new URL(request.url).searchParams.get("secret");
-  return Boolean(process.env.REVALIDATE_SECRET && secret === process.env.REVALIDATE_SECRET);
-}
 
 /**
  * Remind people about the talks they saved, shortly before those talks start.
@@ -31,7 +25,7 @@ function authorized(request: Request): boolean {
  * Everyone else still receives announcements.
  */
 async function handler(request: Request) {
-  if (!authorized(request)) {
+  if (!isCronRequest(request)) {
     return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
   const db = getAdminDb();

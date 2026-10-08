@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin, verifyAdminIdentity } from "@/lib/auth/admin-guard";
-import { announcementPayload } from "@/lib/push/subscription";
 import { parseAnnouncementInput } from "@/lib/push/announcements";
-import { allSubscriptions, isPushConfigured, sendToSubscriptions } from "@/lib/push/send";
+import { sendAnnouncement } from "@/lib/push/announce";
+import { allSubscriptions, isPushConfigured } from "@/lib/push/send";
 
 export const dynamic = "force-dynamic";
 
@@ -42,28 +41,7 @@ export async function POST(req: Request) {
 
   const input = parseAnnouncementInput(await req.json().catch(() => null));
   if (!input) return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
-  const { titleIt, bodyIt, titleEn, bodyEn } = input;
-
-  // Written before sending, not after: each push links to this row, and
-  // someone tapping one the moment it lands must find it already there.
-  const ref = db.collection("announcements").doc();
-  await ref.set({
-    ...input,
-    sentBy: admin.email ?? admin.uid,
-    sentAt: FieldValue.serverTimestamp(),
-  });
-
-  const subscriptions = await allSubscriptions(db);
-  const result = await sendToSubscriptions(db, subscriptions, (subscription) =>
-    subscription.locale === "en" && titleEn && bodyEn
-      ? announcementPayload(titleEn, bodyEn, "en", ref.id)
-      // No English copy written: send the Italian one rather than nothing.
-      // A notification in the wrong language beats a room that wasn't told.
-      : announcementPayload(titleIt, bodyIt, "it", ref.id),
-  );
-
-  // Deleted from the admin list while still sending: nothing left to annotate.
-  await ref.update({ ...result }).catch(() => {});
+  const result = await sendAnnouncement(db, input, admin.email ?? admin.uid);
 
   return NextResponse.json({ ok: true, ...result });
 }

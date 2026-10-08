@@ -11,6 +11,8 @@ import * as pushSubscribe from "@/app/api/push/subscribe/route";
 import * as pushReminders from "@/app/api/push/reminders/route";
 import * as adminPush from "@/app/api/admin/push/route";
 import * as adminAnnouncements from "@/app/api/admin/announcements/route";
+import * as adminScheduled from "@/app/api/admin/scheduled/route";
+import * as pushScheduled from "@/app/api/push/scheduled/route";
 import * as feedback from "@/app/api/feedback/route";
 import * as announcements from "@/app/api/announcements/route";
 import * as scan from "@/app/api/scan/route";
@@ -36,6 +38,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/subscribe": subscribe,
   "/api/push/subscribe": pushSubscribe,
   "/api/push/reminders": pushReminders,
+  "/api/push/scheduled": pushScheduled,
   "/api/feedback": feedback,
   "/api/announcements": announcements,
   "/api/scan": scan,
@@ -54,6 +57,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/admin/publish": adminPublish,
   "/api/admin/push": adminPush,
   "/api/admin/announcements": adminAnnouncements,
+  "/api/admin/scheduled": adminScheduled,
 };
 
 /**

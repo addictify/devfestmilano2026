@@ -1,4 +1,4 @@
-import { fromZonedTime } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 const TZ = "Europe/Rome";
 
@@ -62,4 +62,19 @@ export function formatLongDate(iso: string, locale: string): string {
     year: "numeric",
     timeZone: TZ,
   }).format(new Date(iso));
+}
+
+const INPUT = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+
+/** A `datetime-local` value ("2026-10-09T18:00") read as Milan time. The
+ *  organizer may be anywhere; the event clock isn't. */
+export function romeInputToIso(value: string): string | null {
+  if (!INPUT.test(value)) return null;
+  const date = fromZonedTime(value, TZ);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
+/** An instant as a Milan `datetime-local` value, for prefilling the field. */
+export function isoToRomeInput(iso: string): string {
+  return formatInTimeZone(new Date(iso), TZ, "yyyy-MM-dd'T'HH:mm");
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatTime, formatTimeRange, toEventInstant } from "@/lib/time";
+import { formatTime, formatTimeRange, isoToRomeInput, romeInputToIso, toEventInstant } from "@/lib/time";
 
 /**
  * These assertions must hold whatever zone the process runs in — that is the
@@ -61,5 +61,20 @@ describe("formatTimeRange", () => {
     expect(formatTimeRange("2026-10-10T07:30:00.000Z", null, "it")).toBe("09:30");
     expect(formatTimeRange(null, "2026-10-10T08:15:00.000Z", "it")).toBe("10:15");
     expect(formatTimeRange(null, null, "it")).toBe("");
+  });
+});
+
+describe("Milan wall clock ↔ instant (admin datetime-local fields)", () => {
+  it("reads a datetime-local value as Milan time, whatever the browser's zone", () => {
+    expect(romeInputToIso("2026-10-09T18:00")).toBe("2026-10-09T16:00:00.000Z");
+  });
+
+  it("rejects a malformed value", () => {
+    expect(romeInputToIso("")).toBeNull();
+    expect(romeInputToIso("domani")).toBeNull();
+  });
+
+  it("writes an instant back as Milan wall clock", () => {
+    expect(isoToRomeInput("2026-10-09T16:00:00.000Z")).toBe("2026-10-09T18:00");
   });
 });

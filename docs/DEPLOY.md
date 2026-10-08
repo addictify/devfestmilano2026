@@ -132,6 +132,33 @@ forced run left `status.code: -1` and never reached the function, while a
 retry a minute later returned 200. Confirm with `config/site.lastSync` rather
 than the job's own state.
 
+## Scheduled push jobs
+
+Two more Cloud Scheduler jobs drive Web Push, both with the same
+`Authorization: Bearer $CRON_SECRET` header:
+
+| Job | Schedule (Europe/Rome) | Target | What it does |
+|---|---|---|---|
+| `session-reminders` | `*/5 8-19 10 10 *` | `/api/push/reminders` | 15-minute reminders for the talks each signed-in user saved |
+| `scheduled-announcements` | `*/5 * 8-11 10 *` | `/api/push/scheduled` | sends announcements scheduled in /admin → Notifiche push |
+
+`scheduled-announcements` runs 8–11 October, every five minutes around the
+clock, so the evening reminder on the 9th goes out and a test can be
+scheduled a few minutes ahead from the 8th. An item more than 30 minutes late
+is marked missed instead of sent. Scheduled items live in
+`scheduledAnnouncements`; once sent they also appear in `announcements`.
+
+```bash
+gcloud scheduler jobs create http scheduled-announcements \
+  --location=europe-west1 --schedule="*/5 * 8-11 10 *" --time-zone="Europe/Rome" \
+  --uri="https://europe-west1-devfestmilano26.cloudfunctions.net/api/api/push/scheduled" \
+  --http-method=POST --headers="Authorization=Bearer $CRON_SECRET" \
+  --attempt-deadline=60s
+```
+
+For another edition, move both schedules to the new dates (the day-of-month
+and month fields).
+
 ## Firestore and Storage rules
 
 Independent of all the above:
