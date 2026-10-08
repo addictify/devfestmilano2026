@@ -331,6 +331,8 @@
     "calloutTitle": "Stay in the loop on October 10",
     "iosHint": "On iPhone, notifications work from the app: tap <share></share> Share, then “Add to Home Screen”, and open DevFest from there.",
     "iosShare": "Share",
+    "iosHintShort": "Notifications on iPhone: tap <share></share> Share → “Add to Home Screen”.",
+    "miniWhat": "Reminders for your talks and live announcements.",
     "signInForReminders": "You'll get announcements from the organizers. Sign in to also get reminders for the talks you saved.",
     "adminTitle": "Push announcement",
     "adminLead": "Send a notification to every subscribed device. This cannot be undone.",

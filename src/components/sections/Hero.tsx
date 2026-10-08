@@ -9,6 +9,7 @@ import { Container } from "@/components/common/Container";
 import { Button } from "@/components/ui/button";
 import { TicketButton } from "@/components/common/TicketButton";
 import { NotifyTicketsDialog } from "@/components/common/NotifyTicketsDialog";
+import { PushCallout } from "@/components/common/PushCallout";
 import { Countdown } from "@/components/common/Countdown";
 import { SkylineMilano } from "@/components/common/SkylineMilano";
 import { AddToCalendar } from "@/components/common/AddToCalendar";
@@ -166,6 +167,12 @@ export function Hero() {
               <NotifyTicketsDialog size="lg" variant="accent" />
             )}
             <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
+          </motion.div>
+
+          {/* Above the fold on purpose: on the day, the home page is where
+              people land, and a prompt below the hero went unseen. */}
+          <motion.div variants={item}>
+            <PushCallout mini className="mt-5" />
           </motion.div>
 
           {!cfpOpen && (

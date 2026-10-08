@@ -27,7 +27,14 @@ function isIosBrowserTab(): boolean {
  * refused (only its own settings can undo that). On iOS Safari, where the
  * toggle can't work, it explains the Home Screen step instead.
  */
-export function PushCallout({ className }: { className?: string }) {
+export function PushCallout({
+  className,
+  mini = false,
+}: {
+  className?: string;
+  /** One line under the hero CTAs instead of a card. */
+  mini?: boolean;
+}) {
   const push = usePushNotifications();
   const t = useTranslations("push");
   const { user } = useAuth();
@@ -38,6 +45,30 @@ export function PushCallout({ className }: { className?: string }) {
   const iosHint = push.state === "unsupported" && isIosBrowserTab();
   const show = push.state === "off" || (push.state === "on" && touched) || iosHint;
   if (!show) return null;
+
+  if (mini) {
+    return (
+      <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-muted-foreground", className)}>
+        {iosHint ? (
+          <p className="inline-flex max-w-xl items-start gap-2 text-pretty">
+            <BellRing className="mt-0.5 size-4 shrink-0 text-gdg-blue" />
+            <span>
+              {t.rich("iosHintShort", {
+                share: () => <Share className="inline size-4 -translate-y-px" aria-label={t("iosShare")} />,
+              })}
+            </span>
+          </p>
+        ) : (
+          <>
+            <span onClickCapture={() => setTouched(true)}>
+              <PushToggleControl push={push} bare />
+            </span>
+            <span>{t("miniWhat")}</span>
+          </>
+        )}
+      </div>
+    );
+  }
 
   return (
     <aside
