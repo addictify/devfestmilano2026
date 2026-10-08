@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyAdmin, verifyAdminIdentity } from "@/lib/auth/admin-guard";
 import { announcementPayload } from "@/lib/push/subscription";
+import { parseAnnouncementInput } from "@/lib/push/announcements";
 import { allSubscriptions, isPushConfigured, sendToSubscriptions } from "@/lib/push/send";
 
 export const dynamic = "force-dynamic";
@@ -39,23 +40,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "no-vapid" }, { status: 503 });
   }
 
-  const body = await req.json().catch(() => null);
-  const titleIt = typeof body?.titleIt === "string" ? body.titleIt.trim() : "";
-  const bodyIt = typeof body?.bodyIt === "string" ? body.bodyIt.trim() : "";
-  const titleEn = typeof body?.titleEn === "string" ? body.titleEn.trim() : "";
-  const bodyEn = typeof body?.bodyEn === "string" ? body.bodyEn.trim() : "";
-  if (!titleIt || !bodyIt) {
-    return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
-  }
+  const input = parseAnnouncementInput(await req.json().catch(() => null));
+  if (!input) return NextResponse.json({ ok: false, reason: "invalid" }, { status: 400 });
+  const { titleIt, bodyIt, titleEn, bodyEn } = input;
 
   // Written before sending, not after: each push links to this row, and
   // someone tapping one the moment it lands must find it already there.
   const ref = db.collection("announcements").doc();
   await ref.set({
-    titleIt,
-    bodyIt,
-    titleEn: titleEn || null,
-    bodyEn: bodyEn || null,
+    ...input,
     sentBy: admin.email ?? admin.uid,
     sentAt: FieldValue.serverTimestamp(),
   });
@@ -69,7 +62,8 @@ export async function POST(req: Request) {
       : announcementPayload(titleIt, bodyIt, "it", ref.id),
   );
 
-  await ref.update({ ...result });
+  // Deleted from the admin list while still sending: nothing left to annotate.
+  await ref.update({ ...result }).catch(() => {});
 
   return NextResponse.json({ ok: true, ...result });
 }

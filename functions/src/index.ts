@@ -10,6 +10,7 @@ import * as subscribe from "@/app/api/subscribe/route";
 import * as pushSubscribe from "@/app/api/push/subscribe/route";
 import * as pushReminders from "@/app/api/push/reminders/route";
 import * as adminPush from "@/app/api/admin/push/route";
+import * as adminAnnouncements from "@/app/api/admin/announcements/route";
 import * as feedback from "@/app/api/feedback/route";
 import * as announcements from "@/app/api/announcements/route";
 import * as scan from "@/app/api/scan/route";
@@ -52,6 +53,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/admin/upload": adminUpload,
   "/api/admin/publish": adminPublish,
   "/api/admin/push": adminPush,
+  "/api/admin/announcements": adminAnnouncements,
 };
 
 /**

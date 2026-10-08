@@ -6,8 +6,12 @@ import { adminFetch } from "@/lib/admin-client";
 import { useAdminData } from "@/hooks/useAdminData";
 import { AdminSectionHeader } from "./AdminSectionHeader";
 import { Button } from "@/components/ui/button";
+import { AnnouncementsAdmin, type AdminAnnouncement } from "./AnnouncementsAdmin";
+import { Area, Field } from "./AnnouncementFields";
 
 type Reach = { configured: boolean; total: number; signedIn: number };
+
+const pickAnnouncements = (j: Record<string, unknown>) => (j.announcements as AdminAnnouncement[]) ?? [];
 
 /**
  * Send a push announcement to everyone at the event.
@@ -27,6 +31,8 @@ export function PushAdmin() {
     }),
     null,
   );
+
+  const sentList = useAdminData<AdminAnnouncement[]>("/api/admin/announcements", pickAnnouncements, []);
 
   const [titleIt, setTitleIt] = useState("");
   const [bodyIt, setBodyIt] = useState("");
@@ -54,6 +60,7 @@ export function PushAdmin() {
       setMsg(
         `Inviata: ${json.sent} riuscite, ${json.failed} fallite, ${json.gone} iscrizioni scadute rimosse.`,
       );
+      void sentList.reload();
       setTitleIt("");
       setBodyIt("");
       setTitleEn("");
@@ -122,65 +129,8 @@ export function PushAdmin() {
       )}
 
       {msg && <p className="text-sm">{msg}</p>}
+
+      <AnnouncementsAdmin {...sentList} />
     </section>
-  );
-}
-
-function Field({
-  label,
-  value,
-  onChange,
-  max,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  max: number;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="font-medium">
-        {label}{" "}
-        <span className="font-mono text-xs text-muted-foreground">
-          {value.length}/{max}
-        </span>
-      </span>
-      <input
-        value={value}
-        maxLength={max}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-gdg-blue"
-      />
-    </label>
-  );
-}
-
-function Area({
-  label,
-  value,
-  onChange,
-  max,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  max: number;
-}) {
-  return (
-    <label className="flex flex-col gap-1 text-sm">
-      <span className="font-medium">
-        {label}{" "}
-        <span className="font-mono text-xs text-muted-foreground">
-          {value.length}/{max}
-        </span>
-      </span>
-      <textarea
-        value={value}
-        maxLength={max}
-        rows={3}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-border bg-background px-3 py-2 outline-none focus:border-gdg-blue"
-      />
-    </label>
   );
 }

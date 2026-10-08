@@ -61,3 +61,42 @@ export function hasUnread(items: PublicAnnouncement[], seen: string | null): boo
   const latest = latestSentAt(items);
   return latest !== null && (seen === null || latest > seen);
 }
+
+/** Same caps as the admin form and the push payload (subscription.ts). */
+const MAX_TITLE = 80;
+const MAX_BODY = 180;
+
+export type AnnouncementInput = {
+  titleIt: string;
+  bodyIt: string;
+  titleEn: string | null;
+  bodyEn: string | null;
+};
+
+/** Validate announcement copy from an admin request: Italian required,
+ *  English optional, everything trimmed and capped. */
+export function parseAnnouncementInput(body: unknown): AnnouncementInput | null {
+  if (typeof body !== "object" || body === null) return null;
+  const b = body as Record<string, unknown>;
+  const field = (v: unknown, max: number) => {
+    const s = typeof v === "string" ? v.trim().slice(0, max) : "";
+    return s || null;
+  };
+  const titleIt = field(b.titleIt, MAX_TITLE);
+  const bodyIt = field(b.bodyIt, MAX_BODY);
+  if (!titleIt || !bodyIt) return null;
+  return { titleIt, bodyIt, titleEn: field(b.titleEn, MAX_TITLE), bodyEn: field(b.bodyEn, MAX_BODY) };
+}
+
+/** Auto-generated Firestore ids are 20 alphanumerics; anything else (paths,
+ *  dots) is refused rather than handed to doc(). */
+const ID = /^[A-Za-z0-9_-]{1,64}$/;
+const MAX_IDS = 100;
+
+/** `{ ids: [...] }` from a bulk request, deduped; null when unusable. */
+export function parseIdList(body: unknown): string[] | null {
+  const ids = (body as { ids?: unknown } | null)?.ids;
+  if (!Array.isArray(ids) || ids.length === 0 || ids.length > MAX_IDS) return null;
+  const clean = [...new Set(ids.filter((v): v is string => typeof v === "string" && ID.test(v)))];
+  return clean.length > 0 ? clean : null;
+}

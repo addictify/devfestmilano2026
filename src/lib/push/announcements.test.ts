@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasUnread, localizeAnnouncement, toPublicAnnouncement } from "@/lib/push/announcements";
+import { hasUnread, localizeAnnouncement, parseAnnouncementInput, parseIdList, toPublicAnnouncement } from "@/lib/push/announcements";
 
 const stored = {
   titleIt: "Cambio sala",
@@ -70,5 +70,43 @@ describe("hasUnread", () => {
 
   it("ignores a row still being written", () => {
     expect(hasUnread([at(null)], null)).toBe(false);
+  });
+});
+
+describe("parseAnnouncementInput", () => {
+  it("trims, and keeps English optional", () => {
+    expect(parseAnnouncementInput({ titleIt: " Ciao ", bodyIt: " Testo ", titleEn: "", bodyEn: " " })).toEqual({
+      titleIt: "Ciao",
+      bodyIt: "Testo",
+      titleEn: null,
+      bodyEn: null,
+    });
+  });
+
+  it("requires the Italian title and text", () => {
+    expect(parseAnnouncementInput({ titleIt: "Ciao", bodyIt: "  " })).toBeNull();
+    expect(parseAnnouncementInput(null)).toBeNull();
+  });
+
+  it("caps lengths at what a notification shows", () => {
+    const p = parseAnnouncementInput({ titleIt: "t".repeat(200), bodyIt: "b".repeat(400) })!;
+    expect(p.titleIt).toHaveLength(80);
+    expect(p.bodyIt).toHaveLength(180);
+  });
+});
+
+describe("parseIdList", () => {
+  it("dedupes and drops non-strings", () => {
+    expect(parseIdList({ ids: ["a", "a", "", 3, "b"] })).toEqual(["a", "b"]);
+  });
+
+  it("rejects an empty or oversized list", () => {
+    expect(parseIdList({ ids: [] })).toBeNull();
+    expect(parseIdList({})).toBeNull();
+    expect(parseIdList({ ids: Array.from({ length: 101 }, (_, i) => `id${i}`) })).toBeNull();
+  });
+
+  it("refuses ids that aren't plain Firestore ids", () => {
+    expect(parseIdList({ ids: ["ok", "../x"] })).toEqual(["ok"]);
   });
 });
