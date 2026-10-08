@@ -4,6 +4,8 @@ import { getSiteSettings } from "@/lib/data/settings";
 import { eventJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/common/JsonLd";
 import { Hero } from "@/components/sections/Hero";
+import { Container } from "@/components/common/Container";
+import { PushCallout } from "@/components/common/PushCallout";
 import { ThemeSection } from "@/components/sections/ThemeSection";
 import { WhatToExpect } from "@/components/sections/WhatToExpect";
 import { FeaturedSpeakers } from "@/components/sections/FeaturedSpeakers";
@@ -38,6 +40,9 @@ export default async function Home({
     <>
       <JsonLd data={eventJsonLd(locale, settings.ticketsAvailable, settings.ticketsSoldOut)} />
       <Hero />
+      <Container>
+        <PushCallout className="my-8" />
+      </Container>
       <ThemeSection />
       <WhatToExpect />
       {speakersPublished ? (

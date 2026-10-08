@@ -16,6 +16,7 @@ import { JsonLd } from "@/components/common/JsonLd";
 import { Container } from "@/components/common/Container";
 import { PageHeader } from "@/components/common/PageHeader";
 import { AgendaView } from "@/components/agenda/AgendaView";
+import { PushCallout } from "@/components/common/PushCallout";
 
 export const revalidate = 3600;
 
@@ -59,6 +60,7 @@ export default async function AgendaPage({
       />
       <section className="py-12 sm:py-16">
         <Container>
+          <PushCallout className="mb-10" />
           {published ? (
             <AgendaView
               sessions={sessions}

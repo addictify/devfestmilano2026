@@ -15,7 +15,22 @@ import { cn } from "@/lib/utils";
  * settings can undo it, and a greyed-out toggle would suggest otherwise.
  */
 export function PushToggle({ className }: { className?: string }) {
-  const { state, busy, enable, disable } = usePushNotifications();
+  return <PushToggleControl push={usePushNotifications()} className={className} />;
+}
+
+/** The toggle without its own subscription state, for a parent that already
+ *  holds `usePushNotifications()` (a second instance would not see the first
+ *  one's changes). */
+export function PushToggleControl({
+  push: { state, busy, enable, disable },
+  className,
+  bare = false,
+}: {
+  push: ReturnType<typeof usePushNotifications>;
+  className?: string;
+  /** Just the button: the parent writes the explanation itself. */
+  bare?: boolean;
+}) {
   const { user } = useAuth();
   const t = useTranslations("push");
 
@@ -53,11 +68,13 @@ export function PushToggle({ className }: { className?: string }) {
         {on ? <BellRing className="size-4" /> : <Bell className="size-4" />}
         {on ? t("on") : t("enable")}
       </button>
-      <p className="max-w-prose text-xs text-muted-foreground">
-        {/* Reminders follow favourites, which belong to an account. Say so
-            here rather than letting someone wonder why they never arrive. */}
-        {on && !user ? t("signInForReminders") : t("what")}
-      </p>
+      {!bare && (
+        <p className="max-w-prose text-xs text-muted-foreground">
+          {/* Reminders follow favourites, which belong to an account. Say so
+              here rather than letting someone wonder why they never arrive. */}
+          {on && !user ? t("signInForReminders") : t("what")}
+        </p>
+      )}
     </div>
   );
 }
