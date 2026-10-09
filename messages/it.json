@@ -252,7 +252,9 @@
     "onlyFavorites": "Preferiti",
     "noFavoritesYet": "Non hai ancora salvato nessuna sessione.",
     "favoritesHint": "Tocca la stella su una sessione per aggiungerla alla tua agenda.",
-    "compactView": "Vista compatta"
+    "compactView": "Vista compatta",
+    "showMore": "Leggi tutto",
+    "showLess": "Mostra meno"
   },
   "teamPage": {
     "title": "Il team",

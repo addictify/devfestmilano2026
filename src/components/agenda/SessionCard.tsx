@@ -1,5 +1,8 @@
+"use client";
+
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Clock, MapPin } from "lucide-react";
+import { ChevronDown, Clock, MapPin } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { colorClasses, type GdgColor } from "@/lib/design/tokens";
@@ -47,10 +50,43 @@ export function SessionCard({
   const showRoom =
     Boolean(session.roomName) && (service || session.roomName !== trackLabel);
 
+  const description = service ? "" : localized(session.description, locale);
+  const [expanded, setExpanded] = useState(false);
+  // Whether the clamped abstract actually hides anything. Measured, not
+  // guessed from the length: two lines hold very different amounts of text
+  // on a phone and in a wide plenary card.
+  const [overflowing, setOverflowing] = useState(false);
+  const descRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    const el = descRef.current;
+    if (!el || expanded) return;
+    const measure = () => setOverflowing(el.scrollHeight > el.clientHeight + 1);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [expanded, compact, description]);
+  // Compact view hides the abstract entirely, so any abstract is worth opening.
+  const canExpand = Boolean(description) && (compact || overflowing || expanded);
+  const showDescription = Boolean(description) && (!compact || expanded);
+
+  // The whole card is the hit area for "read more" — a phone thumb shouldn't
+  // have to find a one-word link. Clicks on the card's own controls (star,
+  // speaker links, calendar, feedback) and text selections are left alone.
+  function onCardClick(e: MouseEvent<HTMLElement>) {
+    if (!canExpand) return;
+    const target = e.target as HTMLElement;
+    if (target.closest("a, button, input, textarea, select, label, [role=button], [role=dialog]")) return;
+    if (window.getSelection()?.toString()) return;
+    setExpanded((v) => !v);
+  }
+
   return (
     <article
+      onClick={onCardClick}
       className={cn(
         "group relative flex gap-4 overflow-hidden rounded-2xl border border-border bg-card transition-colors",
+        canExpand && "cursor-pointer hover:border-foreground/30",
         compact ? "p-3.5" : "p-5",
         service && "bg-muted/50",
       )}
@@ -103,10 +139,32 @@ export function SessionCard({
           {session.title}
         </h3>
 
-        {!service && !compact && (
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {localized(session.description, locale)}
+        {showDescription && (
+          <p
+            ref={descRef}
+            id={`session-desc-${session.id}`}
+            className={cn(
+              "whitespace-pre-line text-sm text-muted-foreground",
+              !expanded && "line-clamp-2",
+            )}
+          >
+            {description}
           </p>
+        )}
+
+        {canExpand && (
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            aria-controls={showDescription ? `session-desc-${session.id}` : undefined}
+            className="inline-flex w-fit items-center gap-1 text-sm font-medium text-gdg-blue hover:underline"
+          >
+            {expanded ? t("showLess") : t("showMore")}
+            <ChevronDown
+              className={cn("size-4 transition-transform", expanded && "rotate-180")}
+            />
+          </button>
         )}
 
         {speakers.length > 0 && (
@@ -136,7 +194,7 @@ export function SessionCard({
               filename={`devfest-${session.id}.ics`}
               event={{
                 title: session.title,
-                description: localized(session.description, locale),
+                description,
                 location: session.roomName,
                 start: session.startsAt,
                 end: session.endsAt,
