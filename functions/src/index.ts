@@ -12,6 +12,7 @@ import * as pushReminders from "@/app/api/push/reminders/route";
 import * as adminPush from "@/app/api/admin/push/route";
 import * as adminAnnouncements from "@/app/api/admin/announcements/route";
 import * as adminScheduled from "@/app/api/admin/scheduled/route";
+import * as adminSync from "@/app/api/admin/sync/route";
 import * as pushScheduled from "@/app/api/push/scheduled/route";
 import * as feedback from "@/app/api/feedback/route";
 import * as announcements from "@/app/api/announcements/route";
@@ -58,6 +59,7 @@ const ROUTES: Record<string, RouteModule> = {
   "/api/admin/push": adminPush,
   "/api/admin/announcements": adminAnnouncements,
   "/api/admin/scheduled": adminScheduled,
+  "/api/admin/sync": adminSync,
 };
 
 /**
@@ -75,13 +77,14 @@ const ALLOWED_ORIGINS = [
 
 /**
  * Writes that rebuild the static site on their own instead of waiting for
- * someone to press Pubblica. Only the Sessionize sync: it changes the agenda
- * with nobody at the admin, and on the day a room change that sits unpublished
- * is a room change nobody hears about. It only writes (and so only gets here)
- * when Sessionize actually changed, so this is at most one rebuild an hour.
- * Admin edits still batch up behind Pubblica.
+ * someone to press Pubblica. Only the Sessionize sync — hourly, or from the
+ * admin's "Sincronizza ora": it changes the agenda with nobody at the admin,
+ * and on the day a room change that sits unpublished is a room change nobody
+ * hears about. It only touches paths (and so only gets here) when Sessionize
+ * actually changed, so an unchanged sync never rebuilds. Admin edits still
+ * batch up behind Pubblica.
  */
-const AUTO_PUBLISH = new Set(["/api/sync"]);
+const AUTO_PUBLISH = new Set(["/api/sync", "/api/admin/sync"]);
 
 // What the admin banner shows as "what changed".
 const LABELS: Record<string, string> = {
@@ -92,6 +95,7 @@ const LABELS: Record<string, string> = {
   "/api/admin/checkpoints": "checkpoint",
   "/api/admin/upload": "immagine",
   "/api/sync": "sync Sessionize",
+  "/api/admin/sync": "sync Sessionize (manuale)",
 };
 
 function corsHeaders(origin: string | undefined): Record<string, string> {

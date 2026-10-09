@@ -5,6 +5,7 @@ import { adminFetch } from "@/lib/admin-client";
 import { AdminSectionHeader } from "./AdminSectionHeader";
 import { useAdminData } from "@/hooks/useAdminData";
 import { notifyContentChanged } from "./PublishBar";
+import { SessionizeSyncCard } from "./SessionizeSyncCard";
 import { Button } from "@/components/ui/button";
 import type { SiteSettings } from "@/lib/data/settings";
 
@@ -57,6 +58,7 @@ export function ConfigAdmin() {
       <AdminSectionHeader title="Configurazione">
         Gli interruttori che decidono cosa mostra il sito pubblico: biglietti disponibili o esauriti, speaker e agenda pubblicati, call for speakers aperta, DevFest Quest attiva. Attivare speaker o agenda senza aver prima sincronizzato Sessionize mostrerebbe pagine vuote. Le modifiche vanno pubblicate per avere effetto online.
       </AdminSectionHeader>
+      <SessionizeSyncCard />
       <div className="flex flex-col gap-3">
         {(Object.keys(LABELS) as (keyof SiteSettings)[]).map((k) => (
           <label key={k} className="flex items-center justify-between rounded-2xl border border-border px-4 py-3">

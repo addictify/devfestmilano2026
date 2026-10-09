@@ -126,7 +126,9 @@ gcloud scheduler jobs create http sessionize-sync \
 When Sessionize actually changed, the sync rebuilds the site on its own
 (the Cloud Function dispatches the Pages workflow, like Pubblica does), so an
 agenda change reaches the public site within the hour plus a ~1-minute build.
-An unchanged sync writes nothing and rebuilds nothing. If the dispatch fails
+An unchanged sync writes nothing and rebuilds nothing. Organizers can also
+run it on demand from /admin → Configurazione → "Sincronizza ora"
+(`/api/admin/sync`, same code path and same auto-rebuild). If the dispatch fails
 (e.g. `GITHUB_REBUILD_TOKEN` missing), it falls back to flagging the change in
 the admin banner. Admin edits are not auto-published: they still wait for
 Pubblica.
