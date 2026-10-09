@@ -252,7 +252,9 @@
     "onlyFavorites": "Favorites",
     "noFavoritesYet": "You haven't saved any sessions yet.",
     "favoritesHint": "Tap the star on a session to add it to your schedule.",
-    "compactView": "Compact view"
+    "compactView": "Compact view",
+    "showMore": "Read more",
+    "showLess": "Show less"
   },
   "teamPage": {
     "title": "The team",
