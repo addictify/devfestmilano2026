@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Star } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { useAuth } from "@/hooks/useAuth";
+import { useFeedbackOpen } from "@/hooks/useFeedbackOpen";
 import { getDb } from "@/lib/firebase/client";
 import { userFetch } from "@/lib/user-client";
 import { invalidateRatings } from "@/lib/feedback-client";
@@ -18,6 +19,7 @@ export function FeedbackForm({ sessionId }: { sessionId: string }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const feedbackOpen = useFeedbackOpen();
 
   // Load any existing vote as soon as we know who's asking, not when the form
   // is opened. One response per person is enforced by the document id, but the
@@ -40,7 +42,9 @@ export function FeedbackForm({ sessionId }: { sessionId: string }) {
     };
   }, [user, sessionId]);
 
-  if (!enabled) return null;
+  // Nothing to rate before the event day: no link at all rather than one the
+  // server would refuse.
+  if (!enabled || !feedbackOpen) return null;
 
   async function submit() {
     const res = await userFetch("/api/feedback", {

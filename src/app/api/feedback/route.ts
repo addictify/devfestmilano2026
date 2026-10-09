@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { verifyUser } from "@/lib/auth/user-guard";
+import { isFeedbackOpen } from "@/lib/feedback-window";
 import {
   nextAggregate,
   publicRating,
@@ -13,6 +14,9 @@ export const dynamic = "force-dynamic";
 export async function POST(req: Request) {
   const uid = await verifyUser(req);
   if (!uid) return NextResponse.json({ ok: false }, { status: 401 });
+  // Enforced here, not just by hiding the form: a cached page or a scripted
+  // POST must not be able to rate a talk before the event day.
+  if (!isFeedbackOpen()) return NextResponse.json({ ok: false, reason: "not-open" }, { status: 403 });
   const db = getAdminDb();
   if (!db) return NextResponse.json({ ok: false, reason: "unconfigured" }, { status: 503 });
   const body = await req.json().catch(() => null);
