@@ -5,6 +5,7 @@ import { useLocale } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
 import { apiUrl } from "@/lib/api-base";
 import { PUSH_STORAGE_KEY } from "@/lib/push/prepaint";
+import { track } from "@/lib/track-client";
 
 /**
  * Subscribe this browser to event notifications.
@@ -46,6 +47,20 @@ function supported(): boolean {
   );
 }
 
+function isIos(): boolean {
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
+function isInstalledApp(): boolean {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}
+
 export function usePushNotifications() {
   const [state, setState] = useState<PushState>("loading");
   const [busy, setBusy] = useState(false);
@@ -59,8 +74,14 @@ export function usePushNotifications() {
   useEffect(() => {
     let active = true;
     void (async () => {
-      if (!supported()) return active && setState("unsupported");
-      if (Notification.permission === "denied") return active && setState("denied");
+      if (!supported()) {
+        track(isIos() && !isInstalledApp() ? "push_ios_needs_install" : "push_unsupported");
+        return active && setState("unsupported");
+      }
+      if (Notification.permission === "denied") {
+        track("push_blocked");
+        return active && setState("denied");
+      }
       const registration = await navigator.serviceWorker.getRegistration();
       const existing = await registration?.pushManager.getSubscription();
       if (active) setState(existing ? "on" : "off");
@@ -106,8 +127,13 @@ export function usePushNotifications() {
     if (!supported()) return;
     setBusy(true);
     try {
+      // Only when the dialog will really open: after a decision the browser
+      // answers instantly and nothing was shown, so it isn't a prompt.
+      const asked = Notification.permission === "default";
+      if (asked) track("push_prompted");
       const permission = await Notification.requestPermission();
       if (permission !== "granted") {
+        if (asked) track(permission === "denied" ? "push_denied" : "push_dismissed");
         setState(permission === "denied" ? "denied" : "off");
         return;
       }
@@ -139,6 +165,7 @@ export function usePushNotifications() {
         setState("off");
         return;
       }
+      if (asked) track("push_accepted");
       setState("on");
     } catch {
       setState("off");

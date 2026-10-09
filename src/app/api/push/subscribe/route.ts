@@ -29,7 +29,12 @@ export async function POST(req: Request) {
   const uid = await verifyUser(req);
   const id = subscriptionId(subscription.endpoint);
 
-  await db.collection(PUSH_COLLECTION).doc(id).set(
+  const ref = db.collection(PUSH_COLLECTION).doc(id);
+  // createdAt is set once, on the first subscription of this browser, so the
+  // dashboard can show sign-ups over time. updatedAt moves on every refresh.
+  const isNew = !(await ref.get()).exists;
+
+  await ref.set(
     {
       endpoint: subscription.endpoint,
       keys: subscription.keys,
@@ -38,6 +43,7 @@ export async function POST(req: Request) {
       // detach the row, not silently leave the previous person's uid on it.
       uid: uid ?? FieldValue.delete(),
       updatedAt: FieldValue.serverTimestamp(),
+      ...(isNew ? { createdAt: FieldValue.serverTimestamp() } : {}),
     },
     { merge: true },
   );

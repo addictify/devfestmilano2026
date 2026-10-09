@@ -105,6 +105,22 @@ venue, 2025 numbers (300 attendees · 20+ speakers · 20+ sessions · 3 tracks).
 - New deps: `jsqr` (scan), `qrcode` (admin QR). `/play/*` degrades to signed-out on
   the static export; `/admin/*` + `/api/*` stripped there as before.
 
+### ✅ Dashboard statistics (2026-10-09)
+- `/admin/dashboard` now shows: accounts and logins (Firebase Auth `listUsers`:
+  new / active 24h / active 7d, sign-ups per day), push devices (signed-in vs
+  anonymous, IT/EN, reminder-ready), personal agendas (`users/*/favorites`:
+  distribution, most-saved sessions, saves per room), a user funnel, feedback
+  summary and Quest thresholds (≥1/3/5 scans). Each section degrades to "dati non
+  disponibili" on its own if its read fails. Pure maths in `src/lib/dashboard-stats.ts`.
+- **Anonymous counters:** `POST /api/track` (closed event list in `src/lib/track.ts`)
+  increments `metrics/events` (totals + per Rome day). Today they cover only the
+  notification permission funnel (prompted / accepted / denied / dismissed /
+  already-blocked / unsupported / iOS-needs-install). No identifier is stored.
+- `pushSubscriptions` rows now get `createdAt` on first subscribe; rows created
+  before 2026-10-09 have none, so "new devices per day" undercounts history.
+- Needs the Cloud Function redeployed (new `/api/track` route) and the Pages site
+  rebuilt (client reports events) before the counters start filling.
+
 ## ⏳ Pending / next steps
 - **Go-live config:** Firebase project `devfestmilano26` exists and the local
   `.env` is filled in — client config, `FIREBASE_ADMIN_*`, `SESSIONIZE_EVENT_ID`,
