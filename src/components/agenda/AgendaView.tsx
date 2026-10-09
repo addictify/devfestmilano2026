@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { colorClasses } from "@/lib/design/tokens";
 import { localized } from "@/lib/localize";
 import { formatTime } from "@/lib/time";
-import { collapseServiceSessions, matchesFilters } from "@/lib/agenda";
+import { collapseServiceSessions, matchesFilters, standsAlone } from "@/lib/agenda";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useAgendaDensity } from "@/hooks/useAgendaDensity";
 import type { Session, Speaker, Track } from "@/types/models";
@@ -45,8 +45,8 @@ export function AgendaView({
 
   // One break is one row, however many rooms Sessionize repeated it across.
   const schedule = useMemo(
-    () => collapseServiceSessions(sessions, tracks.length),
-    [sessions, tracks.length],
+    () => collapseServiceSessions(sessions),
+    [sessions],
   );
 
   const filtered = useMemo(
@@ -214,8 +214,19 @@ export function AgendaView({
               </div>
               <div className="grid auto-rows-fr gap-4 md:grid-cols-2">
                 {items.map((session) => {
+                  // Full width means "the whole venue": breaks, and talks
+                  // nothing else runs alongside — not any talk that happens
+                  // to be alone in its start-time row.
                   const isFull =
-                    session.isServiceSession || items.length === 1;
+                    session.isServiceSession ||
+                    (items.length === 1 && standsAlone(session, filtered));
+                  // The row label is the start time; when the talks in it
+                  // end at different times (lightning talks next to 45-minute
+                  // ones), or one runs alongside another row, each card
+                  // says its own span.
+                  const showTime =
+                    !session.isServiceSession &&
+                    (new Set(items.map((i) => i.endsAt)).size > 1 || (!isFull && items.length === 1));
                   return (
                     <div
                       key={session.id}
@@ -223,7 +234,7 @@ export function AgendaView({
                     >
                       <SessionCard
                         session={session}
-                        showTime={false}
+                        showTime={showTime}
                         compact={compact}
                         track={
                           session.trackId

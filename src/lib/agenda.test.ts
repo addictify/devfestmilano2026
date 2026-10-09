@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collapseServiceSessions, matchesFilters } from "@/lib/agenda";
+import { collapseServiceSessions, matchesFilters, standsAlone } from "@/lib/agenda";
 import type { Session } from "@/types/models";
 
 function session(over: Partial<Session> & { id: string }): Session {
@@ -23,7 +23,6 @@ describe("collapseServiceSessions", () => {
   it("collapses a break repeated in every room into one block", () => {
     const out = collapseServiceSessions(
       [break_("a", "Nexus"), break_("b", "Coworking"), break_("c", "Workshop")],
-      3,
     );
     expect(out).toHaveLength(1);
     expect(out[0].title).toBe("Coffee Break");
@@ -32,13 +31,28 @@ describe("collapseServiceSessions", () => {
     expect(out[0].trackId).toBeUndefined();
   });
 
-  it("keeps the rooms when the block covers only some of them", () => {
-    const out = collapseServiceSessions(
-      [break_("a", "Nexus"), break_("b", "Coworking")],
-      3,
-    );
-    expect(out).toHaveLength(1);
-    expect(out[0].roomName).toBe("Nexus · Coworking");
+  it("keeps the rooms when another room is running a talk during the block", () => {
+    const out = collapseServiceSessions([
+      break_("a", "Nexus"),
+      break_("b", "Coworking"),
+      session({ id: "t", roomName: "Workshop", startsAt: "2026-10-10T10:30:00", endsAt: "2026-10-10T12:00:00" }),
+    ]);
+    const block = out.find((s) => s.isServiceSession)!;
+    expect(block.roomName).toBe("Nexus · Coworking");
+  });
+
+  it("is venue-wide when every room in use is on the break, even with a room idle", () => {
+    // A fourth room (Secret Track) that only runs talks at other times
+    // mustn't turn every break into "Coworking · Nexus · Workshop".
+    const out = collapseServiceSessions([
+      break_("a", "Nexus"),
+      break_("b", "Coworking"),
+      break_("c", "Workshop"),
+      session({ id: "t1", roomName: "Secret Track", startsAt: "2026-10-10T09:30:00", endsAt: "2026-10-10T11:00:00" }),
+      session({ id: "t2", roomName: "Secret Track", startsAt: "2026-10-10T11:30:00", endsAt: "2026-10-10T11:50:00" }),
+    ]);
+    const block = out.find((s) => s.isServiceSession)!;
+    expect(block.roomName).toBeUndefined();
   });
 
   it("takes the majority title, so one room's typo doesn't win", () => {
@@ -48,7 +62,6 @@ describe("collapseServiceSessions", () => {
         break_("b", "Coworking", "Ceck In"),
         break_("c", "Workshop", "Check In"),
       ],
-      3,
     );
     expect(out[0].title).toBe("Check In");
   });
@@ -66,7 +79,6 @@ describe("collapseServiceSessions", () => {
           roomName: "Nexus",
         }),
       ],
-      3,
     );
     expect(out.map((s) => s.title)).toEqual(["Coffee Break", "Lunch"]);
   });
@@ -77,7 +89,6 @@ describe("collapseServiceSessions", () => {
         session({ id: "a", title: "Talk A", roomName: "Nexus" }),
         session({ id: "b", title: "Talk B", roomName: "Coworking" }),
       ],
-      3,
     );
     expect(out).toHaveLength(2);
   });
@@ -89,7 +100,6 @@ describe("collapseServiceSessions", () => {
         session({ id: "t", title: "Talk A" }),
         break_("b", "Coworking", "Welcome"),
       ],
-      3,
     );
     expect(out.map((s) => s.title)).toEqual(["Welcome", "Talk A"]);
   });
@@ -100,7 +110,6 @@ describe("collapseServiceSessions", () => {
         session({ id: "a", title: "TBA", startsAt: null, endsAt: null, isServiceSession: true }),
         session({ id: "b", title: "TBA", startsAt: null, endsAt: null, isServiceSession: true }),
       ],
-      3,
     );
     expect(out).toHaveLength(2);
   });
@@ -145,5 +154,31 @@ describe("matchesFilters", () => {
     expect(
       matchesFilters(talk, { track: "nexus", lang: "it", onlyFavorites: true, favorites: new Set(["x"]) }),
     ).toBe(false);
+  });
+});
+
+describe("standsAlone", () => {
+  const talk = (id: string, room: string, start: string, end: string) =>
+    session({ id, roomName: room, startsAt: `2026-10-10T${start}:00`, endsAt: `2026-10-10T${end}:00` });
+  const day = [
+    talk("keynote", "Nexus", "09:00", "09:30"),
+    talk("a", "Nexus", "11:30", "12:15"),
+    talk("b", "Coworking", "11:30", "12:15"),
+    talk("lt1", "Secret Track", "11:30", "11:50"),
+    talk("lt2", "Secret Track", "11:50", "12:10"),
+  ];
+  const byId = (id: string) => day.find((s) => s.id === id)!;
+
+  it("spans the row when nothing else runs at the same time", () => {
+    expect(standsAlone(byId("keynote"), day)).toBe(true);
+  });
+
+  it("doesn't, for a talk that starts mid-slot alongside longer ones", () => {
+    // Alone in its 11:50 row, but rooms are still busy until 12:15.
+    expect(standsAlone(byId("lt2"), day)).toBe(false);
+  });
+
+  it("always does for a break", () => {
+    expect(standsAlone(session({ id: "x", isServiceSession: true }), day)).toBe(true);
   });
 });

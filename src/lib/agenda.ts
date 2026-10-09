@@ -1,4 +1,5 @@
 import type { Session } from "@/types/models";
+import { toEventInstant } from "@/lib/time";
 
 /**
  * Collapse the service sessions that Sessionize repeats per room.
@@ -12,13 +13,13 @@ import type { Session } from "@/types/models";
  * title is the most frequent one, which also absorbs a typo in a single room
  * ("Ceck In" alongside two "Check In") without editing anyone's content.
  *
- * The room label survives only when the block does *not* span every room —
- * a break everywhere needs no room, a break in one room still does.
+ * The room label survives only when the block does *not* cover every room in
+ * use at that time — a break everywhere needs no room, a break in one room
+ * still does. "In use at that time", not "every room of the event": a room
+ * that only runs talks at other hours (Secret Track) would otherwise turn
+ * every break into "Coworking · Nexus · Workshop".
  */
-export function collapseServiceSessions(
-  sessions: Session[],
-  totalRooms: number,
-): Session[] {
+export function collapseServiceSessions(sessions: Session[]): Session[] {
   const groups = new Map<string, Session[]>();
   const out: Session[] = [];
 
@@ -41,7 +42,7 @@ export function collapseServiceSessions(
 
   const merged = new Map<string, Session>();
   for (const [key, group] of groups) {
-    merged.set(key, mergeGroup(group, totalRooms));
+    merged.set(key, mergeGroup(group, roomsInUse(sessions, group[0])));
   }
 
   return out.map((s) => {
@@ -50,12 +51,51 @@ export function collapseServiceSessions(
   });
 }
 
-function mergeGroup(group: Session[], totalRooms: number): Session {
+/** Milliseconds span of a session, or null when it has no schedule. */
+function span(s: Session): [number, number] | null {
+  const start = toEventInstant(s.startsAt);
+  const end = toEventInstant(s.endsAt);
+  if (!start || !end) return null;
+  return [new Date(start).getTime(), new Date(end).getTime()];
+}
+
+const overlaps = (a: [number, number], b: [number, number]) => a[0] < b[1] && b[0] < a[1];
+
+/** Rooms with anything scheduled during `ref`'s time span. */
+function roomsInUse(sessions: Session[], ref: Session): Set<string> {
+  const refSpan = span(ref);
+  const rooms = new Set<string>();
+  if (!refSpan) return rooms;
+  for (const s of sessions) {
+    const sSpan = span(s);
+    if (s.roomName && sSpan && overlaps(refSpan, sSpan)) rooms.add(s.roomName);
+  }
+  return rooms;
+}
+
+/**
+ * Whether a session gets a whole agenda row to itself: a break, or a talk
+ * nothing else runs alongside (a keynote). A 20-minute lightning talk that
+ * starts at 11:50 is alone in its time row but not in the venue — other rooms
+ * are mid-talk until 12:15 — and full width made it read as a plenary.
+ */
+export function standsAlone(session: Session, all: Session[]): boolean {
+  if (session.isServiceSession) return true;
+  const own = span(session);
+  if (!own) return true;
+  return !all.some((o) => {
+    if (o.id === session.id || o.isServiceSession) return false;
+    const other = span(o);
+    return other !== null && overlaps(own, other);
+  });
+}
+
+function mergeGroup(group: Session[], inUse: Set<string>): Session {
   const first = group[0];
   if (group.length === 1) return first;
 
-  const rooms = [...new Set(group.map((s) => s.roomName).filter(Boolean))];
-  const spansVenue = totalRooms > 0 && rooms.length >= totalRooms;
+  const rooms = [...new Set(group.map((s) => s.roomName).filter(Boolean))] as string[];
+  const spansVenue = inUse.size > 0 && [...inUse].every((r) => rooms.includes(r));
 
   return {
     ...first,
