@@ -3,7 +3,7 @@
 // Offline shell, plus pages you've actually visited — the venue has patchy
 // signal on the day, and an attendee who opened the agenda over wifi should
 // still be able to read it in a basement track room.
-const CACHE_VERSION = "devfest-v4";
+const CACHE_VERSION = "devfest-v5";
 const OFFLINE_URL = "/offline";
 const OFFLINE_URL_SLASH = "/offline/";
 
@@ -48,6 +48,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;        // third-party: passthrough
   if (url.pathname.startsWith("/api/")) return;            // never cache APIs
+  if (url.pathname.startsWith("/__/")) return;             // Firebase sign-in helper: hands off
 
   // Navigations: network-first, keeping a copy so a page you've already opened
   // survives losing signal. Falls back to that copy, then to the offline page.

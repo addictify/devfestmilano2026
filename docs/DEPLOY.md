@@ -163,6 +163,31 @@ gcloud scheduler jobs create http scheduled-announcements \
 For another edition, move both schedules to the new dates (the day-of-month
 and month fields).
 
+## Sign-in helper, self-hosted (`public/__/auth`)
+
+Firebase's sign-in pages (`/__/auth/handler`, `/__/auth/iframe` and their
+scripts) are copied into `public/__/auth/` and served from the site's own
+domain. Served from `devfestmilano26.firebaseapp.com` instead, sign-in broke
+wherever the browser keeps storage per site — Safari/iOS, the installed
+iPhone app, in-app browsers — with "Unable to process request due to missing
+initial state". This is Firebase's "self-host helper code" option.
+
+- `handler` and `iframe` are directories with an `index.html`: GitHub Pages
+  would serve an extensionless file as a download, and it 301s
+  `/__/auth/handler` to `/__/auth/handler/` keeping the query string. Their
+  script `src` are absolute for the same reason.
+- `public/__/firebase/init.json` is the public web config (no Firebase
+  Hosting on this project, so firebaseapp.com has none to copy).
+- It only takes effect with `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=2026.devfestmilano.it`
+  (GitHub variable) and `https://2026.devfestmilano.it/__/auth/handler` among
+  the authorized redirect URIs of the OAuth client "Web client (auto created by
+  Google Service)" (Google Cloud Console → APIs & Services → Credentials).
+  With the auth domain on the site, `useAuth` signs in by redirect in the
+  installed app (where a popup would open in a separate browser) and when a
+  popup is blocked.
+- Re-download the five files now and then to pick up Firebase fixes:
+  `https://devfestmilano26.firebaseapp.com/__/auth/{handler,handler.js,experiments.js,iframe,iframe.js}`.
+
 ## Firestore and Storage rules
 
 Independent of all the above:
