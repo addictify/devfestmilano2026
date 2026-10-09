@@ -172,10 +172,12 @@ wherever the browser keeps storage per site — Safari/iOS, the installed
 iPhone app, in-app browsers — with "Unable to process request due to missing
 initial state". This is Firebase's "self-host helper code" option.
 
-- `handler` and `iframe` are directories with an `index.html`: GitHub Pages
-  would serve an extensionless file as a download, and it 301s
-  `/__/auth/handler` to `/__/auth/handler/` keeping the query string. Their
-  script `src` are absolute for the same reason.
+- `handler` and `iframe` are `handler.html` / `iframe.html`: GitHub Pages
+  serves `/__/auth/handler` from `handler.html` with no redirect (an
+  extensionless file would be served as a download). Not a directory with an
+  `index.html`: Pages would 301 to `/__/auth/handler/`, the handler uses its
+  own URL as the OAuth `redirect_uri`, and Google rejects the trailing slash
+  (`redirect_uri_mismatch` — this broke sign-in for ~4 minutes on 9 Oct).
 - `public/__/firebase/init.json` is the public web config (no Firebase
   Hosting on this project, so firebaseapp.com has none to copy).
 - It only takes effect with `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=2026.devfestmilano.it`
