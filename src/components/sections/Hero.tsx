@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowUpRight, CalendarDays, Heart, MapPin } from "lucide-react";
 import { siteConfig } from "@/lib/site";
 import { GDG, GDG_ORDER } from "@/lib/design/tokens";
 import { Container } from "@/components/common/Container";
@@ -18,7 +18,7 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 export function Hero() {
   const t = useTranslations("hero");
   const tCal = useTranslations("calendar");
-  const { ticketsAvailable, ticketsSoldOut, cfpOpen } = useSiteSettings();
+  const { ticketsAvailable, ticketsSoldOut, cfpOpen, eventEnded } = useSiteSettings();
 
   // Entrance stagger in CSS (`.rise`), not JS: it starts on first paint of the
   // server HTML instead of after hydration, which on a slow phone kept the
@@ -120,69 +120,101 @@ export function Hero() {
             {t("lead")}
           </p>
 
-          <div
-            style={rise(4)}
-            className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
-          >
-            {ticketsAvailable || ticketsSoldOut ? (
-              <>
-                {/* Tickets open (or sold out — TicketButton becomes the badge):
-                    tickets lead, CFP secondary while it's open. */}
-                <TicketButton size="lg" label={t("ctaTickets")} />
-                {cfpOpen && (
-                  <Button asChild variant="outline" size="lg">
+          {eventEnded ? (
+            // After the event: thanks, the headcount, and where to follow
+            // for next year — in place of tickets, calendar, push and the
+            // countdown, which all pointed at a day that has passed.
+            <div
+              style={rise(4)}
+              className="rise mt-8 max-w-xl rounded-2xl border border-border bg-card/90 p-6 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.35)]"
+            >
+              <p className="eyebrow flex items-center gap-2 text-muted-foreground">
+                <Heart aria-hidden className="size-3.5 fill-gdg-red text-gdg-red" />
+                {t("endedEyebrow")}
+              </p>
+              <p className="mt-3 text-balance font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+                {t("endedTitle")}
+              </p>
+              <p className="mt-3 text-pretty text-muted-foreground">{t("endedBody")}</p>
+              <p className="mt-5 text-sm font-medium">{t("endedFollow")}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {siteConfig.communities.map((c) => (
+                  <Button key={c.id} asChild variant="outline" size="md">
+                    <a href={c.url} target="_blank" rel="noopener noreferrer">
+                      {c.name}
+                      <ArrowUpRight className="size-4" />
+                    </a>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+            <div
+              style={rise(4)}
+              className="rise mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"
+            >
+              {ticketsAvailable || ticketsSoldOut ? (
+                <>
+                  {/* Tickets open (or sold out — TicketButton becomes the badge):
+                      tickets lead, CFP secondary while it's open. */}
+                  <TicketButton size="lg" label={t("ctaTickets")} />
+                  {cfpOpen && (
+                    <Button asChild variant="outline" size="lg">
+                      <a
+                        href={siteConfig.cfpUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t("ctaCfp")}
+                      </a>
+                    </Button>
+                  )}
+                </>
+              ) : cfpOpen ? (
+                <>
+                  {/* CFP-open phase: the live action (submit a talk) leads;
+                      ticket intent is captured via the notify dialog. */}
+                  <Button asChild variant="accent" size="lg">
                     <a
                       href={siteConfig.cfpUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {t("ctaCfp")}
+                      <ArrowUpRight className="size-4" />
                     </a>
                   </Button>
-                )}
-              </>
-            ) : cfpOpen ? (
-              <>
-                {/* CFP-open phase: the live action (submit a talk) leads;
-                    ticket intent is captured via the notify dialog. */}
-                <Button asChild variant="accent" size="lg">
-                  <a
-                    href={siteConfig.cfpUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {t("ctaCfp")}
-                    <ArrowUpRight className="size-4" />
-                  </a>
-                </Button>
-                <NotifyTicketsDialog size="lg" />
-              </>
-            ) : (
-              /* CFP closed, tickets not on sale: nothing external to click, so
-                 the notify dialog is promoted to the leading action. */
-              <NotifyTicketsDialog size="lg" variant="accent" />
+                  <NotifyTicketsDialog size="lg" />
+                </>
+              ) : (
+                /* CFP closed, tickets not on sale: nothing external to click, so
+                   the notify dialog is promoted to the leading action. */
+                <NotifyTicketsDialog size="lg" variant="accent" />
+              )}
+              <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
+            </div>
+
+            {/* Above the fold on purpose: on the day, the home page is where
+                people land, and a prompt below the hero went unseen. */}
+            <div style={rise(5)} className="rise">
+              <PushCallout mini className="mt-5" />
+            </div>
+
+            {!cfpOpen && (
+              <p
+                style={rise(6)}
+                className="rise mt-4 max-w-xl font-mono text-sm text-muted-foreground"
+              >
+                {t("cfpClosed")}
+              </p>
             )}
-            <AddToCalendar event={eventCalendarEvent(tCal("eventDescription"))} variant="ghost" size="md" />
-          </div>
 
-          {/* Above the fold on purpose: on the day, the home page is where
-              people land, and a prompt below the hero went unseen. */}
-          <div style={rise(5)} className="rise">
-            <PushCallout mini className="mt-5" />
-          </div>
-
-          {!cfpOpen && (
-            <p
-              style={rise(6)}
-              className="rise mt-4 max-w-xl font-mono text-sm text-muted-foreground"
-            >
-              {t("cfpClosed")}
-            </p>
+            <div style={rise(7)} className="rise mt-12">
+              <Countdown target={siteConfig.eventDate} />
+            </div>
+            </>
           )}
-
-          <div style={rise(7)} className="rise mt-12">
-            <Countdown target={siteConfig.eventDate} />
-          </div>
 
           {/* Compact ticket stub — mobile/tablet only; the CTAs and countdown
               above lead, this is the brand flourish that follows, not the
@@ -198,7 +230,7 @@ export function Hero() {
               <div className="flex items-center justify-between gap-4 p-5">
                 <div>
                   <p className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-muted-foreground">
-                    Save the date
+                    {eventEnded ? t("panelEnded") : "Save the date"}
                   </p>
                   <p className="mt-1 font-display text-5xl font-extrabold leading-none tracking-tighter">
                     10<span className="text-gdg-red">.</span>10
@@ -250,7 +282,7 @@ export function Hero() {
             <div className="relative flex h-full flex-col justify-between p-8">
               <div>
                 <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  Save the date
+                  {eventEnded ? t("panelEnded") : "Save the date"}
                 </p>
                 <p className="mt-4 font-display text-7xl font-extrabold leading-none tracking-tighter">
                   10<span className="text-gdg-red">.</span>10

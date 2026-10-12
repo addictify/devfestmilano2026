@@ -49,7 +49,7 @@ export function Header() {
   const tPlay = useTranslations("play");
   const pathname = usePathname();
   const { user } = useAuth();
-  const { questEnabled } = useSiteSettings();
+  const { questEnabled, eventEnded } = useSiteSettings();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -103,7 +103,8 @@ export function Header() {
                 {tPlay("title")}
               </Link>
             )}
-            <NotificationsBell />
+            {/* Announcements were for the day itself. */}
+            {!eventEnded && <NotificationsBell />}
             <AuthButton />
 
             {/* Mobile menu */}

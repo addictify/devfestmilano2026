@@ -53,6 +53,11 @@ export const siteConfig = {
    *  header link, 404 the /play pages and refuse checkpoint scans. */
   questEnabled: true,
 
+  /** The event is over: the home page thanks attendees and points to the
+   *  communities; calendar buttons, notification prompts, the countdown and
+   *  ticket CTAs are hidden. */
+  eventEnded: true,
+
   /** Last edition (2025) in numbers — social proof while the CFP is open. */
   lastEdition: {
     year: 2025,

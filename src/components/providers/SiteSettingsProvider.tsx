@@ -11,6 +11,7 @@ const fallback: SiteSettings = {
   schedulePublished: siteConfig.schedulePublished,
   cfpOpen: siteConfig.cfpOpen,
   questEnabled: siteConfig.questEnabled,
+  eventEnded: siteConfig.eventEnded,
 };
 
 const SiteSettingsContext = createContext<SiteSettings>(fallback);

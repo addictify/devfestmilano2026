@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Link } from "@/i18n/navigation";
 import { SessionCard } from "@/components/agenda/SessionCard";
 import { PushToggle } from "@/components/common/PushToggle";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 import type { Session, Speaker, Track } from "@/types/models";
 
 export function MyScheduleList({
@@ -20,6 +21,7 @@ export function MyScheduleList({
   const { favorites, count, ready } = useFavorites();
   const { user, enabled } = useAuth();
   const t = useTranslations("myschedule");
+  const { eventEnded } = useSiteSettings();
 
   const mine = sessions
     .filter((s) => favorites.has(s.id))
@@ -36,7 +38,7 @@ export function MyScheduleList({
         </p>
       )}
 
-      <PushToggle className="mt-6" />
+      {!eventEnded && <PushToggle className="mt-6" />}
 
       <div className="mt-8 flex flex-col gap-4">
         {mine.length === 0 ? (

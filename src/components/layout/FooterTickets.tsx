@@ -14,8 +14,23 @@ import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
  */
 export function FooterTickets() {
   const t = useTranslations("footer");
-  const { ticketsAvailable: open, ticketsSoldOut } = useSiteSettings();
+  const { ticketsAvailable: open, ticketsSoldOut, eventEnded } = useSiteSettings();
   const ticketsAvailable = open || ticketsSoldOut;
+
+  if (eventEnded) {
+    return (
+      <div className="flex flex-col gap-4">
+        <h3 className="eyebrow text-muted-foreground">{t("endedTitle")}</h3>
+        <p className="text-sm text-muted-foreground">{t("endedBody")}</p>
+        <Button asChild variant="outline" size="sm" className="w-fit">
+          <Link href="/communities">
+            {t("join")}
+            <ArrowUpRight className="size-4" />
+          </Link>
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-4">

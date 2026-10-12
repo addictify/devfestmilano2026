@@ -23,6 +23,11 @@
     "home": "Home"
   },
   "hero": {
+    "endedEyebrow": "Grazie, Milano!",
+    "endedTitle": "Siamo stati più di 250",
+    "endedBody": "È stato fantastico avervi a DevFest Milano 2026: grazie a chi è venuto, a speaker, sponsor e volontari. Ci rivediamo il prossimo anno!",
+    "endedFollow": "Per le novità sulla prossima edizione segui le due community:",
+    "panelEnded": "Alla prossima",
     "eyebrow": "GDG Cloud Milano & GDG Milano presentano",
     "date": "10 Ottobre 2026",
     "city": "Milano, Italia",
@@ -207,6 +212,8 @@
     ]
   },
   "footer": {
+    "endedTitle": "Alla prossima",
+    "endedBody": "Grazie per aver reso speciale DevFest Milano 2026. Segui le community per la prossima edizione.",
     "tagline": "L'evento annuale della community Google Developer a Milano.",
     "explore": "Esplora",
     "community": "Community",

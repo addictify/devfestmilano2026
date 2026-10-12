@@ -23,6 +23,11 @@
     "home": "Home"
   },
   "hero": {
+    "endedEyebrow": "Thank you, Milan!",
+    "endedTitle": "250+ of you showed up",
+    "endedBody": "It was fantastic having you at DevFest Milano 2026: thank you to every attendee, speaker, sponsor and volunteer. See you next year!",
+    "endedFollow": "For news about the next edition, follow the two communities:",
+    "panelEnded": "See you next time",
     "eyebrow": "GDG Cloud Milano & GDG Milano present",
     "date": "October 10, 2026",
     "city": "Milan, Italy",
@@ -207,6 +212,8 @@
     ]
   },
   "footer": {
+    "endedTitle": "See you next time",
+    "endedBody": "Thank you for making DevFest Milano 2026 special. Follow the communities for the next edition.",
     "tagline": "The annual Google Developer community event in Milan.",
     "explore": "Explore",
     "community": "Community",

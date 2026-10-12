@@ -16,6 +16,7 @@ const LABELS: Record<keyof SiteSettings, string> = {
   schedulePublished: "Agenda pubblicata",
   cfpOpen: "Call for Speakers aperta",
   questEnabled: "DevFest Quest attiva",
+  eventEnded: "Evento concluso (messaggio di ringraziamento)",
 };
 
 export function ConfigAdmin() {

@@ -10,6 +10,7 @@ export type SiteSettings = {
   schedulePublished: boolean;
   cfpOpen: boolean;
   questEnabled: boolean;
+  eventEnded: boolean;
 };
 
 const FLAGS = [
@@ -19,6 +20,7 @@ const FLAGS = [
   "schedulePublished",
   "cfpOpen",
   "questEnabled",
+  "eventEnded",
 ] as const;
 
 export function mergeSettings(doc: Record<string, unknown> | null): SiteSettings {

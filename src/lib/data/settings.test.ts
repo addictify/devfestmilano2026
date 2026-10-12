@@ -11,6 +11,7 @@ describe("mergeSettings", () => {
       schedulePublished: siteConfig.schedulePublished,
       cfpOpen: siteConfig.cfpOpen,
       questEnabled: siteConfig.questEnabled,
+      eventEnded: siteConfig.eventEnded,
     });
   });
   it("overrides per-flag only when the doc has a boolean", () => {

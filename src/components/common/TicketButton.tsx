@@ -33,7 +33,10 @@ export function TicketButton({
   label?: string;
 }) {
   const t = useTranslations("nav");
-  const { ticketsAvailable, ticketsSoldOut } = useSiteSettings();
+  const { ticketsAvailable, ticketsSoldOut, eventEnded } = useSiteSettings();
+
+  // After the event there's no ticket to sell or be sold out of.
+  if (eventEnded) return null;
 
   if (ticketsSoldOut) {
     return (

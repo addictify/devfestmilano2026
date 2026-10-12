@@ -6,6 +6,7 @@ import { CalendarPlus, Download, ArrowUpRight } from "lucide-react";
 import { googleCalendarUrl, icsDataUri, type CalendarEvent } from "@/lib/calendar";
 import { buttonVariants, type ButtonProps } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSiteSettings } from "@/components/providers/SiteSettingsProvider";
 
 export function AddToCalendar({
   event,
@@ -21,7 +22,9 @@ export function AddToCalendar({
   className?: string;
 }) {
   const t = useTranslations("calendar");
-  if (!event.start || !event.end) return null;
+  // Nothing left to put in a calendar once the event is over.
+  const { eventEnded } = useSiteSettings();
+  if (eventEnded || !event.start || !event.end) return null;
 
   return (
     <DropdownMenu.Root>

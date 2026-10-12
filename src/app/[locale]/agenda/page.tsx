@@ -39,7 +39,7 @@ export default async function AgendaPage({
   setRequestLocale(locale);
   const t = await getTranslations("agendaPage");
 
-  const [sessions, tracks, speakers, published, { cfpOpen }] = await Promise.all([
+  const [sessions, tracks, speakers, published, { cfpOpen, eventEnded }] = await Promise.all([
     getSessions(),
     getTracks(),
     getSpeakers(),
@@ -60,7 +60,7 @@ export default async function AgendaPage({
       />
       <section className="py-12 sm:py-16">
         <Container>
-          <PushCallout className="mb-10" />
+          {!eventEnded && <PushCallout className="mb-10" />}
           {published ? (
             <AgendaView
               sessions={sessions}

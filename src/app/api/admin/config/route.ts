@@ -13,6 +13,7 @@ const FLAGS = [
   "schedulePublished",
   "cfpOpen",
   "questEnabled",
+  "eventEnded",
 ] as const;
 
 export async function GET(req: Request) {
